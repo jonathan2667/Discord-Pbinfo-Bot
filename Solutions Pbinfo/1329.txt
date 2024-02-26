@@ -1,0 +1,28 @@
+#include <iostream>
+
+using namespace std;
+
+int main()
+{
+    int a[1001],i,n,ok;
+    cin>>n;
+    ok=1;
+    cin>>a[1];
+    cin>>a[2];
+    if (a[2]==a[1]) ok=0;    // doua elemente egale nu convin
+    for(i=3;i<=n;++i)
+    {
+        cin>>a[i];
+        if (a[i]==a[i-1]) ok=0;   // nu convin doua elemente egale
+        if (!((a[i]<a[i-1]) xor (a[i-1]<a[i-2]))) ok=0;   // monotonia alternativa obliga ca din cele doua conditii 
+                                                    // sa fie adevarata exact una, deci "xor"-ul este true
+                                                    // iar pe noi ne intereseaza negarea acestei conditii
+    }
+
+
+    if (ok)
+        cout<<"DA";
+    else
+        cout<<"NU";
+    return 0;
+}

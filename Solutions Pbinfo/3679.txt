@@ -1,0 +1,64 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+ifstream f ("consolidare.in");
+ofstream g ("consolidare.out");
+
+const int nmax = 1e5 + 3;
+int n, h, v[nmax], usu, sol, act;
+
+vector <int> pwp;
+
+int main()
+{
+    f >> n >> h;
+
+    for (int i = 1; i <= n; ++i)
+        f >> v[i];
+
+    for (int i = 1; i <= h; ++i)
+    {
+        usu = 0;
+        pwp.clear();
+
+        for (int j = 1; j <= n; ++j)
+        {
+            if (!v[j]) ++usu;
+            else if(usu)
+            {
+                pwp.push_back(usu);
+                usu = 0;
+            }
+        }
+
+        if (usu) pwp.push_back(usu);
+
+        if (pwp.size() == 1)
+        {
+            ++sol;
+            continue;
+        }
+
+        if (pwp.size() == 0)
+        {
+            for (int j = 1; j <= n; ++j)
+            v[j] = max(v[j] - 1, 0);
+            continue;
+        }
+
+        act = pwp[0];
+
+        for (int j = 1; j < pwp.size(); ++j)
+            act = __gcd(act, pwp[j]);
+
+        for (int j = 0; j < pwp.size(); ++j)
+            sol += pwp[j] / act;
+
+        for (int j = 1; j <= n; ++j)
+            v[j] = max(v[j] - 1, 0);
+    }
+
+    g << sol;
+
+    return 0;
+}

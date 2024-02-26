@@ -1,0 +1,110 @@
+#include <fstream>
+
+using namespace std;
+
+struct NOD
+{
+    int nod;
+    NOD* next;
+};
+NOD *dp[10000];
+int s, *c, n, k, h[10001], lh;
+
+void Add(NOD*& p, int a)
+{
+    NOD* q;
+    q = new(NOD);
+    q->next = p;
+    q->nod = a;
+    p = q;
+}
+
+void Remove(NOD*& p, int a)
+{
+    NOD *q, *r;
+    if (p->nod == a)
+    {
+        q = p;
+        p = p->next;
+        delete q;
+    }
+    else
+    {
+        q = p;
+        while (q->next->nod != a)
+            q = q->next;
+        r = q->next;
+        q->next = q->next->next;
+        delete r;
+    }
+}
+
+void Citire()
+{
+    int i, x, y;
+    ifstream f("cezar1.in");
+    f >> n >> k;
+    c=new int[10000];
+    for (i = 0; i < n; i++)
+    {
+        *(c + i) = 1;
+        dp[i] = 0;
+        h[i] = n;
+    }
+    for (i=0;i<n-1;i++)
+    {
+        f >> x >> y;
+        Add(dp[x - 1], y - 1);
+        Add(dp[y - 1], x - 1);
+    }
+    for (i = 0; i < n; i++)
+        if (!dp[i]->next) h[++lh] = i;
+     *(c+n) = 20000;
+     h[n] = n;
+     f.close();
+}
+
+void Desfrunzire()
+{
+    int ii, i, j, pmin;
+    s = 0;
+    for (ii = n - 1; ii >= k + 1; ii--)
+    {
+        pmin = h[1];
+        s += *(c + pmin);
+        j = dp[pmin]->nod;
+        *(c + j) += *(c + pmin);
+        Remove(dp[j], pmin);
+        if(!dp[j]->next) h[1] = j;
+        else
+        {
+            h[1] = h[lh];
+            h[lh] = n;
+            lh--;
+        }
+        i = 1;
+        while (2 * i <= lh)
+        {
+            if (*(c + h[2 * i]) < *(c + h[2 * i + 1])) j = 2 * i;
+            else j = 2 * i + 1;
+            if (*(c + h[i]) > *(c + h[j]))
+            {
+                int aux = h[i];
+                h[i] = h[j];
+                h[j] = aux;
+                i = j;
+            }
+            else i = n;
+        }
+    }
+}
+
+int main()
+{
+    Citire();
+    Desfrunzire();
+    ofstream f("cezar1.out");
+    f << s << "\n";
+    f.close();
+    return 0;
+}

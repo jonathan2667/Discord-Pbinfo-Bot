@@ -1,0 +1,38 @@
+/// Moca Andrei - 100p
+
+class Multiset {
+public:
+    Multiset(const int& _n = 0) : n(_n) {
+        aib = vector<int>(n + 1);
+    }
+    inline void Insert(const int& val) {
+        aibUpdate(val, 1);
+    }
+    inline void Erase(const int& pos) {
+        aibUpdate(Find(pos), -1);
+    }
+    inline int Find(const int& pos) const {
+        int st(1), dr(n), mid, res(0);
+        while (st <= dr) {
+            mid = (st + dr) / 2;
+            if (aibQuery(mid) >= pos)
+                res = mid, dr = mid - 1;
+            else st = mid + 1;
+        }
+        return res;
+    }
+private:
+    inline void aibUpdate(const int& pos, const int& val) {
+        if (pos)
+            for (int i = pos; i <= n; i += i & -i)
+                aib[i] += val;
+    }
+    inline int aibQuery(const int& pos) const {
+        int sum(0);
+        for (int i = pos; i > 0; i -= i & -i)
+            sum += aib[i];
+        return sum;
+    }
+    int n;
+    vector<int> aib;
+};

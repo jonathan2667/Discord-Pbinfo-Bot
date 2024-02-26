@@ -1,0 +1,77 @@
+/**
+* Autor: Vlad Stoian
+* Punctaj: 100p
+*/
+#include <iostream>
+#include <cstdio>
+typedef long long ll;
+
+using namespace std;
+const int NMAX = 110;
+const int KMAX = NMAX * NMAX;
+
+ll MOD = 1000000007;
+ll N; ll M; ll P;
+ll DP[NMAX][KMAX];
+ll CombNPow[NMAX][5];
+
+ll pow_mod(ll x, ll n, ll mod) {
+    if( n == 0 ) return 1;
+
+    ll p = pow_mod(x, n / 2, mod);
+    if( n % 2 ) return (((p * p) % mod) * x) % mod;
+    else return (p * p) % mod;
+}
+
+ll div_mod(ll x, ll y, ll mod) {
+    while(x % y != 0) x += mod;
+    return (x / y) % mod;
+}
+
+void compute_combinations(ll n, ll m) {
+    CombNPow[0][0] = CombNPow[0][1] = 1;
+    ll currentComb = 1;
+
+    for(int k = 1; k <= n; k++) {
+        currentComb = currentComb * (n - k + 1);
+        currentComb = div_mod(currentComb, k, MOD);
+
+        //CombNPow[k][0] == Comb(n,k) ** (M / N)
+        //CombNPow[k][1] == Comb(n,k) ** (M / N + 1)
+        CombNPow[k][0] = pow_mod(currentComb, m / n, MOD);
+        CombNPow[k][1] = (CombNPow[k][0] * currentComb) % MOD;
+    }
+}
+
+int main() {
+#ifndef LOCAL
+    if(freopen("puncte2.in", "r", stdin) == NULL ||
+       freopen("puncte2.out", "w", stdout) == NULL) {
+        return 1;
+    }
+#endif
+    cin >> N >> M >> P;
+
+    compute_combinations(N, M);
+
+    P = min(P, N * N - P);
+
+    DP[0][0] = 1;
+    for(int i = 1; i <= N; i++)
+    {
+        for(int j = 0; j <= N; j++)
+        {
+            int comb = CombNPow[j][M % N >= i];
+
+            for(int k = 0; k + j <= P; k++)
+            {
+                DP[i][j + k] += (ll)(DP[i - 1][k]) * comb % MOD;
+                DP[i][j + k] %= MOD;
+            }
+        }
+    }
+
+    cout << DP[N][P] << endl;
+
+    return 0;
+}

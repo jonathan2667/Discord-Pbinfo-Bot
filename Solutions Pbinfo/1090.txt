@@ -1,0 +1,79 @@
+{solutie Szabo Zoltan - GrSc"Petru Maior" Reghin}
+program secvente3; {rezolvare cu ciurul lui Eratostene}
+
+const MAX = 30000;
+
+const fin='secvente2.in';
+      fout='secvente2.out';
+var f,g:text;
+    t,n,p,k,m,i,x,d:integer;  {n-atatea numere de pe foaie}
+                    {p-baza componentei putere a numarului p-prim}
+                    {k-cate numere prime vor fi in secventele cerute}
+    a:array[1..15000] of integer; {a- contine pozitiile numerelor p-prime}
+    prime: array[1..MAX] of boolean;
+                   {prim[i]=true/false ne va spune daca i este numar prim}
+
+procedure numereprime;                    {ciurul lui Eratostene}
+var i,j:integer;                  {pentru generarea numerelor prime}
+    rad:real;
+begin
+  rad:=sqrt(MAX);
+  for i:=1 to MAX do     {toate numerele le consideram prime la inceput}
+    prime[i]:=true;
+  i:=1;                  {plec de la inceputul vectorului}
+  while i<=rad do        {se lucreaza doar pana la radical din n}
+    begin
+      repeat
+        inc(i)
+      until prime[i];      {caut urmatorul numar prim la rand}
+      j:=i*i;       {primul numar care nu mai este prim este patratul lui}
+      while j<=MAX do      {apoi plecand de la el}
+        begin
+          prime[j]:=false; {il marchez ca fiind neprim (e multiplu de i)}
+          j:=j+i           {si marchez din i in i}
+        end;
+    end;
+End;
+function pprim(x:integer):boolean;
+begin
+  if x=1 then pprim:=false   {numarul 1 nu e pprim}
+  else
+    begin
+      while x mod p=0 do    {simplific cu p}
+        x := x div p;
+      pprim:= prime[x];  {si verific daca e prim}
+                        {- de data asta se accepta si 1}
+    end;
+end;
+
+begin
+  assign(f,fin);
+  reset(f);
+  assign(g,fout);
+  rewrite(g);
+  numereprime;  {generez tabelul numerelor prime cu ciurul lui Eratostene}
+  readln(f,D);
+  for t:=1 to D do
+  begin
+    readln(f,n,p,k);
+    m:=0;
+    for i:=1 to n do
+      begin
+        readln(f,x);
+        if pprim(x) then
+          begin
+            inc(m);
+            a[m]:=i;     {am memorat pozitia de aparitie a unui numar p-prim}
+          end;
+      end;
+    if m-k+1<=0 then
+      writeln(g,0)
+    else
+      writeln(g,m-k+1); {din m numere prime pot crea m-k+1 secvente de lungime k}
+
+    for i:=1 to m-k+1 do
+      writeln(g,a[i],' ',a[i+k-1]); {astea sunt extremitatile secventelor}
+  end;
+  close(f);
+  close(g);
+end.

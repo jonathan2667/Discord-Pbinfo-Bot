@@ -1,0 +1,33 @@
+#include <iostream>
+#include <cstring>
+using namespace std;
+
+int palindrom(char *p){
+    char s[21];
+    strcpy(s,p);
+    for(int i=0;s[i];++i)
+        if(s[i]>='a')
+            s[i]-=32;
+    for(int i=0,j=strlen(s)-1 ; i<j ; i++, j--)
+        if(s[i]!=s[j])
+            return 0;
+    return 1;
+}
+
+int main(){
+    char s[256];
+    cin.getline(s,256);
+    char *p, *pal=NULL, sep[]=" ,.:;";
+    p = strtok(s,sep);
+    while(p){
+        if(palindrom(p))
+            if( !pal )
+                pal = p;
+            else
+                if(strlen(p) > strlen(pal))
+                    pal = p;
+        p = strtok(NULL , sep);
+    }
+    cout << pal;
+    return 0;
+}

@@ -1,0 +1,39 @@
+// ===========================
+// =   Solutie neoficiala    =
+// =  Vintila Valentin Ioan  =
+// ===========================
+
+#include <bits/stdc++.h>
+
+using namespace std;
+
+long long f(long long l, long long c, long long cadran)
+{
+    if(cadran == 1)
+        return 0;
+    if(l <= cadran / 2 && c <= cadran / 2)
+        return f(l, c, cadran/2);
+    else if(l > cadran / 2 && c > cadran / 2)
+        return f(l-cadran / 2, c - cadran / 2, cadran/2);
+    else if(l <= cadran / 2 && c > cadran / 2)
+        return f(l, c-cadran/2, cadran/2) + cadran/2;
+    else
+        return f(l-cadran/2, c, cadran/2) + cadran/2;
+
+}
+
+int main()
+{
+    ifstream fin("tabela.in");
+    ofstream fout("tabela.out");
+
+    long long l, c, l2, c2, cadran;
+    fin >> l >> c;
+
+    l2 = (long long)1 << ((long long)log2((double)l-1) + 1);
+    c2 = (long long)1 << ((long long)log2((double)c-1) + 1);
+    cadran = max(l2, c2);
+
+    fout << f(l, c, cadran);
+    return 0;
+}

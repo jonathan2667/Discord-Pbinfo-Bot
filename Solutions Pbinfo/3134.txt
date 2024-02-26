@@ -1,0 +1,48 @@
+///100p
+#include <bits/stdc++.h>
+using namespace std;
+ifstream in("inf.in");
+ofstream out("inf.out");
+char next(char ch)
+{
+    if(ch=='I')
+        return 'N';
+    if(ch=='N')
+        return 'F';
+    return 'I';
+}
+int n,k,result[3],res=INT_MAX;
+char ch,now[3],then[3];
+queue<char>q;
+int main()
+{
+    for(int i=0; i<3; i++)
+        now[i]=then[i]="INF"[i];
+    in>>n>>k;
+    for(int i=1; in>>ch; i++)
+    {
+        q.push(ch);
+        for(int j=0; j<3; j++)
+        {
+            result[j]+=(now[j]!=ch);
+            now[j]=next(now[j]);
+        }
+        if(i>=k)
+        {
+            if(i>k)
+            {
+                char cnow=q.front();
+                q.pop();
+                for(int j=0; j<3; j++)
+                {
+                    result[j]-=(then[j]!=cnow);
+                    then[j]=next(then[j]);
+                }
+            }
+            for(int j=0; j<3; j++)
+                res=min(res,result[j]);
+        }
+    }
+    out<<res;
+    return 0;
+}

@@ -1,0 +1,55 @@
+// 100 p
+#include <fstream>
+#define MOD 997
+#define DIMX 50010
+#define DIMK 53
+#define INF 1<<30
+
+using namespace std;
+
+int c[DIMK];
+int b[DIMX];
+int d[DIMX];
+
+int a, x, k, i, j, n;
+
+inline int maxim(int a, int b) {
+    return (a > b ? a : b);
+}
+
+int main() {
+    ifstream fin("calatorie.in");
+    ofstream fout("calatorie.out");
+    fin>>x>>k;
+    if (k%2 == 1)
+        k--;
+    fin>>n;
+    for (i=1;i<=n;i++) {
+        fin>>a;
+        if (a < x)
+            b[a] = 1;
+    }
+    c[0] = 1;
+    for (i=1;i<=k;i++) {
+        c[i] = 0;
+        for (j=0;j<i;j++) {
+            c[i] += c[j]*c[i-j-1];
+            c[i] %= MOD;
+        }
+
+    }
+
+    d[0] = 1;
+    for (i=1;i<=x;i++)
+        if (b[i])
+            d[i] = INF;
+        else {
+            for (j=maxim(i-k/2,0);j<i;j++)
+                if (!b[j]) {
+                    d[i] += 2*d[j]*c[i-j-1];
+                    d[i] %= MOD;
+                }
+        }
+    fout<<d[x]<<"\n";
+    return 0;
+}

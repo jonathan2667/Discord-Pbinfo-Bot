@@ -1,0 +1,54 @@
+#include <cstdio>
+#include <algorithm>
+
+using namespace std;
+
+#define maxn 100010
+
+int n, m, x;
+int v[maxn];
+long long sc, sol;
+int pp, mm, ps[maxn], mn[maxn];
+
+int main()
+{
+    freopen("permutare1.in", "r", stdin);
+    freopen("permutare1.out", "w", stdout);
+
+    scanf("%d%d", &n, &m);
+    for(int i=1; i<=n; ++i)
+        scanf("%d", &x);
+    for(int i=1; i<m; ++i)
+    {
+        scanf("%d", &v[i]);
+
+        --mn[v[i]];
+        ++ps[v[i]];
+
+        --ps[(v[i]+n/2)%n];
+        ++mn[(v[i]+n/2+n%2)%n];
+
+        if(v[i]<n/2)
+            ++mm;
+        if(v[i]>=n/2+n%2)
+            ++pp;
+
+        sol+=min(v[i], n-v[i]);
+    }
+
+    sc=sol;
+
+    for(int i=0; i<n; ++i)
+    {
+        sol=min(sol, sc+min(i, n-i));
+
+        pp+=ps[i];
+        mm+=mn[i];
+
+        sc+=pp-mm;
+    }
+
+    printf("%lld\n", sol);
+
+    return 0;
+}

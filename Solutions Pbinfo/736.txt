@@ -1,0 +1,105 @@
+const fi:string='codif.in';
+      fo:string='codif.out';
+      v:array[0..9]of string[4]=('1','2','4','8','16','32','64','128','256','512');
+      c:array[0..9]of string[2]=(' ','a','e','i','o','u','m','n','r','s');
+var s,sx,ss:string;ns,na:integer;
+    x:array[1..500]of integer;{vector cu indici din v, ce il generez}
+    a:array[1..600]of string; {vector cu texte solutie}
+
+procedure cit;
+var f:text;
+begin
+assign(f,fi);
+reset(f);
+readln(f,ns);
+read(f,s);
+close(f);
+end;
+
+procedure afis;
+var f:text;
+    i:integer;
+begin
+assign(f,fo);
+rewrite(f);
+writeln(f,na);
+writeln(na);
+for i:=1 to na do
+ writeln(f,a[i]);
+close(f);
+end;
+
+procedure ordonare;
+var i:integer;
+    aux:string;
+    sw:boolean;
+begin
+ repeat
+  sw:=true;
+  for i:=1 to na-1 do
+   if length(a[i])>length(a[i+1]) then
+    begin
+     aux:=a[i];
+     a[i]:=a[i+1];
+     a[i+1]:=aux;
+     sw:=false;
+    end
+    else
+       if (length(a[i])=length(a[i+1]))and(a[i]>a[i+1]) then
+    begin
+     aux:=a[i];
+     a[i]:=a[i+1];
+     a[i+1]:=aux;
+     sw:=false;
+    end
+ until sw;
+end;
+
+function cont(k,p:integer):boolean;
+var aux:string[4];
+begin
+ if (p+length(v[x[k]])-1>ns) then
+  cont:=false
+   else
+ begin
+  aux:=copy(s,p,length(v[x[k]]));
+  if v[x[k]]=aux then
+  cont:=true
+   else
+  cont:=false;
+ end;
+end;
+
+
+procedure generare(k,p:integer);
+var i:integer;
+begin
+ if p>ns then
+  begin
+   na:=na+1;
+   ss:='';
+   for i:=1 to k-1 do
+     begin
+     {write(c[x[i]]);}
+     ss:=ss+c[x[i]];
+     end;
+    {writeln;}
+  a[na]:=ss;
+  end
+   else
+ for i:=0 to 9 do
+  begin
+   x[k]:=i;
+   if cont(k,p) then
+    generare(k+1,p+length(v[i]));
+  end;
+end;
+
+begin{p.p.}
+cit;
+na:=0;
+generare(1,1);
+ordonare;
+afis;
+{writeln(na);}
+end.

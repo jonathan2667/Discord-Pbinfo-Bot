@@ -1,0 +1,166 @@
+#include <fstream>
+#include <iostream>
+#define NMAX 260
+#define maxV 255
+#define MAX(a,b) (a)>(b)?(a):(b)
+
+using namespace std;
+ifstream fin("virus.in");
+ofstream fout("virus.out");
+
+int nrb[NMAX];
+int msk[2][NMAX];
+int nr[2][NMAX];
+int n, m, task;
+char ch;
+
+int cntSetBits(int x)
+{
+    int ans = 0;
+    while (x)
+    {
+        x = (x&(x-1));
+        ++ans;
+    }
+    return ans;
+}
+
+bool cycle(int x)
+{
+    ++x;
+    return (!(x&(x-1)));
+}
+
+int maskType1(int x)
+{
+    for (int i=0; i<8; ++i)
+    {
+        if (!(x & (1<<i)))
+        {
+            return (1<<i);
+        }
+    }
+    return 0;
+}
+
+int maskType2(int x)
+{
+    if (nrb[x] == 1)
+    {
+        return x;
+    }
+    int ans = 0;
+    int cn = 0;
+    int i = 7;
+    while (cn<2 && i>=0)
+    {
+        if (x & (1<<i))
+        {
+            ans |= (1<<i);
+            ++cn;
+        }
+        --i;
+    }
+    return ans;
+}
+
+int maxCnt1(int line)
+{
+    int ans = 0;
+    for (int i=1; i<=maxV; ++i)
+    {
+        if (!nr[line][i])
+        {
+            continue;
+        }
+        ans = MAX(ans, nrb[i]);
+    }
+    return ans;
+}
+
+int solve();
+
+int main()
+{
+    fin>>n>>m;
+    for (int i=1; i<=n; ++i)
+    {
+        fin.get(ch);
+        for (int j=1; j<=m; ++j)
+        {
+            fin.get(ch);
+            if (!cycle((int)ch))
+            {
+                ++nr[0][(int)ch];
+            }
+        }
+    }
+    fin>>task;
+    for (int i=1; i<=maxV; ++i)
+    {
+        nrb[i] = cntSetBits(i);
+        msk[0][i] = maskType1(i);
+        msk[1][i] = maskType2(i);
+    }
+    fout<<solve()<<'\n';
+    fin.close();
+    fout.close();
+    return 0;
+}
+
+int solve()
+{
+    int deleted = 0;
+    int ans = 0;
+    int maxCnt = maxCnt1(0);
+    int newValue;
+    int now = 1, last = 0;
+    while (maxCnt)
+    {
+        ++ans;
+        for (int i=1; i<maxV; ++i)
+        {
+            nr[now][i] = 0;
+        }
+        for (int i=1; i<maxV; ++i)
+        {
+            if (!nr[last][i])
+            {
+                continue;
+            }
+            if (cycle(i))
+            {
+                deleted += nr[last][i];
+                continue;
+            }
+            if (nrb[i] == maxCnt)
+            {
+                newValue = i ^ msk[1][i];
+                if (!newValue || cycle(newValue))
+                {
+                    deleted += nr[last][i];
+                    continue;
+                }
+                nr[now][newValue] += nr[last][i];
+            }
+            else
+            {
+                newValue = i | msk[0][i];
+                if (cycle(newValue))
+                {
+                    deleted += nr[last][i];
+                    continue;
+                }
+                nr[now][newValue] += nr[last][i];
+            }
+        }
+        now ^= 1;
+        last ^= 1;
+        if (task == 1)
+        {
+            return deleted;
+        }
+        maxCnt = maxCnt1(last);
+    }
+    return ans;
+}

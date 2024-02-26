@@ -1,0 +1,31 @@
+#include <iostream>
+#include <algorithm>
+using namespace std;
+
+int n, m , a[1001][1001];
+int dx[]={ 1, 1,-1,-1},
+    dy[]={ 1,-1, 1,-1};
+
+int main()
+{
+    cin >> n >> m;
+    for( ; m ; m --)
+    {
+        int i ,j , p;
+        cin >> i >> j >> p;
+        a[i][j] = 1;
+        for(int x = 1 ; x <= p ; x ++)
+        {
+            for(int k = 0 ; k < 4 ; k ++)
+                if( i+x * dx[k] > 0 && i + x * dx[k] <= n && j + x * dy[k] > 0 && j + x * dy[k] <= n)
+                    a[i + x * dx[k]][j + x * dy[k]] = 1;
+        }
+    }
+    int cnt = 0;
+    for(int j = 1 ; j <= n ; j++)
+        for(int i = 1 ; i <= n ; i ++)
+            if(a[i][j] == 0)
+                cnt ++;
+    cout << cnt << endl;
+    return 0;
+}

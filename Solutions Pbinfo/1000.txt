@@ -1,0 +1,39 @@
+#include <iostream>
+#include <fstream>
+#include <cstring>
+using namespace std;
+
+ifstream fin ("cnp.in");
+ofstream fout("cnp.out");
+
+bool cifra(char L)
+{
+    if(L >= '0' && L <= '9')
+        return true;
+    return false;
+}
+
+int main()
+{
+    char s[210], t[210];
+    bool gasit = false;
+    while(fin.getline(s , 210))
+        for(size_t i = 0 ; i < strlen(s) ; i ++)
+            if( cifra(s[i]) )
+            {
+                int j = i + 1;
+                while( cifra(s[j]) )
+                    j ++;
+                if(j - i == 13)
+                {
+                    strcpy(t , s + i);
+                    t[13] = 0;
+                    fout << t << endl;
+                    gasit = true;
+                }
+                i = j - 1;
+            }
+    if(! gasit)
+        fout << 0;
+    return 0;
+}

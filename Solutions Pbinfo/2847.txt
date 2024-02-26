@@ -1,0 +1,52 @@
+#include<bits/stdc++.h>
+using namespace std;
+
+ifstream in("list.in");
+ofstream out("list.out");
+
+list<pair<int, int>> v;
+list<pair<int, int>>::iterator it;
+list<pair<int, int>>::reverse_iterator itt=v.rbegin();
+
+int main()
+{
+    pair<int, int> p;
+    int n,a,b;
+    in>>n;
+    for(int i=1;i<=n;i++)
+    {
+        in>>a>>b;
+        p=make_pair(a,b);
+        v.push_back(p);
+        if(p.first%2==0  && p.second%2)
+        {
+            p=make_pair((a+b)*2,(a+b)*2-p.second);
+            v.push_back(p);
+        }
+        else
+        if(p.first%2  && p.second%2==0)
+        {
+            p=make_pair((a+b)*2-p.first,(a+b)*2);
+            itt=v.rbegin();
+            itt++;
+            v.insert(itt.base(),p);
+        }
+        else
+        if(p.first%2==0  && p.second%2==0)
+        {
+            p=make_pair((a+b)/2,(a+b)/2+p.second);
+            v.push_back(p);
+        }
+        else
+        if(p.first%2  && p.second%2)
+        {
+            p=make_pair((a+b)/2+p.first,(a+b)/2);
+            itt=v.rbegin();
+            itt++;
+            v.insert(itt.base(),p);
+        }
+    }
+    for(it=v.begin();it!=v.end();it++)
+        out<<it->first<<" "<<it->second<<'\n';
+    return 0;
+}

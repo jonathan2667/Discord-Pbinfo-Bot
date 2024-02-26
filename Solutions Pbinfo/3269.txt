@@ -1,0 +1,28 @@
+void ReverseWords(char s[])
+{
+    int st, dr, i;
+    st = 0;
+    for (i = 0; s[i]; )
+        if (s[i] == ' ') i++;
+        else /// incepe un cuvant
+        {
+            st = dr = i;
+            while ('a'<= s[dr] && s[dr] <= 'z')
+                dr++;
+            i = dr;
+            dr--;
+            while (st < dr)
+            {
+                s[st] ^= s[dr] ^= s[st] ^= s[dr];
+                st++;
+                dr--;
+            }
+        }
+    st = 0; dr = i - 1;
+    while (st < dr)
+    {
+        s[st] ^= s[dr] ^= s[st] ^= s[dr];
+        st++;
+        dr--;
+    }
+}

@@ -1,0 +1,72 @@
+#include<stdio.h>
+#include<vector>
+#include<cassert>
+using namespace std;
+
+#define BITMAX 20
+#define NMAX 100005
+#define value first
+#define number second
+
+int n,m,v[NMAX];
+int partialBits[BITMAX][NMAX];
+vector< pair<int,int> > bucket;
+
+int main () {
+    int a, b;
+
+    freopen("sufle.in","r",stdin);
+    freopen("sufle.out","w",stdout);
+    
+    assert(scanf("%d%d",&n,&m) == 2);
+    assert(1 <= n && n <= 100000);
+    assert(1 <= m && m <= 100000);
+    for(int i = 1; i <= n; i++) {
+        assert(scanf("%d",&v[i]) == 1);
+        assert(0 <= v[i] && v[i] <= 1000000);
+    }
+    
+    for(int bit = 0; bit < BITMAX; bit++) { 
+        for(int i = 1; i <= n; i++)
+            partialBits[bit][i] = partialBits[bit][i - 1] + ((v[i] & (1 << bit)) ? 1 : 0);
+    }
+    for(int i = 1; i <= m; i++) {
+        assert(scanf("%d%d",&a,&b) == 2);
+        assert(1 <= a && a <= b && b <= n);
+        bucket.push_back(make_pair(0, b - a + 1));
+        for(int bit = BITMAX - 1; bit >= 0; bit--) {
+            int cntBit = partialBits[bit][b] - partialBits[bit][a - 1];
+            //printf("Bitul %d apare de %d ori\n", bit, cntBit);
+            int numBuckets = bucket.size();
+            for(int j = 0; j < numBuckets && cntBit; j++) {
+                if(bucket[j].number <= cntBit) {
+                    cntBit -= bucket[j].number;
+                    bucket[j].value += (1 << bit);
+                }
+                else {
+                    bucket.push_back(bucket[numBuckets - 1]);
+                    for(int k = numBuckets - 1; k > j + 1; k--) {
+                        bucket[k] = bucket[k - 1];
+                    }
+                    bucket[j + 1] = make_pair(bucket[j].value + (1 << bit), cntBit);
+                    bucket[j].number -= cntBit;
+                    cntBit = 0;
+                }
+            }
+        }
+        
+        int numBucket = bucket.size();
+        long long answer = 0;
+        for(int j = 0; j < numBucket; j++) {
+            answer += (long long)bucket[j].value * bucket[j].value * bucket[j].number;
+        //  printf("%d %d\n", bucket[j].value, bucket[j].number);
+        }
+        printf("%lld\n", answer);
+        
+        bucket.clear();
+    }
+
+    return 0;
+}
+
+

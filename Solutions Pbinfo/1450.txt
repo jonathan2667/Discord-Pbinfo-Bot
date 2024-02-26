@@ -1,0 +1,76 @@
+#include <fstream>
+
+using namespace std;
+ifstream f("memory003.in");
+ofstream g("memory003.out");
+long m,n,p,i,j,k,bun,prim[30],exp[30],pp[101],nr[101],pr[101][10],e[101][10],x,col[301][101],sol;
+
+int main()
+{
+    f >> m >> n >> p ;
+    for ( i=2 ; i*i<=p ; i++ )
+      if ( p%i==0 )
+      {
+          k++ ;
+          prim[k]=i ;
+          exp[k]=0 ;
+          while ( p%i==0 )
+          {
+              exp[k]++ ;
+              p=p/i ;
+          }
+      }
+    if ( p!=1 )
+    {
+        k++ ;
+        prim[k]=p ;
+        exp[k]=1 ;
+    }
+    if ( prim[k]>100 ) g << 0 ;
+    else
+    {
+        for ( i=1 ; i<=k ; i++ ) pp[prim[i]]=exp[i] ;
+        for( i=2 ; i<=100 ; i++)
+        {
+            x = i ;
+            nr[i]=0 ;
+            for( j=2 ; j*j <=x ; j++ )
+              if( x%j==0 )
+              {
+                 nr[i]++ ;
+                 pr[i][nr[i]]=j ;
+                 while ( x%j==0 )
+                   {
+                       e[i][nr[i]]++ ;
+                       x=x/j ;
+
+                   }
+              }
+            if ( x!=1 )
+               {
+                   nr[i]++ ;
+                   pr[i][nr[i]]=x ;
+                   e[i][nr[i]]=1 ;
+               }
+        }
+        for ( i=1 ; i<=m ; i++ )
+          for (j=1 ; j<=n ; j++ )
+          {
+              f >> x ;
+              if ( x!=1 )
+              {
+                  for ( k=1 ; k<=nr[x] ; k++ ) col[j][pr[x][k]]+=e[x][k];
+              }
+          }
+        sol = 0 ;
+        for ( j=1 ; j<=n ; j++ )
+        {
+          bun=1 ;
+          for ( k=2 ; k<=97 ; k++)
+             if( col[j][k]<pp[k] ){ bun=0 ; break ; }
+          sol+=bun ;
+        }
+        g << sol ;
+    }
+    return 0;
+}

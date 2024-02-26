@@ -1,0 +1,153 @@
+#include <iostream>
+#include <fstream>
+#include <vector>
+#include <algorithm>
+#include <set>
+#include <queue>
+#include <deque>
+#include <map>
+#include <cmath>
+
+using namespace std;
+
+ifstream f("passwd.in");
+ofstream g("passwd.out");
+
+#define ll long long
+#define pb push_back
+#define mp make_pair
+#define sz size
+#define x first
+#define y second
+
+#define nmax 2501
+#define inf
+#define MOD 666013
+
+int tip, a, b, c, d;
+int X;
+int n, fact[nmax*4], inv[nmax*4];
+vector<char> v;
+int cntPasswd = 0;
+char Sol[nmax*4];
+bool gata = 0;
+
+void citeste(){
+    f >> tip;
+    f >> a >> b >> c >> d;
+    f >> X;
+}
+
+int put(int a, int b){
+    // a ^ b;
+    int rez = 1;
+    for(; b; b>>=1){
+        if (b&1) rez = (1LL*rez * a) % MOD;
+        a = (1LL*a*a) % MOD;
+    }
+    return rez;
+}
+
+void preprocesare(){
+    fact[0] = 1; inv[0] = 1;
+    fact[1] = 1; inv[1] = 1;
+    for(int i=2; i<=n; ++i){
+        fact[i] = (1LL*fact[i-1] * 1LL*i) % MOD;
+        inv[i] = put(fact[i], MOD-2);
+        //cout << i << " " << fact[i] << " " << inv[i] << "\n";
+    }
+}
+
+int comb(int n, int k){
+    if (n == k) return 1;
+    if (k == 0) return 1;
+    // comb(n,k) % MOD;
+    //return (( 1LL*((1LL*fact[n]*inv[n-k])%MOD) * inv[k]) % MOD);
+    int rez = ((1LL*fact[n] * inv[n-k]) % MOD *  1LL*inv[k]) % MOD;
+    //cout << n << " " << k << " " << rez << "\n";
+    return rez;
+}
+
+void baga(int pos, int a, int b, int c, int d){
+    if (pos == n+1){
+        ++cntPasswd; if (cntPasswd == X){
+            gata = 1;
+            for(int i=1; i<=n; ++i) g << Sol[i];
+            g << "\n";
+            return;
+        }
+    }else{
+        if (a){
+            for(char i='a'; i<='z'; ++i){
+                Sol[pos] = i;
+                baga(pos+1, a-1, b, c, d);
+                if (gata) return;
+            }
+        }
+        if (b){
+            for(char i='A'; i<='Z'; ++i){
+                Sol[pos] = i;
+                baga(pos+1, a, b-1, c, d);
+                if (gata) return;
+            }
+        }
+        if (c){
+            for(char i='0'; i<='9'; ++i){
+                Sol[pos] = i;
+                baga(pos+1, a, b, c-1, d);
+                if (gata) return;
+            }
+        }
+        if (d){
+            for(int i=0; i<5; ++i){
+                Sol[pos] = v[i];
+                baga(pos+1, a, b, c, d-1);
+                if (gata) return;
+            }
+        }
+    }
+}
+
+
+void primaCerinta(){
+    v.pb('!'); v.pb('@'); v.pb('#'); v.pb('$'); v.pb('%');
+    baga(1, a, b, c, d);
+}
+
+void a2Cerinta(){
+    preprocesare();
+    int rez = (1LL*comb(n,a)*put(26,a))%MOD;
+    rez = (1LL*rez*comb(n-a, b))%MOD;
+    rez = (1LL*rez*put(26,b)) % MOD;
+    rez = (1LL*rez*comb(n-a-b, c)) % MOD;// rez %= MOD;
+    rez = (1LL*rez*put(10,c)) % MOD;// rez %= MOD;
+    rez = (1LL*rez*comb(n-a-b-c, d)) % MOD;// rez %= MOD;
+    rez = (1LL*rez*put(5,d)) %MOD;// rez %= MOD;
+    //cout << rez << "\n";
+    g << rez << "\n";
+}
+
+void rezolva(){
+    // solutie : pt prima cerinta generez toate solutiile incepand cu cea mai mica si ma opresc cand o gasesc pe a x-a solutie
+    // a 2-a cerinta : fie n = a + b + c + d; => comb(n,a)*26^a * comb(n-a,b)*26^b * comb(n-a-b,c)*10^c * comb(n-a-b-c,d)*5^d;
+    // imi preprocesez factorialele si inversele modulare
+    n = a + b + c + d;
+    if (tip == 1){
+        primaCerinta();
+            //for(int i=1; i<=n; ++i) cout << Sol[i];
+            //cout << "\n";
+      //g << "a" << "\n";
+        //for(int i=1; i<=n; ++i) cout << sol[i];
+    }else a2Cerinta();
+}
+
+
+int main(){
+   citeste();
+   rezolva();
+
+   f.close();
+   g.close();
+
+   return 0;
+}

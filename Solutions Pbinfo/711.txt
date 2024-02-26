@@ -1,0 +1,80 @@
+// varianta iterativa cu calculare factori crescator numai pana la n/2 plus n-1 si n
+
+#include <stdio.h>
+#include <math.h>
+#define nmax 10000001
+
+using namespace std;
+
+FILE *f = fopen("desc.in","r");
+FILE *g = fopen("desc.out","w");
+
+char v[nmax];
+int w[nmax/5],nr=0;
+
+int eprim(int x)
+{
+int d=0,i;
+for(i=2;i*i<=x;i++)
+    if (x%i==0) d++;
+if (d==0)   return x;
+    else    return 0;
+}
+
+
+// Ciurul lui Eratostene
+void ciur(int n) 
+{
+  int i, j;
+  for (i = 2; i <= n; ++i) {
+    if (v[i] == 0) {
+      w[++nr]=i;
+      for (j = i + i; j <= n; j += i) {
+        v[j] = 1;
+      }}}
+    
+}
+
+    
+void solve(int q,int prim)
+{
+bool ok=true;
+int i,k=0,fact,x[25];
+x[0]=0;
+while (q>1&&ok)
+    {
+    fact=0;
+    while (q%prim==0)
+        {fact++;q/=prim;}
+    if (k>0&&!fact) ok = false;
+    x[k+1]=fact+x[k];   
+    k++;q--;
+    }
+
+if (ok&&!q)
+    {   
+    fprintf(g,"%d %d ",prim,k);
+    for(i=1;i<=k;i++)
+        fprintf(g,"%d ",x[i]);
+    fprintf(g,"\n");
+    }
+}
+
+int main()
+{
+int i,q;
+fscanf(f,"%d",&q);
+ciur((int)sqrt(q));
+if (eprim(q-1)) w[++nr]=q-1;
+if (eprim(q)) w[++nr]=q;
+for(i=1;i<=nr;i++)
+    solve(q,w[i]);
+
+
+fclose(f);
+fclose(g);
+
+return 0;
+}
+
+

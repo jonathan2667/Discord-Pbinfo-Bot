@@ -1,0 +1,51 @@
+#define N 100
+void determinare_linie(int linii, int coloane, int matrice[N][N], int indice_linie, int &minim, int &maxim)
+{
+    minim = maxim = matrice[indice_linie][0];
+
+    for(int col = 1; col < coloane; col++)
+    {
+        if(matrice[indice_linie][col] > maxim)
+            maxim = matrice[indice_linie][col];
+
+        if(matrice[indice_linie][col] < minim)
+            minim = matrice[indice_linie][col];
+    }
+}
+
+void determinare_coloana(int linii, int coloane, int matrice[N][N], int indice_coloana, int &minim, int &maxim)
+{
+    minim = maxim = matrice[0][indice_coloana];
+
+    for(int lin = 1; lin < linii; lin++)
+    {
+        if(matrice[lin][indice_coloana] > maxim)
+            maxim = matrice[lin][indice_coloana];
+
+        if(matrice[lin][indice_coloana] < minim)
+            minim = matrice[lin][indice_coloana];
+    }
+}
+
+int nr_sa(int matrice[N][N], int linii, int coloane)
+{
+    int minim_linie[N], minim_coloana[N], maxim_linie[N], maxim_coloana[N];
+
+    for(int lin = 0; lin < linii; lin++)
+        determinare_linie(linii, coloane, matrice, lin, minim_linie[lin], maxim_linie[lin]);
+
+    for(int col = 0; col < coloane; col++)
+        determinare_coloana(linii, coloane, matrice, col, minim_coloana[col], maxim_coloana[col]);
+
+    int numar_elemente_sa = 0;
+
+    for(int lin = 0; lin < linii; lin++)
+        for(int col = 0; col < coloane; col++)
+            if((matrice[lin][col] == maxim_coloana[col] && matrice[lin][col] == minim_linie[lin])
+               ||
+               (matrice[lin][col] == minim_coloana[col] && matrice[lin][col] == maxim_linie[lin]))
+               numar_elemente_sa++;
+
+    return numar_elemente_sa;
+
+}

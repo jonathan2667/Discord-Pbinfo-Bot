@@ -1,0 +1,41 @@
+#include <fstream>
+using namespace std;
+ifstream  fin("pqstr.in");
+ofstream fout("pqstr.out");
+int n, P, Q, a[100005], i, j, k;
+int dqminus[100005], pm, um, dqplus[100005], pp, up;
+long long s, x, y, smax, bminus[100005], bplus[100005];
+int main()
+{
+    fin>>n>>P>>Q;
+    for(i=0;i<=n-1;i++)fin>>a[i];
+    um=0; up=0; pm=1; um=1;
+    for(i=0;i<=P-1;i++){
+        bminus[i]=-a[i];
+        bplus[i]=+a[i];
+    }
+    smax=-((long long)1000000000)*1000000000;
+
+    for(i=P;i<=n-1;i++){
+        if(pm<=um && dqminus[pm]<i-Q)pm++;
+        while(pm<=um && bminus[dqminus[um]]<bminus[i-P])um--;
+        um++; dqminus[um]=i-P;
+
+        if(pp<=up && dqplus[pp]<i-Q)pp++;
+        while(pp<=up && bplus[dqplus[up]]<bplus[i-P])up--;
+        up++; dqplus[up]=i-P;
+
+        x=bminus[dqminus[pm]]+a[i];
+        y=bplus[dqplus[pp]]-a[i];
+
+        if(x>y){ s=x; }
+        else{ s=y; }
+        bminus[i]=s-a[i];
+        bplus[i]=s+a[i];
+        if(s>smax){smax=s;}
+    }
+    fout<<smax;
+    fout.close(); fin.close();
+    return 0;
+}
+

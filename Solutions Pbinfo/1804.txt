@@ -1,0 +1,37 @@
+#include <bits/stdc++.h>
+#define pb push_back
+#define mp make_pair
+#define INF numeric_limits<int>::max()
+#define int64 long long
+#define lsb(x) (x)&(-x)
+using namespace std;
+ifstream in("ursulet.in");
+ofstream out("ursulet.out");
+int a[100010],n;
+int main()
+{
+    in>>n;
+    for(int i=1;i<=n;i++)
+    {
+        in>>a[i];
+    }
+    int sum=0,sol=0,x=0,y=0,j=1,smin=0;
+    for(int i=1;i<=n;i++)
+    {
+        sum+=a[i];
+        if(sol < sum-smin)
+        {
+            sol=sum-smin;
+            x=j;
+            y=i;
+        }
+        if(sum < smin)
+        {
+            smin=sum;
+            j=i+1;
+        }
+    }
+    out<<sol<<'\n'<<x<<' '<<y<<'\n';
+    return 0;
+}
+

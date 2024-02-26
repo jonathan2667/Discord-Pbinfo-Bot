@@ -1,0 +1,45 @@
+//O(Comb(N,K))
+// Se genereaza fiecare posibilitate dar se si calculeaza suma pe parcurs
+
+#include <cstdio>
+#define inf 2000000000
+#define MAXN 40
+
+using namespace std;
+
+
+int A[MAXN];
+int maxim,minim, N, K,i;
+
+void back(int lv, int k, int aux, int suma)
+{
+    if (lv == N){
+        suma += aux;
+        if (suma > maxim) maxim = suma;
+        if (suma < minim) minim = suma;
+        return;
+    }
+    if (N - lv - 1 >= k)
+        back(lv+1, k, A[lv+2], suma + aux);
+    if (k > 0)
+        back(lv+1, k-1, aux * A[lv+2], suma);
+}
+
+int main()
+{
+    freopen("optim.in","r",stdin);
+    freopen("optim.out", "w",stdout);
+    
+    scanf("%d %d",&N,&K);
+    for (i=1; i<=N; ++i)
+        scanf("%d",&A[i]);
+    
+    --N;
+    maxim = -2000000000;
+    minim =  2000000000;
+    
+    back(0, K, A[1], 0);
+    
+    printf("%d %d\n", minim, maxim);
+    return 0;
+}

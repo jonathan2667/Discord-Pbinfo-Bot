@@ -1,0 +1,165 @@
+// student Mihai Nitu - Universitatea Bucuresti
+
+
+#include <fstream>
+#include <iostream>
+#include <cstring>
+
+#define maxn 1510
+
+using namespace std;
+
+ifstream fin("sablon1.in");
+ofstream fout("sablon1.out");
+
+bool ok1[maxn][maxn], ok2[maxn][maxn], part[maxn][maxn];
+int n,m;
+
+char s[maxn], c[maxn];
+
+void go1 (int n, int m, bool dp[][maxn ])
+{
+    memset(part, 0, sizeof(part));
+
+    dp[n+1][m+1] = 1;
+    part[n+1][m+1] = 1;
+
+    for (int i = 1; i <= m; ++i)
+    {
+        part[n+1][i] = 1;
+    }
+    for (int i = n; i >= 1 && s[i] == '*'; --i)
+    {
+        dp[i][m+1] = 1;
+        part[i][m+1] = 1;
+    }
+
+    for (int i = n; i >= 1; --i)
+    {
+        for (int j = m; j >= 1; --j)
+        {
+            if (s[i] == c[j])
+                dp[i][j] = dp[i+1][j+1];
+            else if (s[i] == '?')
+                dp[i][j] = dp[i+1][j+1];
+            else if (s[i] == '*')
+                dp[i][j] = part[i+1][j];
+            else dp[i][j] = 0;
+
+            part[i][j] = part[i][j+1] || dp[i][j];
+        }
+    }
+}
+
+void go2 (int n, int m, bool dp[][maxn])
+{
+    memset(part, 0, sizeof(part));
+
+    dp[0][0] = 1;
+    part[0][0] = 1;
+
+    for (int i = 1; i <= m; ++i)
+    {
+        part[0][i] = 1;
+    }
+
+    for (int i = 1; i <= n && s[i] == '*'; ++i)
+    {
+        dp[i][0] = 1;
+        part[i][0] = 1;
+    }
+
+    for (int i = 1; i <= n; ++i)
+    {
+        for (int j = 1; j <= m; ++j)
+        {
+            if (s[i] == c[j])
+                dp[i][j] = dp[i-1][j-1];
+            else if (s[i] == '?')
+                dp[i][j] = dp[i-1][j-1];
+            else if (s[i] == '*')
+                dp[i][j] = part[i-1][j];
+            else dp[i][j] = 0;
+
+            part[i][j] = part[i][j-1] || dp[i][j];
+        }
+    }
+}
+
+string getString(int x)
+{
+    if (x == 0)
+        return "0";
+
+    string s;
+
+    while (x != 0)
+    {
+        char c = x%10 + '0';
+        s = c + s;
+        x /= 10;
+    }
+
+    return s;
+}
+
+int main()
+{
+
+   /* for (int i = 0; i < 25; ++i)
+    {
+        cout << i << "\n";
+        ifstream fin ((getString(i) + "-sablon.in").c_str());
+        ifstream fin2((getString(i) + "-sablon.ok").c_str());*/
+    fin >> s+1;
+
+    fin >> n;
+
+    //cout << n << " ";
+
+    for (int i = 1; i <= n; ++i)
+    {
+        fin >> c+1;
+
+        int n = strlen(s+1);
+        int m = strlen(c+1);
+
+        //cout << n << " " << m << "\n";
+
+        memset(ok1, 0, sizeof(ok1));
+        memset(ok2, 0, sizeof(ok2));
+
+        go1(n,m,ok1);
+        go2(n,m,ok2);
+
+        bool ok = ok1[1][1];
+
+        for (int i = 1; i <= n; ++i)
+        {
+            if ('a' <= s[i] && s[i] <= 'z')
+            {
+                for (int j = 0; j <= m; ++j)
+                {
+                    if (ok2[i-1][j] && ok1[i+1][j+1])
+                    {
+                        ok = 1;
+                    }
+                }
+            }
+        }
+
+        fout << ok << "\n";
+
+       /*bool ok2;
+        fin2 >> ok2;
+
+        if (ok == ok2)
+            cout << "YES";
+        else cout << "NO";
+        cout << "\n";
+
+    }*/
+
+
+    }
+}

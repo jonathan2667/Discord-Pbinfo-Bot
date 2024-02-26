@@ -1,0 +1,27 @@
+#include <fstream>
+
+using namespace std;
+
+ifstream in("frecvimp.in");
+ofstream out("frecvimp.out");
+
+int main()
+{
+    int n;
+    in >> n;
+    long long a = 0;
+    while(n--)
+    {
+        long long x;
+        in >> x;
+        if (!(x & (x - 1)))// verificam daca numarul este putere a lui 2
+        {
+            if (a == 0) a = x; 
+            else a ^= x; // folosim xor
+        }
+    }
+
+    out << a; // afisam puterea lui 2 cu frecventa impara
+
+    return 0;
+}

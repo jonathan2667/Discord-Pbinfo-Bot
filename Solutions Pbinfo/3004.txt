@@ -1,0 +1,128 @@
+#include<bits/stdc++.h>
+#define maxN 1000002
+#define inf 1000000002
+
+using namespace std;
+
+FILE *fin=freopen("links.in","r",stdin);
+FILE *fout=freopen("links.out","w",stdout);
+
+int n;
+
+struct Point
+{
+    int x,y;
+    bool operator<(const Point &ot) const
+    {
+        if(x==ot.x)
+            return y<ot.y;
+        return x<ot.x;
+    }
+}p[maxN];
+
+struct Rect
+{
+    Point a,b;
+}v[maxN*4];
+
+int N, par[maxN*4];
+
+void getRect()
+{
+    sort(p+1,p+n+1);
+    p[0].x=-1;
+    for(int i=1;i<=n;i++)
+    {
+        if(p[i-1].x+1!=p[i].x)
+            v[++N]=Rect{Point{p[i-1].x+1,-1},Point{p[i].x-1,inf}};
+        v[++N]=Rect{Point{p[i].x,-1},Point{p[i].x,p[i].y-1}};
+        while(i<n&&p[i].x==p[i+1].x)
+        {
+            if (p[i].y+1!=p[i+1].y)
+                v[++N]=Rect{Point{p[i].x,p[i].y+1},Point{p[i].x,p[i+1].y-1}};
+            ++i;
+        }
+        v[++N]=Rect{Point{p[i].x,p[i].y+1},Point{p[i].x,inf}};
+    }
+    v[++N]=Rect{Point{p[n].x+1,-1},Point{inf,inf}};
+}
+
+int root(int x)
+{
+    if(par[x]==x)
+        return x;
+    return par[x]=root(par[x]);
+}
+
+bool Inters(int l1,int r1,int l2,int r2)
+{
+    if(l1<l2)
+        return r1>=l2;
+    return r2>=l1;
+}
+
+void findNbrs()
+{
+    int it1=1;
+    for(int i=1;i<=N;i++)
+        par[i]=i;
+    for(int it2=2;it2<=N;it2++)
+    {
+        while(it1<it2 && (v[it1].b.x+1<v[it2].a.x || (v[it1].b.x+1==v[it2].a.x && v[it1].b.y<v[it2].a.y)))
+            it1++;
+        if(v[it1].b.x+1==v[it2].a.x && Inters(v[it1].a.y,v[it1].b.y,v[it2].a.y,v[it2].b.y))
+        {
+            int rx=root(it1),
+                ry=root(it2);
+            if(rx!=ry)
+                par[rx]=ry;
+        }
+    }
+    it1=N;
+    for(int it2=N-1;it2>=1;it2--)
+    {
+        while(it1>it2 && (v[it1].a.x-1>v[it2].b.x || (v[it1].a.x-1==v[it2].b.x && v[it1].a.y>v[it2].b.y)))
+            it1--;
+        if(v[it1].a.x-1==v[it2].b.x && Inters(v[it1].a.y,v[it1].b.y,v[it2].a.y,v[it2].b.y))
+        {
+            int rx=root(it1),ry=root(it2);
+            if(rx!=ry)
+                par[rx]=ry;
+        }
+    }
+}
+
+int RectId(Point P)
+{
+    int i=0,p=1;
+    while(p<N)
+        p<<=1;
+    while(p)
+    {
+        if(i+p<=N && (v[i+p].a.x<P.x || (v[i+p].a.x==P.x && v[i+p].b.y<P.y)))
+            i+=p;
+        p>>=1;
+    }
+    i++;
+    return i;
+}
+
+int main()
+{
+    int q;
+    scanf("%d%d",&n,&q);
+    for (int i=1; i<=n; i++)
+        scanf("%d%d",&p[i].x,&p[i].y);
+    getRect();
+    findNbrs();
+    while(q--)
+    {
+        Point A,B;
+        scanf("%d%d%d%d",&A.x,&A.y,&B.x,&B.y);
+        if(root(RectId(A))==root(RectId(B)))
+            printf("1\n");
+        else
+            printf("0\n");
+    }
+    return 0;
+}

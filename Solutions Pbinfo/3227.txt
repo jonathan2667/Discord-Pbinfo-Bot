@@ -1,0 +1,32 @@
+#include <fstream>
+
+#define NMAX 1000007
+using namespace std;
+
+ifstream fin("tramvaie.in");
+ofstream fout("tramvaie.out");
+
+int phi[NMAX], v[NMAX];
+
+int main()
+{
+    int t;
+    fin >> t;
+
+    int maxx = 0;
+    for(int i = 1; i <= t; ++i){
+        fin >> v[i];
+        maxx = max(maxx, v[i]);
+    }
+
+    phi[1] = 1;
+    for(int i = 2; i <= maxx; ++i)
+        phi[i] = i - 1;
+    for(int i = 2; i <= maxx; ++i)
+        for(int j = 2 * i; j <= maxx; j += i)
+            phi[j] -= phi[i];
+
+    for(int i = 1; i <= t; ++i)
+        fout << phi[v[i]] << ' ';
+    return 0;
+}

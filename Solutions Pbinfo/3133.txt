@@ -1,0 +1,66 @@
+#include <fstream>
+#include <vector>
+#include <math.h>
+#define N 100007
+using namespace std;
+ifstream f("arbori_nr.in");
+ofstream g("arbori_nr.out");
+int n, r, i, u, v, m;
+int cant[4*N], viz[N], d[N], grad[N];
+vector<int> arb[N];
+
+void adaug(int nod)
+{
+    int gr;
+    gr = (nod-1) / m + 1;
+    cant[gr]++;
+}
+
+int numar(int nod)
+{
+    int gr, j, suma = 0;
+    gr = (nod-1) / m + 1;
+    for(j = 1; j < gr; j++)
+        suma += cant[j];
+    for(j = m*(gr-1)+1; j < nod; j++)
+        suma += viz[j];
+    return suma;
+}
+
+void parcurg_arbore(int nod)
+{
+    int gr;
+    viz[nod] = 1;
+    if((grad[nod]==1)and(nod != r))
+    {
+        d[nod] = 0;
+        gr = (nod-1)/ m + 1;
+        cant[gr]++;
+    }
+    else
+    {
+        int j, m = arb[nod].size();
+        d[nod] = numar(nod);
+        adaug(nod);
+        for(j = 0; j < m; j++)
+            if(viz[arb[nod][j]] == 0)
+                parcurg_arbore(arb[nod][j]);
+        d[nod] = numar(nod) - d[nod];
+    }
+}
+
+int main()
+{
+    f >> n >> r;
+    m = (int)sqrt(n);
+    for(i = 1; i < n; i++)
+    {
+        f >> u >> v;
+        arb[u].push_back(v);
+        arb[v].push_back(u);
+    }
+    parcurg_arbore(r);
+    for(i = 1; i <= n; i++)
+        g << d[i] << " ";
+    return 0;
+}

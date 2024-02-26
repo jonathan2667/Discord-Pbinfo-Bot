@@ -1,0 +1,27 @@
+#include <fstream>
+using namespace std;
+
+ifstream fin ("teamwork.in");
+ofstream fout ("teamwork.out");
+
+const int N = 18;
+
+int n, a[N][N], d[N][1 << N], sol;
+
+int main() {
+    fin >> n;
+    for (int i = 0; i < n; ++i)
+        for (int j = 0; j < n; ++j)
+            fin >> a[i][j];
+    for (int i = 0; i < n; ++i)
+        d[0][1 << i] = a[0][i];
+    for (int i = 0; i < n - 1; ++i) {
+        for (int mask = 1; mask < (1 << n); ++mask)
+            for (int j = 0; j < n; ++j)
+                if (!((1 << j) & mask))
+                    d[i + 1][mask | (1 << j)] = max(d[i][mask] + a[i + 1][j], d[i + 1][mask | (1 << j)]);
+    }
+    fout << d[n-1][(1 << n) - 1];
+
+}
+

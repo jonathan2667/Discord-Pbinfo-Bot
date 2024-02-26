@@ -1,0 +1,271 @@
+#include <fstream>
+
+
+using namespace std;
+ifstream fin("transform.in");
+ofstream fout("transform.out");
+int n,lin1[80001][2],col1[80001][2],lin2[80001][2],col2[80001][2],clin1[80001],clin2[80001],ccol1[80001],
+        ccol2[80001],oklin1[80001],oklin2[80001],okcol1[80001],okcol2[80001];
+void citire()
+{   int i,x,y;
+    fin>>n;
+    for (i=2*n;i;--i)
+    {
+        fin>>x>>y;
+        if(lin1[x][0])
+            lin1[x][1]=y;
+        else
+            lin1[x][0]=y;
+        if(col1[y][0])
+            col1[y][1]=x;
+        else
+            col1[y][0]=x;
+    }
+    for (i=2*n;i;--i)
+    {
+        fin>>x>>y;
+        if(lin2[x][0])
+            lin2[x][1]=y;
+        else
+            lin2[x][0]=y;
+        if(col2[y][0])
+            col2[y][1]=x;
+        else
+            col2[y][0]=x;
+    }
+}
+void rezolvacicluri (int lin[][2],int col[][2],int clin[],int ccol[],int oklin[], int okcol[])
+{
+    int p=1,l_curent,c_curent,lung,l_urmator,c_urmator;
+    while (1)
+    {
+        while (p<=n and oklin[p]) p++;    // cautam un ciclu inca nedepistat
+        if (p>n) return;
+        l_curent=p;
+        c_curent=lin[l_curent][0];
+        lung=0;
+        do
+        {
+            if (col[c_curent][0]==l_curent)
+                l_urmator=col[c_curent][1];
+            else
+                l_urmator=col[c_curent][0];
+
+            if (lin[l_urmator][0]==c_curent)
+                c_urmator=lin[l_urmator][1];
+            else
+                c_urmator=lin[l_urmator][0];
+            l_curent=l_urmator;
+            c_curent=c_urmator;
+            lung++;                         // calculam lungimea ciclului
+        }while (l_urmator!=p);
+
+        l_curent=p;
+        c_curent=lin[l_curent][0];          // vom memora pentru fiecare nod al ciclului lungimea
+        do
+        {
+            if (col[c_curent][0]==l_curent)
+                l_urmator=col[c_curent][1];
+            else
+                l_urmator=col[c_curent][0];
+
+            if (lin[l_urmator][0]==c_curent)
+                c_urmator=lin[l_urmator][1];
+            else
+                c_urmator=lin[l_urmator][0];
+            l_curent=l_urmator;
+            c_curent=c_urmator;
+            oklin[l_curent]=lung;
+        }
+        while (l_urmator!=p);
+    }
+}
+void rezolvamatrice()
+{
+    int p1=1,p2,l_curent1,c_curent1,l_urmator1,c_urmator1,l_curent2,c_curent2,l_urmator2,c_urmator2;
+    while (1)
+    {
+        while (p1<=n and !oklin1[p1]) p1++;    // cautam un ciclu in matricea 1 inca nerezolvat
+        if (p1>n) return;
+        p2=1;
+        while (p2<=n and oklin2[p2]!=oklin1[p1]) p2++;    // cautam un ciclu in matricea 2 cu lungime identica
+        if (p2>n)
+        {
+            fout<<"date eronate!!!!!!!!!!!!!!!!!\n";
+            return;
+        }
+
+
+
+        l_curent1=p1;
+        c_curent1=lin1[l_curent1][0];          // matricea 2 o vom transforma in matricea 1 prin interschimbari de linii si coloane
+        l_curent2=p2;
+        c_curent2=lin2[l_curent2][0];
+        do
+        {
+
+            oklin1[l_curent1]=0;
+            oklin2[l_curent2]=oklin2[l_curent1];               // dupa ce rezolvam o linie, transformam starea in 0
+            oklin2[l_curent1]=0;                // dupa ce rezolvam o linie, transformam starea in 0
+            if (l_curent1!=l_curent2)
+            {
+                fout<<"L "<<l_curent1<<" "<<l_curent2<<"\n";
+
+                swap(lin2[l_curent1][0],lin2[l_curent2][0]);
+                swap(lin2[l_curent1][1],lin2[l_curent2][1]);
+
+                if (col2[lin2[l_curent1][0]][0]==l_curent2)
+                    col2[lin2[l_curent1][0]][0]=-l_curent1;
+
+                if (col2[lin2[l_curent1][0]][1]==l_curent2)
+                    col2[lin2[l_curent1][0]][1]=-l_curent1;
+
+                if (col2[lin2[l_curent1][1]][0]==l_curent2)
+                    col2[lin2[l_curent1][1]][0]=-l_curent1;
+
+                if (col2[lin2[l_curent1][1]][1]==l_curent2)
+                    col2[lin2[l_curent1][1]][1]=-l_curent1;
+
+                if (col2[lin2[l_curent2][0]][0]==l_curent1)
+                    col2[lin2[l_curent2][0]][0]=-l_curent2;
+
+                if (col2[lin2[l_curent2][0]][1]==l_curent1)
+                    col2[lin2[l_curent2][0]][1]=-l_curent2;
+
+                if (col2[lin2[l_curent2][1]][0]==l_curent1)
+                    col2[lin2[l_curent2][1]][0]=-l_curent2;
+
+                if (col2[lin2[l_curent2][1]][1]==l_curent1)
+                    col2[lin2[l_curent2][1]][1]=-l_curent2;
+
+// retransformare in numere pozitive
+
+                if (col2[lin2[l_curent1][0]][0]<0)
+                    col2[lin2[l_curent1][0]][0]*=-1;
+
+                if (col2[lin2[l_curent1][0]][1]<0)
+                    col2[lin2[l_curent1][0]][1]*=-1;
+
+                if (col2[lin2[l_curent1][1]][0]<0)
+                    col2[lin2[l_curent1][1]][0]*=-1;
+
+                if (col2[lin2[l_curent1][1]][1]<0)
+                    col2[lin2[l_curent1][1]][1]*=-1;
+
+                if (col2[lin2[l_curent2][0]][0]<0)
+                    col2[lin2[l_curent2][0]][0]*=-1;
+
+                if (col2[lin2[l_curent2][0]][1]<0)
+                    col2[lin2[l_curent2][0]][1]*=-1;
+
+                if (col2[lin2[l_curent2][1]][0]<0)
+                    col2[lin2[l_curent2][1]][0]*=-1;
+
+                if (col2[lin2[l_curent2][1]][1]<0)
+                    col2[lin2[l_curent2][1]][1]*=-1;
+
+
+                l_curent2=l_curent1;
+            }
+
+            if (c_curent1!=c_curent2)
+            {
+                fout<<"C "<<c_curent1<<" "<<c_curent2<<"\n";
+
+                swap(col2[c_curent1][0],col2[c_curent2][0]);
+                swap(col2[c_curent1][1],col2[c_curent2][1]);
+
+
+                if (lin2[col2[c_curent1][0]][0]==c_curent2)
+                    lin2[col2[c_curent1][0]][0]=-c_curent1;
+
+                if (lin2[col2[c_curent1][0]][1]==c_curent2)
+                    lin2[col2[c_curent1][0]][1]=-c_curent1;
+
+                if (lin2[col2[c_curent1][1]][0]==c_curent2)
+                    lin2[col2[c_curent1][1]][0]=-c_curent1;
+
+                if (lin2[col2[c_curent1][1]][1]==c_curent2)
+                    lin2[col2[c_curent1][1]][1]=-c_curent1;
+
+                if (lin2[col2[c_curent2][0]][0]==c_curent1)
+                    lin2[col2[c_curent2][0]][0]=-c_curent2;
+
+                if (lin2[col2[c_curent2][0]][1]==c_curent1)
+                    lin2[col2[c_curent2][0]][1]=-c_curent2;
+
+                if (lin2[col2[c_curent2][1]][0]==c_curent1)
+                    lin2[col2[c_curent2][1]][0]=-c_curent2;
+
+                if (lin2[col2[c_curent2][1]][1]==c_curent1)
+                    lin2[col2[c_curent2][1]][1]=-c_curent2;
+
+
+// retransformare in pozitive
+                if (lin2[col2[c_curent1][0]][0]<0)
+                    lin2[col2[c_curent1][0]][0]*=-1;
+
+                if (lin2[col2[c_curent1][0]][1]<0)
+                    lin2[col2[c_curent1][0]][1]*=-1;
+
+                if (lin2[col2[c_curent1][1]][0]<0)
+                    lin2[col2[c_curent1][1]][0]*=-1;
+
+                if (lin2[col2[c_curent1][1]][1]<0)
+                    lin2[col2[c_curent1][1]][1]*=-1;
+
+                if (lin2[col2[c_curent2][0]][0]<0)
+                    lin2[col2[c_curent2][0]][0]*=-1;
+
+                if (lin2[col2[c_curent2][0]][1]<0)
+                    lin2[col2[c_curent2][0]][1]*=-1;
+
+                if (lin2[col2[c_curent2][1]][0]<0)
+                    lin2[col2[c_curent2][1]][0]*=-1;
+
+                if (lin2[col2[c_curent2][1]][1]<0)
+                    lin2[col2[c_curent2][1]][1]*=-1;
+
+
+                c_curent2=c_curent1;
+            }
+
+            if (col1[c_curent1][0]==l_curent1)
+                l_urmator1=col1[c_curent1][1];
+            else
+                l_urmator1=col1[c_curent1][0];
+
+            if (lin1[l_urmator1][0]==c_curent1)
+                c_urmator1=lin1[l_urmator1][1];
+            else
+                c_urmator1=lin1[l_urmator1][0];
+
+            if (col2[c_curent2][0]==l_curent2)
+                l_urmator2=col2[c_curent2][1];
+            else
+                l_urmator2=col2[c_curent2][0];
+
+            if (lin2[l_urmator2][0]==c_curent2)
+                c_urmator2=lin2[l_urmator2][1];
+            else
+                c_urmator2=lin2[l_urmator2][0];
+
+            l_curent1=l_urmator1;
+            c_curent1=c_urmator1;
+            l_curent2=l_urmator2;
+            c_curent2=c_urmator2;
+        }
+        while (l_urmator1!=p1);
+    }
+}
+
+int main()
+{
+    citire();
+    rezolvacicluri(lin1,col1,clin1,ccol1,oklin1,okcol1);
+    rezolvacicluri(lin2,col2,clin2,ccol2,oklin2,okcol2);
+    rezolvamatrice();
+    fout<<"0 0 0\n";
+    return 0;
+}
+

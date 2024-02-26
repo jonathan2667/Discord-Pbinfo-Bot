@@ -1,0 +1,82 @@
+#include <fstream>
+#define DIM 1000002
+using namespace std;
+
+unsigned int v[DIM];
+
+unsigned int n, i, k, p, u, mid, dist, centre;
+
+int sePoate(int d) {
+    int s = 0;
+    int i=2;
+    while (s + v[i]  <= d && i<=n) {
+        s += v[i];
+        i++;
+    }
+
+    if (i > n) {
+        return 1;
+        //se poate cu un singur centru
+    }
+
+    centre = 1;
+//    int lastcentru = i-1;
+
+    for (;;) {
+        s = 0;
+        while (s + v[i]<= d && i<=n) {
+            s += v[i];
+            i++;
+        }
+
+        if (i<=n) {
+            centre++;
+            if (centre > k)
+                return 0;
+            s = 0;
+            i++;
+            if (i>n)
+                return 1;
+
+            while (s + v[i] <= d && i<=n) {
+                s += v[i];
+                i++;
+            }
+
+            if (i > n) {
+                return 1;
+                //se poate cu un singur centru
+            }
+        } else {
+            return 1;
+        }
+    }
+}
+
+int main() {
+    ifstream fin("orase1.in");
+    ofstream fout("orase1.out");
+    fin>>n>>k;
+    for (i=2;i<=n;i++) {
+        fin>>v[i];
+        dist += v[i];
+    }
+
+    sePoate(4);
+
+    p = 1;
+    u = dist;
+
+    while (p<=u) {
+        mid = p + (u-p)/2;
+        if (sePoate(mid))
+            u = mid - 1;
+        else
+            p = mid + 1;
+    }
+
+    fout<<p;
+    sePoate(p);
+    fout<<" "<<centre<<"\n";
+    return 0;
+}

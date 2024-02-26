@@ -1,0 +1,89 @@
+#include <stdio.h>
+#include <bits/stdc++.h>
+
+using namespace std;
+
+#define ll long long
+#define ld long double
+#define pb push_back
+#define mp make_pair
+#define pii pair<int, int>
+#define pll pair<ll, ll>
+#define pdd pair<ld, ld>
+#define all(x) (x).begin(), (x).end()
+#define fi first
+#define se second
+
+const int kMaxN = 2000;
+const int kMaxVal = 1e6;
+const int kInf = (1LL << 31) - 1;
+
+int v[kMaxN + 5];
+int sum[kMaxN + 5];
+int dp[kMaxN + 5][kMaxN + 5];
+
+int main() {
+  cin.sync_with_stdio(false);
+
+  ifstream cin("antivirus.in");
+  ofstream cout("antivirus.out");
+
+  int t;
+  cin >> t;
+
+  for (; t; t--) {
+    int n, m;
+    cin >> n >> m;
+    assert(n >= 1 && n <= kMaxN);
+    assert(m >= 1 && m <= n);
+
+    for (int i = 1; i <= n; i++) {
+      cin >> v[i];
+      assert(v[i] >= 0 && v[i] <= kMaxVal);
+      if (v[i] == 0) {
+        m--;
+      }
+      sum[i] = sum[i - 1] + v[i];
+    }
+
+    for (int i = 0; i < kMaxN; i++) {
+      for (int j = 0; j < kMaxN; j++) {
+        dp[i][j] = kInf;
+      }
+    }
+
+    for (int i = 0; i <= n; i++) {
+      dp[i][0] = 0;
+    }
+
+    int last = 0;
+    for (int i = 1; i <= n; i++) {
+      if (v[i] > 0) {
+        if (last > 0) {
+          for (int j = m; j > 0; j--) {
+            dp[i][j] = dp[i - 1][j];
+            if (j - (i - last) >= 0 && dp[last][j - (i - last)] != kInf) {
+              dp[i][j] = min(dp[i][j], dp[last][j - (i - last)] + sum[i] - sum[last]);
+            }
+          }
+        }
+      } else {
+        for (int j = 1; j <= m; j++) {
+          dp[i][j] = dp[i - 1][j];
+          for (int k = i - 1; k >= last; k--) {
+            if (j - (i - k - 1) >= 0 && dp[k][j - (i - k - 1)] != kInf) {
+              dp[i][j] = min(dp[i][j], dp[k][j - (i - k - 1)] + sum[i] - sum[k]);
+            }
+          }
+        }
+        last = i;
+      }
+    }
+
+    ll ans = dp[n][m];
+    cout << ans << '\n';
+    assert(ans != kInf);
+  }
+
+  return 0;
+} 

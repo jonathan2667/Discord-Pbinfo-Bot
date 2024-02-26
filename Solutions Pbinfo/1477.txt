@@ -1,0 +1,186 @@
+// Posibila solutie de 100p pentru problema amplasare_cuvinte #1477 @pbinfo.ro
+// Ideile prezentate pot fi imbunatatite
+// Compilat cu Code::Blocks 13.12
+
+#include <stdio.h> // fopen, fprintf, fscanf
+#include <string.h> // strlen, strstr
+
+char cuvinte[100][30]; // lista cuvintelor din fisierul de intrare
+char careu[50][50]; // careul construit
+
+unsigned nr_cuvinte, nr_linii, nr_coloane;
+
+unsigned solutie_afisata; // afisam solutia o singura data
+
+//-------------------------------------------------------------------------------------------------------
+// Functie care verifica daca cuvantul cuvinte[indiceCuvant] se afla in careu
+int cuvant_existent_in_careu(int indiceCuvant) {
+
+    unsigned i, j; // iteratori
+
+    // verificare printre liniile careului
+    for (i = 0; i < nr_linii; ++i)
+        if (strstr( careu[i], cuvinte[indiceCuvant]))
+            return 1;
+
+    // verificare printre coloanele careului
+    char caractere_verticale[100];
+    for (j = 0; j < nr_coloane; ++j) {
+        for (i = 0; i < nr_linii; i++)
+            caractere_verticale[i] = careu[i][j];
+        caractere_verticale[i] = '\0';
+        if (strstr(caractere_verticale, cuvinte[indiceCuvant]) != NULL)
+            return 1;
+    }
+
+    // cuvantul nu se afla in careu
+    return 0;
+}
+
+int careuValidConstruit() {
+    unsigned i;
+    for(i = 0; i < nr_cuvinte; i++)
+        if(!cuvant_existent_in_careu(i))
+            return 0;
+    return 1;
+}
+
+
+//-------------------------------------------------------------------------------------------------------
+// Functie care citeste datele din fisierul de intrare
+void citireDate() {
+    FILE *fin = fopen("cuvinte.in", "r");
+    unsigned i; // iterator
+    fscanf(fin, "%d %d %d", &nr_cuvinte, &nr_linii, &nr_coloane);
+    for(i = 0; i < nr_cuvinte; i++)
+        fscanf(fin, "%s", &cuvinte[i]);
+    fclose(fin);
+}
+
+//-------------------------------------------------------------------------------------------------------
+// Functie care initializeaza careul cu caracterul special minus(-)
+void initializare_careu() {
+    unsigned i, j; // iteratori
+    for(i = 0; i < nr_linii; i++)
+        for(j = 0; j < nr_coloane; j++)
+            careu[i][j] = '-';
+}
+
+//-------------------------------------------------------------------------------------------------------
+// Functie care verifica daca pozitia data (linie, coloana, orientare) este valida pentru a insera cuvantul cuvinte[indiceCuvant]
+// directie=1 -> verificare pe orizontala; directie=2 -> verificare pe verticala
+unsigned int pozitieValida(int indiceCuvant, int linie, int coloana, int directie) {
+    unsigned int lungime_cuvant = strlen(cuvinte[indiceCuvant]), i;
+    if(directie == 1) { // orizontala
+        if (coloana + lungime_cuvant - 1 <= nr_coloane) {
+            for (i=0; i < lungime_cuvant; ++i)
+                if (careu[linie][coloana + i] != cuvinte[indiceCuvant][i] && careu[linie][coloana + i] != '-')
+                    return 0;
+            return 1;
+        }
+    }
+    else { // verticala
+        if (linie + lungime_cuvant - 1 <= nr_linii) {
+            for (i=0; i < lungime_cuvant; ++i)
+                if (careu[linie + i][coloana] != cuvinte[indiceCuvant][i] && careu[linie + i][coloana] != '-')
+                    return 0;
+            return 1;
+        }
+    }
+    return 0; // cuvantul nu poate fi inserat
+}
+
+//-------------------------------------------------------------------------------------------------------
+// Inserarea cuvantului in careu, dupa (linie, coloana, directie);
+// directie=1 -> inserare pe orizontala; directie=2 -> inserare pe verticala
+void inserareCuvant(int pozitie_cuvant, int linie, int coloana, int directie) {
+
+    int lungime = strlen(cuvinte[pozitie_cuvant]);
+    int i, j; // iterator
+    if(directie == 1) // orizontala
+        for(j = coloana, i = 0; i < lungime; i++, j++)
+            careu[linie][j] = cuvinte[pozitie_cuvant][i];
+    else
+        for(i = linie, j = 0; j < lungime; i++, j++)
+            careu[i][coloana] = cuvinte[pozitie_cuvant][j];
+}
+
+
+//-------------------------------------------------------------------------------------------------------
+// Functii care ajuta la restaurearea careului dupa introducerea unui cuvant
+void copiere_careu(char careu_temporar[][30]) {
+    unsigned i, j; // iteratori
+    for(i = 0; i < nr_linii; i++)
+        for(j = 0; j < nr_coloane; j++)
+            careu_temporar[i][j] = careu[i][j];
+}
+void restaurare_careu(char careu_temporar[][30]) {
+    unsigned i, j; // iteratori
+    for(i = 0; i < nr_linii; i++)
+        for(j = 0; j < nr_coloane; j++)
+            careu[i][j] = careu_temporar[i][j];
+}
+
+//-------------------------------------------------------------------------------------------------------
+// Afisarea solutiei
+void afisareSolutie() {
+    if(solutie_afisata != 0) // o solutie a mai fost afisata, asa ca ne oprim
+        return;
+
+    FILE *fout = fopen("cuvinte.out", "w");
+    unsigned i, j; // iteratori
+    for(i = 0; i < nr_linii; i++) {
+        for(j = 0; j < nr_coloane; j++)
+            fprintf(fout, "%c ", careu[i][j]);
+        fprintf(fout, "\n");
+    }
+}
+
+//-------------------------------------------------------------------------------------------------------
+// Functia recursiva care insereaza, pe rand, daca este posibil, cuvintele in careu, atat pe orizontala,
+// cat si pe verticala. Dupa ce un cuvant a fost inserat, trecem la cuvantul urmator. Stergen din matrice
+// cuvantul recent amplasat pentru a verifica si alte pozitii
+void verificareCuvant(int pozitieCuvant) {
+    if(solutie_afisata != 0)
+        return;
+
+    unsigned i, j, directie; // iteratori
+    for(i = 0; i < nr_linii; i++) {
+
+        for(j = 0; j < nr_coloane; j++) {
+
+            for(directie = 1; directie <= 2; directie++) {
+
+                if(pozitieValida(pozitieCuvant, i, j, directie)) {
+                    char careu_temporar[100][30];
+
+                    copiere_careu(careu_temporar);
+
+                    inserareCuvant(pozitieCuvant, i, j, directie);
+
+                    if(pozitieCuvant == nr_cuvinte - 1) {
+                        if(careuValidConstruit()) {
+                            afisareSolutie();
+                            solutie_afisata = 1;
+                        }
+                    }
+
+                    else
+                        verificareCuvant(pozitieCuvant + 1);
+
+                    restaurare_careu(careu_temporar);
+                }
+            }
+        }
+    }
+}
+
+int main(void) {
+    citireDate();
+
+    initializare_careu();
+
+    verificareCuvant(0);
+
+    return 0;
+}

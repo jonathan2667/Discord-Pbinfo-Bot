@@ -1,0 +1,92 @@
+#include <stdio.h>
+#include <algorithm>
+
+using namespace std;
+
+#define DIMM 5010
+#define DIM 1010
+
+struct rec {
+    int i;
+    int j;
+    int p;
+    int v;
+};
+
+rec M[DIMM];
+char S[DIMM];
+
+int cmpij(rec x, rec y) {
+    if (x.i == y.i)
+        return x.j < y.j;
+    else
+        return x.i < y.i;
+}
+
+int cmpp(rec x, rec y) {
+    return x.p < y.p;
+}
+
+int L, C, K, k, ri, rj, i, j, X, R, Sol;
+char c;
+
+int main() {
+    FILE *f = fopen("robot1.in","r");
+    FILE *g = fopen("robot1.out","w");
+    fscanf(f, "%d",&L);
+    fscanf(f, "%d",&K);
+    fscanf(f, "%d %d\n",&ri,&rj);
+//  fscanf(f,"%s",S+1);
+    M[1].i = ri;
+    M[1].j = rj;
+    M[1].p = 1;
+    for (k=1;k<=K;k++) {
+        fscanf(f,"%c%c",&S[k],&c);
+        M[k+1].p = k+1;
+        if (S[k] == 'N') {
+            M[k+1].i = M[k].i - 1;
+            M[k+1].j = M[k].j;
+        } else if (S[k] == 'S') {
+            M[k+1].i = M[k].i + 1;
+            M[k+1].j = M[k].j;
+        } else if (S[k] == 'E') {
+            M[k+1].i = M[k].i;
+            M[k+1].j = M[k].j + 1;
+        } else if (S[k] == 'V') {
+            M[k+1].i = M[k].i;
+            M[k+1].j = M[k].j - 1;
+        }
+    }
+    sort(M+1, M+K+2, cmpij);
+    k = 1;
+    for (i=1;i<=L && k<=K+1;i++) {
+        for (j=1;j<=L && k<=K+1;j++) {
+            fscanf(f,"%d",&X);
+            if (i==M[k].i && j==M[k].j) {
+                M[k].v = X;
+                k++;
+            }
+        }
+    }
+    fclose(f);
+    
+    sort(M+1, M+K+2, cmpp);
+    R = M[1].v;
+    k = 1;
+    if (R == 0)
+        Sol = 1;
+    else
+        for (k=2;k<=K+1;k++) {
+            R+=(M[k].v-1);
+            if (R == 0) {
+                Sol = k;
+                break;
+            }
+        }
+    if (k == K+2)
+        Sol = K+1;
+    
+    fprintf(g,"%d %d\n",M[Sol].i, M[Sol].j);
+    
+    return 0;
+}

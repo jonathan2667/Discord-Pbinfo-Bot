@@ -1,0 +1,35 @@
+#include <fstream>
+#include <cstring>
+using namespace std;
+ifstream fin("prodnr.in");
+ofstream fout("prodnr.out");
+char s[30001];
+int f[100000];
+long nr, n, k, d, lg, i;
+int main()
+{
+    fin>>s;
+    lg=strlen(s);
+    i=0;
+    while (i<lg)
+    {
+        nr++;
+        n=s[i]-'0';
+        i++;
+        k=0;
+        for (int j=0; j<n; j++)
+            k=k*10+s[i++]-'0';
+        d=2;
+        while (k>1)
+        {
+            while (k%d==0) f[d]++, k/=d;
+            d++;
+        }
+    }
+    fout<<nr<<'\n';
+    for (int i=2; i<100000; i++)
+        if (f[i]) fout<<i<<' '<<f[i]<<'\n';
+    fin.close();
+    fout.close();
+    return 0;
+}

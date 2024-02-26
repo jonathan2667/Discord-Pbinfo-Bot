@@ -1,0 +1,29 @@
+#include <iostream>
+#include <cstring>
+using namespace std;
+
+char s[256];
+char t[256], Max[256];
+
+
+int main()
+{
+    cin >> s;
+    strcpy(Max , "");
+    for(int i = 0 ; s[i+1] ; i ++)
+        for(int j = 2 ; s[i+j] ; j ++)
+        {
+            strncpy(t , s+ i , j); t[j] = 0;
+            if( strstr(s+i+1 , t) )
+            {
+                if( strlen(t) > strlen(Max) )
+                    strcpy(Max , t);
+                else
+                    if( strlen(t) == strlen(Max) )
+                        if(strcmp(t , Max) < 0)
+                            strcpy(Max , t);
+            }
+        }
+    cout << Max;
+    return 0;
+}

@@ -1,0 +1,32 @@
+#include <fstream>
+
+using namespace std;
+int f[10];
+ifstream fin("mincifre.in");
+ofstream fout("mincifre.out");
+int main()
+{
+    char cif;
+    while(fin>>cif)
+    {
+        f[cif-'0']++;
+    }
+    bool gasit=false;
+    for(int i=1;i<=9 && !gasit;i++)
+    {
+        if(f[i])
+        {
+            fout<<i;
+            f[i]--;
+            gasit=true;
+        }
+    }
+    for(int i=0;i<=9;i++)
+    {
+        for(int j=1;j<=f[i];j++)
+        {
+            fout<<i;
+        }
+    }
+    return 0;
+}

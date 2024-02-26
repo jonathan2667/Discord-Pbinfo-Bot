@@ -1,0 +1,27 @@
+#include <fstream>
+#include <cstring>
+using namespace std;
+///Implementare propie cu grafuri - 100 puncte.
+ifstream fin("hobby.in");
+ofstream fout("hobby.out");
+int A[701][701],n,P[701],ng,c,x,y;char C[701][11];
+void DF(int x,int g){P[x]=g;
+ for(int i=1;i<=n;i++){
+  if(!P[i]&&A[x][i]==1){DF(i,g);}
+ }
+}
+int main(){fin>>n;
+ for(int i=1;i<=n;i++){fin>>x>>y;A[x][y]=1;A[y][x]=1;}
+ for(int i=1;i<=n;i++){fin>>C[i];}
+ for(int i=1;i<=n;i++){if(!P[i]){ng++;DF(i,ng);}}
+ fout<<ng<<'\n';
+ for(int i=1;i<=ng;i++){
+  int ok=1;char p[11]="";
+  for(int j=1;j<=n;j++){
+   if(P[j]==i){
+    if(strlen(p)==0){strcpy(p,C[j]);}
+    else if(strcmp(C[j],p)!=0){ok=0;}
+   }
+  }if(ok){c++;}
+ }fout<<c;
+}

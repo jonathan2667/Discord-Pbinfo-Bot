@@ -1,0 +1,31 @@
+#include <fstream>
+
+using namespace std;
+
+int main()
+{
+    int n,s,i,a[302],t,c,d;
+    ifstream f("cd.in");
+    f>>n>>s;
+
+    s=s/n;
+
+    for (i=1;i<=n;i++)
+        a[i]=s;
+
+    for (i=1;i<=n;i++) {
+        f>>c>>d;
+        a[i]=a[i]+c;
+        a[d]=a[d]-c;
+    }
+
+    t=1;
+    for (i=1;i<=n;i++)
+        t=t*(a[i]-1) % 9901;
+
+    f.close();
+
+    ofstream g("cd.out");
+    g<<t<<"\n";
+    g.close();
+}

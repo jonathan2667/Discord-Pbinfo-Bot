@@ -1,0 +1,38 @@
+#include <iostream>
+#include <cstring>
+using namespace std;
+
+void produs(int A[], int &n, int x)
+{//inmulteste numarul mare din A cu numarul mic x
+    int t=0; //transportul
+    if(x==0) { n=1; A[1]=0; }
+    for(int i=1;i<=n;i++)
+    {
+        int c=A[i]*x+t;//inmultesc cifra si adun t
+        A[i]=c%10;//cifra
+        t=c/10;//transportul
+    }
+    while(t>0) //t se pune in fata cifra cu cifra
+    {
+        A[++n]=t%10;
+        t=t/10;
+    }
+}
+
+int main()
+{
+    char s[100001];
+    int sc=0,A[110001];
+    cin>>s;
+    int nc=strlen(s);
+    for(int i=0;i<nc;i++)
+    {
+        sc=sc+s[i]-48;
+        A[i+1]=1;
+    }
+    produs(A,nc,sc);
+    for(int i=nc;i>=1;i--)
+        cout<<A[i];
+    return 0;
+}
+

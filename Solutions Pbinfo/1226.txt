@@ -1,0 +1,74 @@
+//Emanuela Cerchez, 100 puncte
+#include <fstream>
+#define NMAX 1000001
+#define MMAX 100001
+
+using namespace std;
+
+int N, M;
+int X[MMAX], Y[MMAX];
+int DP[2*NMAX], DS[2*NMAX];
+int nrs[2*NMAX];
+long long int Rez;
+
+void citire();
+void afisare();
+void rezolvare();
+
+int main()
+{
+citire();
+rezolvare();
+afisare();
+return 0;
+}
+
+
+void afisare()
+{ofstream fout("nebuni.out");
+ fout<<Rez<<'\n';
+ fout.close();
+}
+
+void citire()
+{ifstream fin("nebuni.in");
+ int i;
+ fin >> N >> M;
+ for (i=1; i<=M; i++)
+     fin>>X[i]>>Y[i];
+}
+ 
+int nrcelule(int i)
+{
+if (i <= N) return i;
+return 2*N-i;
+}
+
+
+void rezolvare()
+{int i, Sf, Inc, LInceput, CInceput, LSfarsit, CSfarsit, SI, SDS, SDP;
+for (i=1; i<=M; i++)
+    {DP[X[i] - Y[i] + N]=1;
+     DS[X[i] + Y[i] - 1]=1;};
+SDP=SDS=0;
+for (i=1; i<2*N; i++)
+    {if (DP[i]) SDP+=nrcelule(i);
+     if (DS[i]) SDS+=nrcelule(i);}
+
+nrs[1]=DS[1]==1;
+for (i=2; i<2*N; i++) nrs[i]=nrs[i-2]+(DS[i]==1);
+
+SI=0;    
+for (i=1; i<2*N; i++)
+    if (DP[i]) 
+    {if (i<=N) {LInceput=1; CInceput = N-i+1; LSfarsit=i; CSfarsit=N;}
+        else {LInceput=i-N+1; CInceput = 1; LSfarsit=N; CSfarsit =2*N-i;}
+    Sf=LSfarsit+CSfarsit-1;
+    Inc=LInceput+CInceput-1;
+    SI+=nrs[Sf]-nrs[Inc-2];
+    }   
+
+Rez=(long long int)N*N - (SDP+SDS-SI);
+}
+
+

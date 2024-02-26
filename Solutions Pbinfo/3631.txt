@@ -1,0 +1,33 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+int a[123459], n, k;
+unordered_map<int, int> M;
+
+int main()
+{
+    int i, total, nrD;
+    cin >> n >> k;
+    for (i = 0; i < n; i++)
+        cin >> a[i];
+    nrD = 0;
+    for (i = 0; i < k; i++)
+    {
+        M[a[i]]++;
+        if (M[a[i]] == 1) nrD++;
+        if (M[a[i]] == 2) nrD--;
+    }
+    total = nrD;
+    for (i = k; i < n; i++)
+    {
+        M[a[i - k]]--;
+        if (M[a[i - k]] == 0) nrD--;
+        if (M[a[i - k]] == 1) nrD++;
+        M[a[i]]++;
+        if (M[a[i]] == 1) nrD++;
+        if (M[a[i]] == 2) nrD--;
+        total += nrD;
+    }
+    cout << total;
+    return 0;
+}

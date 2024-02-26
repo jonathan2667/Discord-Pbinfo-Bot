@@ -1,0 +1,50 @@
+// Solutie Chesca Ciprian - 100 p
+// Algoritm constructiv - inductie matematica
+
+#include <fstream>
+#include <math.h>
+#include <iostream>
+#define nmax 100009
+
+using namespace std;
+
+int a[nmax];
+
+int main()
+{
+    ifstream f("progresie.in");
+    ofstream g("progresie.out");
+
+    long long k,p;
+    int n,i,j,t,un,x;
+
+    f>>n;
+
+    a[1]=1;a[2]=2;k=2;
+
+    i=1;un=0;p=3;
+    while (!un)
+        {
+        t=k;
+        for(j=1;j<=k;j++)
+             {
+             x=a[j]+p;
+             if (x<=3*n*sqrt(n)) a[++t]=x;
+                else un=1;
+
+             }
+        if (!un) k=2*k;
+            else k=t;
+        i++;
+        p=p*3;
+        }
+    // cout << t ;
+
+    for(i=1;i<=n;i++)
+        g<<a[i]<<" ";
+
+    g<<"\n";
+    f.close();
+    g.close();
+    return 0;
+}

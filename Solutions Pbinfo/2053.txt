@@ -1,0 +1,106 @@
+// prof. Ciprian Chesca - Fibonacci + PINEX cu generare submultimi
+// 100 puncte
+
+
+#include <fstream>
+
+#define nmax 101
+#define ll long long
+
+using namespace std;
+
+ifstream f("fibodiv.in");
+ofstream g("fibodiv.out");
+
+ll n,t;
+ll per[nmax],a[nmax],st[nmax];
+ll sol=0;
+
+// calculez perioada restransa a aparitiei unui termen divizibil cu a[1]..a[n] in sirul Fibonacci
+void perioada(ll n)
+{
+ll x,y,z,p,i;
+bool ok;
+
+for(i=1;i<=n;i++)
+{
+    x=1;y=1;ok=false;p=2;
+    while (!ok)
+        {
+        z=(x+y)%a[i];
+        x = y;
+        y = z;
+        p++;
+        if (z==0) {per[i]=p;ok=true;}
+        }
+}}
+
+
+ll cmmdc(ll a, ll b)
+{
+    ll d=a,i=b,r=d%i;
+    while (r)
+    {
+        d=i;
+        i=r;
+        r=d%i;
+    }
+    return i;
+}
+
+
+ll n_cmmmc(ll x[], ll n)
+{
+    ll i,w = x[1];
+    for(i=2;i<=n;i++)
+        w=(w*x[i])/cmmdc(w,x[i]);
+
+    return w;
+}
+
+
+void inout(ll k)
+{
+ll p = n_cmmmc(st,k);
+if (k%2==0) sol-=t/p;
+    else    sol+=t/p;
+}
+
+
+void parti()
+{
+    ll i,j,k,l = 1 << n; // l = 2^n
+    for(i=1;i<l;i++)
+    {
+
+        k=0;
+        for(j=0;j<n;j++)
+            if ((i>>j) & 1)
+                st[++k]=per[j+1];
+        inout(k);
+
+
+    }
+}
+
+
+int main()
+{
+ll i;
+
+f>>n>>t;
+for(i=1;i<=n;i++)
+    f >> a[i];
+
+
+perioada(n);
+
+parti();
+
+g<<sol<<"\n";
+
+
+f.close();
+g.close();
+return 0;
+}

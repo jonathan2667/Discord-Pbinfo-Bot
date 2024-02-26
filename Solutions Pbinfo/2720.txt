@@ -1,0 +1,61 @@
+#include <fstream>
+#include <vector>
+#include <algorithm>
+#define l int
+
+using namespace std;
+
+///Rezolvare cu bucket-uri
+
+ifstream fin("bucketsort.in");
+ofstream fout("bucketsort.out");
+
+int n,x,c=0,maxi,d;
+vector<l> v[100000];///Bucket-urile facute cu vector pentru eficienta
+
+///Functie de sortare descrescatoare
+inline bool desc(l a,l b){
+    return a>b;
+}
+
+int main(){
+     fin>>n;
+     for(int i=1;i<=n;i++){
+        fin>>x;
+        v[x/1000].push_back(x);
+        ///Maximul pentru eficienta
+        maxi=max(maxi,x/1000);
+     }
+     fin>>d;
+     ///Descrescator
+     if(d){
+        for(int i=maxi;i>=0;i--){
+            if(!v[i].empty()){
+                sort(v[i].begin(),v[i].end(),desc);
+                for(l x:v[i]){
+                    fout<<x<<" ";
+                    c++;
+                }
+            }
+            if(c==n){
+                return 0;
+            }
+        }
+     }
+     ///Crescator
+     else {
+        for(int i=0;i<=maxi;i++){
+            if(!v[i].empty()){
+                sort(v[i].begin(),v[i].end());
+                for(l x:v[i]){
+                    fout<<x<<" ";
+                    c++;
+                }
+            }
+            if(c==n){
+                return 0;
+            }
+        }
+     }
+     return 0;
+}

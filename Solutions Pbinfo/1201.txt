@@ -1,0 +1,104 @@
+//Mihai Ciucu
+//Complexitate O(N)
+
+#include <cstdio>
+#include <cstdlib>
+#include <hash_map>
+#include <algorithm>
+
+using namespace std;
+
+#define MaxN (1 << 20)
+#define STEP(x) ((x) + 2)
+
+int N;
+char str[MaxN];
+
+int lastPosition[2][3000];
+int memJump[MaxN][2];
+int best[MaxN][2];
+
+int getNum(int st, int type) {
+    if (st + STEP(type) > N) {
+        fprintf(stderr, "Eroare de overflow!\n");
+    }
+    if (type == 0) {
+        return str[st] * 10 + str[st + 1];
+    } else {
+        return str[st] * 100 + str[st + 1] * 10 + str[st + 2];
+    }
+}
+
+int GetLastPoz(int poz, int type) {
+    const int modulo = poz % STEP(type);
+    return lastPosition[type][modulo * 1000 + getNum(poz, type)];
+}
+
+void UpdateLastPoz(int poz, int type) {
+    if (poz + STEP(type) > N) {
+        return;
+    }
+    const int modulo = poz % STEP(type);
+    lastPosition[type][modulo * 1000 + getNum(poz, type)] = poz;
+}
+
+int CalcJump(int poz, int type) {
+    if (memJump[poz][type]) {
+        return memJump[poz][type];
+    }
+    if (poz + STEP(type) >= N) {
+        return poz + STEP(type);
+    }
+    int last = GetLastPoz(poz, type);
+    if (last + STEP(type) >= N || last == poz) {
+        memJump[poz][type] = last + STEP(type);
+        return memJump[poz][type];
+    }
+    int curPoz = poz + STEP(type);
+    while (curPoz <= last) {
+        curPoz = CalcJump(curPoz, type);
+    }
+    memJump[poz][type] = curPoz;
+    return memJump[poz][type];
+}
+
+int main() {
+    freopen("text1.in", "rb", stdin);
+    freopen("text1.out", "wb", stdout);
+    scanf("%d\n", &N);
+    fgets(str, MaxN, stdin);
+    for (int i = 0; i < N; i++) {
+        str[i] -= '0';
+    }
+
+    for (int i = 0; i < N; i++) {
+        UpdateLastPoz(i, 0);
+        UpdateLastPoz(i, 1);
+    }
+
+    for (int i = 0; i <= N + 3; i++) {
+        best[i][0] = best[i][1] = -999999999;
+    }
+    best[N][0] = best[N][1] = 0;
+
+    for (int i = N - 2; i >= 0; i--) {
+        for (int type = 0; type < 2; type++) {
+            if (i + STEP(type) <= N) {
+                int jumpPoz = CalcJump(i, type);
+                best[i][type] = max(best[jumpPoz][0], best[jumpPoz][1]) + 1;
+            }
+        }
+    }
+
+    printf("%d\n", max(best[0][0], best[0][1]));
+
+    int poz = 0;
+    while (poz < N) {
+        const int bestType = (best[poz][0] > best[poz][1]) ? 0 : 1;
+        printf("%d %d\n", poz + 1, bestType + 2);
+
+        poz = CalcJump(poz, bestType);
+    }
+
+    return 0;
+}

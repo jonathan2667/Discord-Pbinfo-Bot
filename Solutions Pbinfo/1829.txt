@@ -1,0 +1,160 @@
+#include <stdio.h>
+#include <vector>
+#include <string>
+#include <string.h>
+#include <iostream>
+#include <fstream>
+#include <algorithm>
+using namespace std;
+
+#define N_MAX 6
+#define M_MAX 6
+#define C_MAX 200
+#define A_SIZE 26  // alphabet size
+
+char tab[N_MAX][C_MAX];
+int N, M, C;
+
+struct TrieNode {
+  // chs: cele 26 de litere din alfabet
+  TrieNode* chs[A_SIZE];
+  // count: informatie despre cuvantul de la radcina pana la nod
+  // -1 cuvantul *nu* e in dictionar
+  //  0 cuvantul e in dictionar
+  // > 0 cuvantul e in dictionar si apare de count ori
+  int count;
+
+  TrieNode() {
+    count = -1;
+    memset(chs, 0, A_SIZE * sizeof(struct TrieNode*));
+  }
+
+  void insert(string cuv);
+  void print_and_collect(fstream &fout, string cuv, int min_count, vector<int> &counts);
+  void count_words(int& n_cuv, int min_count);
+};
+
+void TrieNode::insert(string cuv) {
+  TrieNode* tn = this;
+  int clen = cuv.length();
+  for (int i = 0; i < clen; i++) {
+      int idx = cuv[i] - 'a';
+      if (tn->chs[idx] == NULL ) {
+        tn->chs[idx] = new TrieNode();
+      }
+      tn = tn->chs[idx];
+  }
+  // ultima litera din cuvant
+  tn->count = 0;
+}
+
+void TrieNode::count_words(int& n_cuv, int min_count) {
+  TrieNode* tn = this;
+  if (tn == NULL)
+    return;
+
+  if (tn->count >= min_count) {
+    n_cuv = n_cuv + 1;
+  }
+
+  for(int i = 0; i < A_SIZE; i++) {
+    tn->chs[i]->count_words(n_cuv, min_count);
+  }
+}
+
+void TrieNode::print_and_collect(fstream &fout, string cuv, int min_count, vector<int> &counts) {
+  TrieNode* tn = this;
+  if (tn == NULL)
+    return;
+  if (tn->count >= min_count) {
+    fout << cuv << " " << tn->count << "\n";
+    counts.push_back(tn->count);
+  }
+  for(int i = 0; i < A_SIZE; i++) {
+    cuv.push_back('a' + i);
+    tn->chs[i]->print_and_collect(fout, cuv, min_count, counts);
+    cuv.erase(cuv.end() - 1, cuv.end());
+  }
+}
+
+void print_solution(fstream &fout, TrieNode &dict, int min_count) {
+  string s;
+  vector<int> counts;
+  int n_words = 0;
+  dict.count_words(n_words, min_count);
+  fout << n_words << "\n";
+
+  dict.print_and_collect(fout, s, min_count, counts);
+
+  vector<int>::iterator it;
+  for(it = counts.begin(); it != counts.end(); it++) {
+    fout << (char)('a' + (*it % 26))  ;
+  }
+  fout << "\n";
+}
+
+bool in_bounds(int x, int y) {
+  return (x >= 0 && y >= 0 && x < N && y < M);
+}
+
+void dfs(TrieNode *dict, int i, int j) {
+  int idx_l = tab[i][j] - 'a';
+  int idx_r = tab[i][j] - 'a' + 1;
+  if (tab[i][j] == '?') {
+    idx_l = 0;
+    idx_r = A_SIZE;
+  }
+
+  int old_ij = tab[i][j];
+  for(int idx = idx_l; idx < idx_r; idx ++ ) {
+    tab[i][j] = 'a' + idx;
+
+    TrieNode* cur_tn = dict->chs[idx];
+    if(cur_tn == NULL)
+      continue;
+
+    // increase current word
+    if(cur_tn->count >= 0) {
+      cur_tn->count++;
+    }
+
+    for(int dx = -1; dx < 2; dx++){
+      for(int dy = -1; dy < 2; dy++){
+        if((dx == 0 && dy == 0) || !in_bounds(i + dx, j + dy))
+          continue;
+
+        dfs(cur_tn, i + dx, j + dy);
+      }
+    }
+  }
+  tab[i][j] = old_ij;
+}
+
+int main() {
+  int i, j;
+  fstream fin, fout;
+  fin.open("cuvinteascunse.in", fstream::in);
+  fout.open("cuvinteascunse.out", fstream::out);
+  fin >> N >> M >> C;
+  for(i = 0; i < N; i++)
+    for(j = 0; j < M; j++)
+      fin >> tab[i][j];
+
+  TrieNode dict;
+  string cuv;
+  for(i = 0; i < C; i++){
+    fin >> cuv;
+    std::transform(cuv.begin(), cuv.end(),cuv.begin(), ::tolower);
+    dict.insert(cuv);
+  }
+
+  for(i = 0; i < N; i++)
+    for(j = 0; j < M; j++)
+      dfs(&dict, i, j);
+
+  print_solution(fout, dict, 1);
+
+  fin.close();
+  fout.close();
+  return 0;
+}

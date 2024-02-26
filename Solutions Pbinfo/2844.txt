@@ -1,0 +1,39 @@
+#include<bits/stdc++.h>
+using namespace std;
+
+ifstream in("circularlistinsert.in");
+ofstream out("circularlistinsert.out");
+
+list<int> v;
+list<int>::iterator it,itt;
+
+int main()
+{
+    int n,x,m;
+    in>>n;
+    for(int i=1;i<=n;i++)
+        in>>x,v.push_back(x);
+    it=v.begin();
+    in>>m;
+    for(int i=1;i<=m;i++)
+    {
+        in>>x;
+        if(x>n)
+            x%=n;
+        for(int j=1;j<=x;j++)
+        {
+            if(it==v.end())
+                it=v.begin(),j--;
+            else
+                it++;
+        }
+        if(it==v.end())
+            it=v.begin();
+        itt=it,itt++;
+        if(itt!=v.begin())
+        v.insert(itt,*it*2);
+        n++,it++;
+    }
+    for(it=v.begin();it!=v.end();it++)
+        out<<*it<<" ";
+}

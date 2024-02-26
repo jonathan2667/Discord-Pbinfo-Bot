@@ -1,0 +1,17 @@
+#include<fstream>
+#include<cstring>
+
+using namespace std;
+
+ifstream in("evenoddxxl.in");
+ofstream out("evenoddxxl.out");
+
+int main()
+{
+    char s[1001];
+    in>>s;
+    if((s[strlen(s) - 1])%2==0)
+        out<<"Par";
+    else
+        out<<"Impar";
+}

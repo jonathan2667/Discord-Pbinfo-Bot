@@ -1,0 +1,16 @@
+void inserare(int &n)
+{
+    int m, p, c, c1;
+    m = c = n % 10;
+    n /= 10;
+    p = 10;
+    while (n > 0)
+    {
+        c1 = n % 10;
+        n /= 10;
+        m = m + abs(c1 - c) * p + c1 * p * 10;
+        p *= 100;
+        c = c1;
+    }
+    n = m;
+}

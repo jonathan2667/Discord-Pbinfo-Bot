@@ -1,0 +1,65 @@
+/*
+prim - ciur
+main - cu freq
+nrdiv - euler
+*/
+#include <cmath>
+#include <fstream>
+
+using namespace std;
+
+ifstream fin("fantastice.in");
+ofstream fout("fantastice.out");
+int nrdiv(int);
+void CIUR();
+int prim(int);
+int ciur[250],n,a[1000005],freq[1000005],viz[1000005],nr;
+int main(){///main - cu freq
+    CIUR();
+    fin>>n;
+    for (int i=1;i<=n;i++){
+        fin>>a[i];
+        freq[a[i]]++;
+    }
+    for (int i=1;i<=n;i++){
+        if (!viz[a[i]]){
+            if (prim(nrdiv(a[i]))){
+                nr+=freq[a[i]];
+            }
+            viz[a[i]]=1;
+        }
+    }
+    fout<<nr;
+    return 0;
+}
+
+
+int prim(int n){///prim - ciur
+    return (ciur[n]==0);
+}
+
+int nrdiv(int n){///nrdiv - euler
+    int nr=1,d=2,rad=sqrt(n);
+    while (d<n){
+        int e=0;
+        while (n%d==0){
+            e++;
+            n/=d;
+        }
+        nr*=e+1;
+        d++;
+    }
+    if (n>1){
+        nr*=2;
+    }
+    return nr;
+}
+
+void CIUR(){///ciur
+    ciur[0]=ciur[1]=1;
+    for (int i=2;i<=16;i++){
+        for (int j=i*i;j<=240;j+=i){
+            ciur[j]=1;
+        }
+    }
+}

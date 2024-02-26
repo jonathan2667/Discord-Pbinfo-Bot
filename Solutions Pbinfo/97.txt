@@ -1,0 +1,18 @@
+#include <iostream>
+using namespace std;
+
+int main(){
+    char s[21],t[21];
+    int v[26] = {0};
+    cin >> s >> t;
+    for(int i=0; s[i]; ++i)
+        v[s[i]-'a']++;
+    for(int i=0; t[i]; ++i)
+        v[t[i]-'a']--;
+    int Ok = 1;
+    for(int i=0;i<26;++i)
+        if(v[i])
+            Ok = 0;
+    cout << Ok;
+    return 0;
+}

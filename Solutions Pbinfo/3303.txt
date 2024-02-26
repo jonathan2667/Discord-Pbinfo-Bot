@@ -1,0 +1,26 @@
+#include <bits/stdc++.h>
+using namespace std;
+ifstream f("nrcurat.in");
+ofstream g("nrcurat.out");
+int curat(int x)
+{
+    int ogl=0,p=1,urma=0;
+    while(x)
+    {
+        ogl=ogl*10+x%10;
+        urma=urma+p*(9-x%10);
+        p=p*10;
+        x/=10;
+    }
+    return ogl==urma;
+}
+int main()
+{
+    int x;
+    while(f>>x)
+        if(curat(x))
+            g<<1<<' ';
+        else
+            g<<0<<' ';
+    return 0;
+}

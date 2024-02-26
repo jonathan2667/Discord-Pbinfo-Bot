@@ -1,0 +1,36 @@
+/** O sa tinem matricea invers . Nivelul 1 o sa fie coloana 1 ,
+iar distanta 1 o sa fie linia 1. Aplicam programare dinamica , avand grija sa
+nu iesim din matrice sau sa adaugam un sa 2 ori acelasi lucru.
+Raspunsul o sa se afle in casuta a[1][m] */
+
+#include <iostream>
+#include <fstream>
+
+using namespace std;
+
+ifstream in("pitic.in");
+ofstream out("pitic.out");
+const int NMAX = 43;
+long long int a[NMAX+1][NMAX+1];
+
+int main()
+{
+    long long int n,i,j,m;
+    in>>n;
+    in>>m;
+    a[1][1]=1; /// Pot ajunge in pozitia initiala doar intr-un mod
+    for(j=1; j<=m; j++)
+    {
+        for(int i=1; i<=n; i++)
+        {
+            /// a[i][j] Reprezinta modurile in care pot ajunge la nivelul 1, distanta j
+            if(i!=1)
+                a[i][j]+=a[i-1][j-1]; /// Diagonala dreapta sus
+            if(j!=1)
+                a[i][j]+=a[i][j-1]; /// Dreapta
+            if(i!=n)
+                a[i][j]+=a[i+1][j-1]; /// Diagonala dreapta jos
+        }
+    }
+    out<<a[1][m];
+}

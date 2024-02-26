@@ -1,0 +1,145 @@
+#include <iostream>
+#include <algorithm>
+#include <cassert>
+
+#define MOD 1000000007LL
+
+using namespace std;
+
+long long fact[1000010], inv[1000010];
+int frq[1000010];
+
+long long put (long long n, long long p)
+{
+    long long rez = 1LL;
+    for (long long i = 0LL; (1LL << i) <= p; i += 1LL)
+    {
+        if ((1LL << i) & p) rez *= n, rez %= MOD;
+
+        n *= n;
+        n %= MOD;
+    }
+
+    return rez;
+}
+
+int main ()
+{
+    int q, p;
+    cin >> q >> p;
+
+    assert (1 <= q && q <= 1000000);
+    assert (1 <= p && p <= 100000);
+
+    fact[0] = inv[0] = 1LL;
+    for (int i = 1; i <= max (2 * p, q); ++i)
+    {
+        fact[i] = 1LL * i * fact[i - 1];
+        fact[i] %= MOD;
+
+        inv[i] = put (1LL * fact[i], MOD - 2LL);
+    }
+
+    int n = 0;
+    long long sum = 0LL, perm = 1LL;
+    for (; q; --q)
+    {
+        int op, x;
+        cin >> op >> x;
+
+        if (!op)
+        {
+            ++n;
+            sum += 1LL * x;
+
+            perm *= 1LL * n;
+            perm %= MOD;
+
+            if (perm == 0LL)
+            {
+                //fprintf (stderr, "1");
+                return 0;
+            }
+
+            perm *= fact[frq[x]];
+            perm %= MOD;
+
+            if (perm == 0LL)
+            {
+                //fprintf (stderr, "2");
+                return 0;
+            }
+
+            ++frq[x];
+            perm *= inv[frq[x]];
+            perm %= MOD;
+
+            if (perm == 0LL)
+            {
+                //fprintf (stderr, "3");
+                return 0;
+            }
+        }
+
+        else
+        {
+            perm *= inv[n];
+            perm %= MOD;
+
+            if (perm == 0LL)
+            {
+                //fprintf (stderr, "4");
+                return 0;
+            }
+
+            --n;
+            sum -= 1LL * x;
+
+            perm *= fact[n];
+            perm %= MOD;
+            if (perm == 0LL)
+            {
+                //fprintf (stderr, "5");
+                return 0;
+            }
+
+            perm *= fact[frq[x]];
+            perm %= MOD;
+            if (perm == 0LL)
+            {
+                //fprintf (stderr, "6");
+                return 0;
+            }
+
+            --frq[x];
+            perm *= inv[frq[x]];
+            perm %= MOD;
+            if (perm == 0LL)
+            {
+                //fprintf (stderr, "%d", q);
+                return 0;
+            }
+        }
+
+        if (sum > 1LL * p)
+        {
+            cout << "-1\n";
+            continue;
+        }
+
+        long long aux = 1LL * (p + n) - sum;
+
+        long long rez = fact[aux] * inv[n];
+        rez %= MOD;
+
+        rez *= inv[aux - n];
+        rez %= MOD;
+
+        rez *= perm;
+        rez %= MOD;
+
+        cout << rez << '\n';
+    }
+
+    return 0;
+}

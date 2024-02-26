@@ -1,0 +1,29 @@
+#include <iostream>
+#include <algorithm>
+#include <cassert>
+using namespace std;
+
+int n,a[202][202], z;
+
+int main()
+{
+    assert(cin >> n >> z);
+    for(int i = 1 ; i <= n ; ++i)
+        for(int j = 1 ; j <= n ; ++j)
+            assert(cin >> a[i][j]);
+    int s = 0;
+    for(int i = 1 ;i<= n ; i ++)
+        for(int j = 1 ; j <= n ; j ++)
+        {
+            if(z == 1 && (i < j && i + j < n + 1))
+                s += a[i][j];
+            if(z == 2 && (i < j && i + j > n + 1))
+                s += a[i][j];
+            if(z == 3 && (i > j && i + j > n + 1))
+                s += a[i][j];
+            if(z == 4 && (i > j && i + j < n + 1))
+                s += a[i][j];
+        }
+    cout << s;
+    return 0;
+}

@@ -1,0 +1,29 @@
+#include <iostream>
+#include <fstream>
+
+using namespace std;
+
+ifstream fin ("sumperm.in");
+ofstream fout("sumperm.out");
+
+int main()
+{
+    int n , v[15];
+    fin >> n;
+    for(int i = 1 ; i <= n ; i ++)
+        fin >> v[i];
+    long long int s = 0;
+    for(int k = 1 ; k <= n ; k ++)
+    {
+        int x = 0, p = 1;
+        for(int i = n ; i > 0 ; i --)
+            x += p * v[i], p *= 10;
+        s += x;
+        x = v[n];
+        for(int i = n ; i > 1 ; i --)
+            v[i] = v[i - 1];
+        v[1] = x;
+    }
+    fout << s;
+    return 0;
+}

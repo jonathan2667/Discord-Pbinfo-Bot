@@ -1,0 +1,39 @@
+//Solutie Dan Octavian Dumitrascu
+//triunghi cu PD O(n * n)
+//v[i][j] cel mai mare triunghi cu varful in i si j cu baza in jos plin de 0
+#include <cstdio>
+using namespace std;
+bool a[1503][3007];
+int v[1503][3007], b[3003], i, n, j, l, p, q, k, m, r, x, y;
+int main()
+{
+    freopen("triunghi4.in","r",stdin);
+    freopen("triunghi4.out","w", stdout);
+    scanf("%d%d%d\n",&n,&m,&r);
+    for (i = 1;i <= m; i++)
+    {
+        scanf("%d%d\n",&x,&y),a[ x ][ y ] = 1;
+    }
+    for (i = n;i >= 1; i--)
+        for (j = 1; j <= 2*i-1 ;j += 2)
+        {
+            if (a[ i ][ j ] == 1) v[ i ][ j ] = 0;
+            else
+                if (a[ i + 1 ][ j + 1 ] == 0)
+                    if (v[ i + 1 ][ j ] < v[ i + 1 ][ j + 2 ])
+                            v[ i ][ j ] = v[ i + 1][ j ] + 1;
+                    else
+                            v[ i ][ j ] = v[ i + 1 ][ j + 2 ] + 1;
+                else
+                    v[ i ][ j ] = 1;
+            b[ v[ i ][ j ] ]++;
+        }
+    for (i = n - 1; i >= 1; i--)
+        b[ i ] = b[ i + 1 ] + b[ i ];
+    for (i = 1; i <= r; i++)
+    {
+        scanf("%d\n",&y);
+        printf("%d\n",b[ y ]);
+    }
+    return 0;
+}

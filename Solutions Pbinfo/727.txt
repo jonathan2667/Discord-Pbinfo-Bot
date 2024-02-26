@@ -1,0 +1,103 @@
+/* solutia 1 - 100p*/
+#include <iostream>
+#include <fstream>
+
+#define IN  "joc1.in"
+#define OUT "joc1.out"
+#define Nmax 10
+#define NivMax 11
+#define MaxQ 100001
+
+using namespace std;
+typedef short int Mat[10][10];
+  
+Mat T, C[MaxQ];
+int E[MaxQ], p, u;
+int M,N, NrBuf;
+int NivMin, n, gata;
+
+int maxim(int a, int b)
+{
+   return a<b ? b : a;   
+}
+
+void copy(Mat T, Mat D)
+{
+   int i,j;  
+   for(i=1;i<=M;i++)
+     for(j=1;j<=N;j++) T[i][j] = D[i][j];
+}
+
+int final(int p)
+{
+   //verific daca am o configuratie finala 
+   int i,j;  
+   for(i=1;i<=M;i++)
+     for(j=1;j<=N;j++) 
+       if(C[p][i][j] != NivMin) return 0;
+   return 1;
+}
+
+int exista(int u)
+{
+   //verific daca a o configuratie a mai aparut 
+   int i,j,k,ok;  
+   for(k=u-1;k>1;k--)
+   {
+      ok=1; 
+      for(i=1;i<=M;i++)
+       for(j=1;j<=N;j++) 
+         if(C[u][i][j] != C[k][i][j]) ok=0;
+       if(ok && E[k]<=E[u]) return  1;
+   }         
+   return 0;
+}
+
+int main()
+{
+   int i,j, Pi, Pj;
+   ifstream F(IN);
+   ofstream G(OUT);
+   //citesc datele de intrare, calculand nivelul minim
+   NivMin = NivMax;
+   F>>M>>N;
+   for(i=1;i<=M;i++)
+     for(j=1;j<=N;j++) 
+     {
+        F>>T[i][j];
+        if(T[i][j]<NivMin) NivMin = T[i][j];
+     }
+   F.close();
+  
+   //incep jocul
+   n = (M-1)*(N-1);
+   gata = 0; 
+   NrBuf = 1000000;
+   //coada contine configuratia initiala
+   p=u=1;
+   copy(C[u],T);
+   E[u] = 0;
+   //expandez coada
+   while(p<=u)
+   {
+      if(final(p)) {if(E[p]<NrBuf) NrBuf = E[p];}
+      else
+        for(i=1; i<=n; i++) 
+         {
+             u++;
+             Pi = i/(N-1)+1;                
+             if(i%(N-1) == 0) Pi=Pi-1;
+             Pj = (i%(N-1) == 0 ? N-1 : i%(N-1));
+             E[u] = E[p] + maxim(maxim(C[p][Pi][Pj]- NivMin,C[p][Pi][Pj+1]- NivMin), maxim(C[p][Pi+1][Pj]- NivMin, C[p][Pi+1][Pj+1]- NivMin));                  
+             copy(C[u],C[p]);
+             C[u][Pi][Pj] = C[u][Pi][Pj+1] = C[u][Pi+1][Pj] = C[u][Pi+1][Pj+1] = NivMin;
+             if(final(u)) {if(E[u]<NrBuf) NrBuf = E[u];} 
+             if(exista(u)) u--;
+         } 
+       p++;       
+         
+   }    
+   G<<NrBuf<<'\n'; 
+   G.close(); 
+   return 0;   
+}

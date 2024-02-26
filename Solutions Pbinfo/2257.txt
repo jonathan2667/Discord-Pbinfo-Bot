@@ -1,0 +1,20 @@
+#include <iomanip>
+#include <iostream>
+using namespace std;
+
+int main(){
+    int p, u, n;
+    double x, Max;
+    cin >> n >> Max;
+    p = u =1;
+    for(int i=2 ; i<=n ; i++){
+        cin >> x;
+        if(x > Max)
+            p = u = i, Max = x;
+        else
+            if(x == Max)
+                u = i;
+    }
+    cout << p << " " << u;
+    return 0;
+}

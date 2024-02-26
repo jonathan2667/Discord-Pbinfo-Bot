@@ -1,0 +1,38 @@
+#include <fstream>
+#include <cstring>
+using namespace std;
+
+ifstream fin("palindrom.in");
+ofstream fout("palindrom.out");
+
+int palindrom(char * s){
+    for(int i=0, j=strlen(s)-1 ; i< j ; ++i, --j)
+        if(s[i]!=s[j])
+            return 0;
+    return 1;
+}
+
+int palindromP(char * s){
+    char t[250];
+    strcpy(t , s);
+    for(int i = 0 ; t[i] ; )
+        if(t[i]==' ')
+        {
+            char aux[250];
+            strcpy(aux , t + i + 1);
+            strcpy(t+i, aux);
+        }
+        else
+            ++i;
+    return palindrom(t);
+}
+int main(){
+    int n;
+    char s[250];
+    fin >> n;fin.get();
+    for (; n ; --n){
+        fin.getline(s,250);
+        fout << palindromP(s) << endl;
+    }
+    return 0;
+}

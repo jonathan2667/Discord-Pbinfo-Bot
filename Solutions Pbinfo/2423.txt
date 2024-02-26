@@ -1,0 +1,69 @@
+#include "fstream"
+
+using namespace std;
+
+ifstream cin("masterpiece002.in");
+ofstream cout("masterpiece002.out");
+
+int stiva[505050];
+bool plan[1001][1001];
+
+int caut(int st, int dr, int x){
+    while(st <= dr){
+        int m = ((st + dr) >> 1);
+        if(x >= stiva[m])
+            st = m + 1;
+        else
+            dr = m - 1;
+    }
+    return st;
+}
+
+int modul(int x1, int x2, int y1, int y2){
+    int d1 = x1 - x2;
+    int d2 = y1 - y2;
+
+    if(d1 < 0)
+        d1 = -d1;
+    if(d2 < 0)
+        d2 = -d2;
+
+    return (plan[d1][d2] == 0);
+}
+void ciur(){
+    for(int i=2 ; i<=500 ; ++i)
+        if(plan[i][0] == 0)
+            for(int j=(i<<1) ; j<=1000 ; j+=i)
+                plan[j][0] = 1;
+
+    for(int i=2 ; i<=1000 ; ++i)
+        if(plan[i][0] == 0){
+            int k = i;
+            while(k <= 1000){
+                int p = i;
+                while(p <= 1000)
+                    plan[k][p] = 1, p += i;
+                k += i;
+            }
+        }
+
+    for(int i=0 ; i<=1000 ; ++i)
+        plan[i][0] = plan[0][i] = 1;
+
+    plan[1][0] = plan[0][1] = 0;
+}
+
+int main(){
+    int x1, x2, y1, y2, rez = 0;
+    ciur();
+    while(cin >> x1 >> y1 >> x2 >> y2){
+        if(modul(x1, x2, y1, y2)){
+            int lungime = (x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2);
+            if(lungime >= stiva[rez])
+                stiva[++rez] = lungime;
+            else
+                stiva[caut(1, rez, lungime)] = lungime;
+        }
+    }
+   cout << rez;
+}

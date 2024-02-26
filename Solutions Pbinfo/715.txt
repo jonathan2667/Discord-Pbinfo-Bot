@@ -1,0 +1,67 @@
+// Cristina Iordaiche 
+// programare dinamica 100puncte
+#include<fstream>
+using namespace std;
+#define min(a,b) ((a)<(b)?(a):(b))
+
+ifstream fin("cladire4.in");
+ofstream fout("cladire4.out");
+
+const long MOD=666013;
+
+int n,h,h4,lim;
+long a[3][4001];
+int i,i1,i2,j,k,tmp;
+
+int main()
+{
+      fin>>n>>h;
+      fin.close();
+     
+      if(h==1)
+      {
+            fout<<1<<'\n';
+            fout.close();
+            return 0;
+      }
+     
+      h4=4*h;
+     
+      a[1][1]=1;
+      a[2][0]=1;
+      a[2][2]=1;
+     
+      i2=1; i1=2; i=0;
+     
+      for(k=3;k<=h4;k++)
+      {
+            lim=min(n,k);
+           
+            if((k-1)%h)
+            {
+                  a[i][0]=a[i2][0];
+     
+                  for(j=1;j<=lim;j++)
+                  {
+                        a[i][j]=(a[i1][j-1]+a[i2][j])%MOD;
+                  }
+            }
+            else
+            {
+                  a[i][0]=0;
+                 
+                  for(j=1;j<=lim;j++)
+                  {
+                        a[i][j]=a[i1][j-1];
+                  }
+            }
+           
+            tmp=i; i=i2; i2=i1; i1=tmp;
+      }
+     
+      fout<<(a[i1][n])<<'\n';
+     
+      fout.close();
+      return 0;
+}
+

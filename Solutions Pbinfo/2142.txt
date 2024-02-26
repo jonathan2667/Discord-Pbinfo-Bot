@@ -1,0 +1,24 @@
+# include <bits/stdc++.h>
+# define MOD 1000000007
+# define NM 100003
+using namespace std;
+
+ifstream f("easy_sum.in");
+ofstream g("easy_sum.out");
+
+int x[NM], n;
+long long S;
+
+int main()
+{
+    f >> n;
+    for(int i=0; i<n; ++i)
+        f >> x[i];
+
+    for(int i=0; i<n; ++i)
+        S = (S + 1LL * x[i] * (i+1) * (n-i)) % MOD;
+
+    g << S << '\n';
+
+    return 0;
+}

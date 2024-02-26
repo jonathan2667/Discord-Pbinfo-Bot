@@ -1,0 +1,94 @@
+#include <fstream>
+#include <iostream>
+
+using namespace std;
+
+int m,n,p[1000],j,k,M,i,sterse,l,h,d,adancime;
+int a[1000], b[15],rez[1000],c[1000],s[1000][1000];
+ifstream f("plus.in");
+ofstream g("plus.out");
+
+void copie(int a[], int b[]) { for(int i=0;i<=b[0];i++) a[i]=b[i];}
+
+void aduna(int a[], int b[],int k)
+{int i,t=0,r,l=b[0],ia=1,ib=1;rez[0]=0;
+
+if(k<l) for(ib=1;ib<=l-k;ib++) rez[0]++,rez[rez[0]]=b[ib];
+if(k>l) for(ia=1;ia<=k-l;ia++) rez[0]++,rez[rez[0]]=a[ia];
+while(ib<=l && ia<=a[0]) {if(b[ib]!=a[ia]){r=a[ia]+b[ib]+t; rez[0]++;rez[rez[0]]=(r>9?r-10:r); t=r>9;}
+                          ia++;ib++;}
+ while(ia<=a[0]) {r=a[ia]+t; rez[0]++;rez[rez[0]]=(r>9?r-10:r); t=r>9;
+                  ia++;}
+ while(ib<=l) {r=b[ib]+t; rez[0]++;rez[rez[0]]=(r>9?r-10:r); t=r>9;
+                 ib++;}
+ if(t) {rez[0]++; rez[rez[0]]=1;}
+ while(rez[0] && rez[rez[0]]==0)rez[0]--;
+ if(rez[0]==0)rez[0]=1,rez[1]=0;
+}
+
+
+
+int cate(int a[],int b[],int &k)
+{ int nr,l=b[0],i,j,M=0; p[0]=0;k=0;
+
+  for(i=1;i<=a[0]+b[0]-1;i++)
+   { //cate au in comun cele doua siruri daca ultimul element al sirului b este pe poz i in a
+      nr=0;
+      for(j=1;j<=b[0];j++)
+           if(i+j-l>0 && i+j-l<=a[0])nr=nr+(b[j]==a[i+j-l]);
+      if(nr>M) {M=nr;k=1;p[k]=i;}
+            else if(nr==M) k++,p[k]=i;
+   }
+ return M;
+}
+
+int mai_mare()
+{ if(rez[0]>c[0]) return 1;
+  if(rez[0]<c[0]) return 0;
+  int i=rez[0];
+  while(i && rez[i]==c[i])i--;
+  return (rez[i]>c[i]);
+}
+
+
+void Plus(int a[], int b[])
+{ int r,j,k;c[0]=0;
+ r=cate(a,b,k);
+ if(r==0) {c[0]=1;c[1]=0;}
+     else for(j=1;j<=k;j++) {aduna(a,b,p[j]); //r=a+b dar b este deplasat, ultimul element fiind pe locul p[j]
+                             if(mai_mare()) copie(c,rez); // ce am in rez mai mare decat c
+                            }
+}
+
+int main()
+{
+    int x;
+    f>>n;
+    s[0][0]=-1;
+    while(n--)
+    { f>>x;
+      if(x==-1) {h++;s[h][0]=-1;d++; if(d>adancime)adancime=d;}
+        else
+        if(x!=-2) { //numarul se aduna cu ultimul introdus daca nu e primul din paranteza
+                    b[0]=0;
+                    do{b[++b[0]]=x%10;x=x/10;}while(x);
+                    if(s[h][0]==-1) {h++;copie(s[h],b);}
+                        else {Plus(s[h],b);copie(s[h],c);}
+                   }
+        else{d--;
+            if(s[h-1][0]==-1) {h--; copie(s[h],s[h+1]);
+                              if(s[h-1][0]!=-1)
+                                  {Plus(s[h],s[h-1]); h--;copie(s[h],c);}
+                               }
+                     else {Plus(s[h],s[h-1]); h--;copie(s[h],c);}
+            }
+    }
+    g<<adancime<<'\n';
+
+    if(s[h-1][0]!=-1) {Plus(s[h],s[h-1]); h--;copie(s[h],c);}
+    for(i=s[h][0];i>=1;i--)g<<s[h][i];
+
+    g<<'\n';
+
+    return 0;
+}

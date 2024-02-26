@@ -1,0 +1,86 @@
+/*
+    prof. Constantin Galatan
+    O(n)
+*/
+#include <cstdio>
+#include <algorithm>
+#include <vector>
+#include <deque>
+using namespace std;
+
+using VI = vector<int>;
+const int Inf = 0x3f3f3f3f;
+
+void get(int &x);
+VI a, Min, Max;
+int T, n;
+
+int main()
+{
+    freopen("nessie.in", "r", stdin);
+    freopen("nessie.out", "w", stdout);
+
+    get(n); get(T);
+    a = Max = VI(n + 1);
+    Min = VI(n + 2, n + 1);
+
+    int x, y;
+    while ( T-- )
+    {
+        get(x); get(y);
+        Min[y]     = min(Min[y], x);
+        Max[y + 1] = max(Max[y + 1], x);
+    }
+
+    for (int i = n; i >= 0; i--)
+        Min[i] = min(Min[i], Min[i + 1]);
+
+    for (int i = 1; i <= n; i++)
+        Max[i] = max(Max[i], Max[i - 1]);
+
+    int i0(1);
+    deque<int> q;
+    for (int i = 1, imax, imin; i <= n; i++)
+    {
+        imin = max(Max[i], 1);  imax = min(i - 1, Min[i] - 1);
+        if ( imin > imax ) {
+            a[i] = -Inf;
+            continue;
+        }
+
+        for (; i0 <= imax; q.push_back(i0++) )
+            while ( !q.empty() && a[q.back()] <= a[i0] )
+                q.pop_back();
+
+        while (!q.empty() && imin > q.front())
+            q.pop_front();
+
+        if ( !q.empty() )
+            a[i] = max(a[q.front()], 0) + 1;
+    }
+
+    if ( a[n] < 0 )
+        printf("IMPOSIBIL\n");
+    else
+        printf("%d\n", a[n] + 1);
+
+    return 0;
+}
+
+const int Lim = 100000;
+int p =  Lim - 1;
+char s[Lim];
+
+void Next()
+{
+    if (++p == Lim)
+        fread(s, 1, Lim, stdin), p = 0;
+}
+
+void get(int &x)
+{
+    for (; s[p] < '0' || s[p] > '9'; Next());
+    for (x = 0; s[p] >= '0' && s[p] <= '9'; Next())
+        x = x * 10 + s[p] - '0';
+}
+

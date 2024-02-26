@@ -1,0 +1,34 @@
+#include <iostream>
+
+
+using namespace std;
+
+int main()
+{
+    int n,i,a[3000],j,ok;
+    cin>>n;
+    for(i=1;i<=n;i++)
+        cin>>a[i];
+    do
+    {
+        for(i=1;i<=n;i++)
+            cout<<a[i]<<" ";
+        cout<<endl;
+
+        ok=0;
+        i=2;
+        while (i<=n)
+            if((a[i-1]+a[i])%2==0 and a[i-1]!=a[i])
+            {
+                for(j=n;j>=i;j--)
+                    a[j+1]=a[j];
+                a[i]=(a[i-1]+a[i+1])/2;
+                n++;
+                i=i+2;
+                ok=1;
+            }
+            else
+                i++;
+    }while (ok);
+    return 0;
+}

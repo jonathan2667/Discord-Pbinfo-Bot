@@ -1,0 +1,11 @@
+#include <iostream>
+using namespace std;
+short n, m;
+int main () {
+    cin>>n;
+    m += ((n>>8) & 255);
+    m += ((n&255) << 8);
+    cout<<m;
+    return 0;
+}
+

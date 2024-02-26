@@ -1,0 +1,25 @@
+#include <iostream>
+#include <fstream>
+using namespace std;
+
+ifstream fin("secvsummax.in");
+ofstream fout("secvsummax.out");
+
+int n, a[100005];
+
+int main(){
+    fin >> n;
+    for(int i=1;i<=n;++i)
+        fin >> a[i];
+    int start=0,stop=1,summax=-2000000000,sum=a[1], startc=1;
+    for(int i=2;i<=n;++i){
+        if(sum<0)
+            sum=a[i], startc=i;
+        else
+            sum+=a[i];
+        if(sum>summax)
+            summax = sum, start = startc, stop = i;
+    }
+    fout << start << " " << stop;
+    return 0;
+}

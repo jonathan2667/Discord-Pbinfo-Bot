@@ -1,0 +1,30 @@
+/*
+    Autor: Banu Denis
+    Solutie: 100p
+*/
+
+#include <fstream>
+using namespace std;
+
+ifstream fin("bare.in");
+ofstream fout("bare.out");
+
+int n,m,q,o,v;
+int main()
+{
+    fin>>n>>m>>q;
+    for (int i=1;i<=q;i++)
+    {
+        int x,y;
+        char d;
+
+        fin>>x>>y>>d;
+        if (d=='O')
+            o++;
+        else
+            v++;
+    }
+    fout<<q+min(o,v);
+
+    return 0;
+}

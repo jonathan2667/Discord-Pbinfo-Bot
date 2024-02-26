@@ -1,0 +1,95 @@
+//Emanuela Cerchez - 100 puncte
+#include <cstdio>
+#include <algorithm>
+#define NMAX 10004
+using namespace std;
+FILE * fin=fopen("jbb.in","r");
+FILE * fout=fopen("jbb.out","w");
+
+struct ciclu {int lg, x, s1, s2;};
+
+int p[NMAX];
+int b[NMAX];
+int v[2*NMAX];
+int nrc;       //numarul de cicluri
+ciclu c[NMAX];
+bool uz[NMAX];
+int n;
+int rez;
+
+void citire();
+void cicluri();
+void rezolvare_cicluri_impare();
+
+int main()
+{
+ citire();
+ cicluri();
+ rezolvare_cicluri_impare();
+ fprintf(fout,"%d\n",rez);
+ fclose(fout);
+ return 0;
+}
+
+
+void citire()
+{int i;
+fscanf(fin,"%d",&n);
+for (i=1; i<=n; i++) fscanf(fin,"%d",&b[i]);
+for (i=1; i<=n; i++) fscanf(fin,"%d",&p[i]);
+}
+
+void cicluri()
+{
+int i, j, lgc, suma1, suma2, s1, total, x, last;
+for (i=1; i<=n; i++)
+    if (!uz[i])
+       {//incepe un ciclu
+       //sa-l construim
+       lgc=suma1=suma2=0;
+       for (j=i; !uz[j]; j=p[j])
+           {lgc++;
+            v[lgc]=j;
+            uz[j]=1;
+            if (lgc%2) suma1+=b[j];
+                else suma2+=b[j];
+           }
+        if (lgc%2==0) //ciclu de lungime para
+            {if (suma1>=suma2) rez+=suma1;
+               else rez+=suma2;}
+            else
+            {c[++nrc].lg=lgc;
+             for (j=lgc+1; j<=2*lgc; j++) v[j]=v[j-lgc];
+             total=suma1+suma2;
+             s1=suma1; x=v[1];
+             suma2=suma2+b[v[1]];
+             if (suma2>s1) {s1=suma2; x=v[2];}
+             for (j=3; j<=lgc; j++)
+                 if (j%2==0)
+                 {
+                  suma2=suma2-b[v[j-2]]+b[v[j+lgc-1]];
+                  if (suma2>s1) {s1=suma2; x=v[j];}
+                 }
+                 else
+                 {
+                   suma1=suma1-b[v[j-2]]+b[v[j+lgc-1]];
+                   if (suma1>s1) {s1=suma1; x=v[j];}
+                 }
+
+             c[nrc].x=x; c[nrc].s1=s1; c[nrc].s2=total-s1;
+            }
+       }
+}
+
+bool compara(ciclu c1, ciclu c2)
+{
+  return c1.s1-c1.s2>c2.s1-c2.s2;
+}
+
+void rezolvare_cicluri_impare()
+{int i;
+ sort(c+1,c+nrc+1,compara);
+ for (i=1; i<=nrc; i++)
+     if (i%2) rez+=c[i].s1;
+        else rez+=c[i].s2;
+}

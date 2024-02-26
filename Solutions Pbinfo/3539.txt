@@ -1,0 +1,54 @@
+void Complex::set(int pr, int pi)
+{
+    r = pr;
+    i = pi;
+}
+
+double Complex::modul()
+{
+    return sqrt(r*r+i*i);
+}
+
+Complex::Complex(int pr, int pi)
+{
+    r = pr;
+    i = pi;
+}
+Complex::Complex()
+{
+    r = 0;
+    i = 0;
+}
+int Complex::real()
+{
+    return r;
+}
+int Complex::imag()
+{
+    return i;
+}
+Complex Complex::operator +(Complex b)
+{
+    Complex c;
+    c.set(this->r+b.real(),this->i+b.imag());
+    return c;
+}
+Complex Complex::operator -(Complex b)
+{
+    Complex c;
+    c.set(this->r-b.real(),this->i-b.imag());
+    return c;
+}
+Complex Complex::operator *(Complex b)
+{
+    Complex c;
+    c.set(this->r*b.real()-this->i*b.imag(),this->i*b.real()+this->r*b.imag());
+    return c;
+}
+ostream& operator<<(ostream& out, const Complex& c)
+{
+    if(c.r!=0||c.i==0)out <<c.r;
+    if(c.i>0 &&c.r!=0)out<<"+";
+    if(c.i!=0)out<<c.i<<"i";
+    return out;
+}

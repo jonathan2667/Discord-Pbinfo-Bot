@@ -1,0 +1,26 @@
+#include <iomanip>
+#include <fstream>
+#include <iostream>
+#include <cassert>
+using namespace std;
+
+ifstream fin("pozmax.in");
+ofstream fout("pozmax.out");
+
+
+int main(){
+    int p, u, n;
+    double x, Max;
+    fin >> n >> Max;
+    p = u =1;
+    for(int i=2 ; i<=n ; i++){
+        fin >> x;
+        if(x > Max)
+            p = u = i, Max = x;
+        else
+            if(x == Max)
+                u = i;
+    }
+    fout << p << " " << u;
+    return 0;
+}

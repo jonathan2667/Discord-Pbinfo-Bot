@@ -1,0 +1,101 @@
+///student George Popescu
+#include <fstream>
+#include <cstdio>
+#include <vector>
+#define MOD 666013
+#define NMAX 175
+#define min(a,b) (a<b?a:b)
+using namespace std;
+
+int a[NMAX][NMAX],b[NMAX][NMAX];
+long long pd[NMAX][NMAX],dp[NMAX][NMAX];
+int n1,n2,m1,m2,N1,N2;
+struct has
+{
+    int x;
+    long long s;
+};
+vector<has>v[MOD+1];
+
+void fasuma()
+{
+    int i,j;
+    for(i=1;i<=n1;++i)
+        for(j=1;j<=m1;++j)
+            dp[i][j]=dp[i-1][j] + dp[i][j-1] - dp[i-1][j-1] + a[i][j];
+
+    for(i=1;i<=n2;++i)
+        for(j=1;j<=m2;++j)
+            pd[i][j]=pd[i-1][j] + pd[i][j-1] - pd[i-1][j-1] + b[i][j];
+}
+ has pp(long long s,int x)
+ {
+     has X;
+     X.s=s;X.x=x;
+     return X;
+ }
+
+void bagahash(long long x)
+{
+    int r=x%MOD;
+    if(v[r].size() != 0)
+    {
+        for(int i=0;i<v[r].size();++i){
+            if(v[r][i].s == x) {++v[r][i].x;return;}
+        }
+        v[r].push_back(pp(x,1));
+    }
+    else v[r].push_back(pp(x,1));
+}
+
+int cauta(long long x)
+{
+    int r=x%MOD;
+    if(v[r].size() != 0)
+    {
+        for(int i=0; i<v[r].size();++i){
+            if(v[r][i].s == x) {return v[r][i].x;}
+        }
+        return 0;
+    }
+    else return 0;
+}
+
+int main()
+{
+    int i,j,k;
+    long long s;
+    freopen("match.in","r",stdin);
+    freopen("match.out","w",stdout);
+    scanf("%d%d",&N1,&m1);
+    n1=N1/m1;
+    for(i=1;i<=n1;++i)
+        for(j=1;j<=m1;++j)
+        scanf("%d",&a[i][j]);
+    scanf("%d%d",&N2,&m2);
+    n2=N2/m2;
+    for(i=1;i<=n2;++i)
+        for(j=1;j<=m2;++j)
+                scanf("%d",&b[i][j]);
+    fasuma();
+    //calculez sumele tuturor matricilor din a
+    int l1=min(n1,m1);
+    int l2=min(n2,m2);
+    for(k=1;k<=l1;++k)
+        for(i=1;i<=n1-k+1;++i)
+            for(j=1;j<=m1-k+1;++j)
+            {
+                s=dp[i+k-1][j+k-1]+dp[i-1][j-1]-dp[i-1][j+k-1] - dp[i+k-1][j-1];
+                bagahash(s);
+            }
+    int sol=0;
+    for(k=1;k<=l2;++k)
+        for(i=1;i<=n2-k+1;++i)
+            for(j=1;j<=m2-k+1;++j)
+            {
+                 s=pd[i+k-1][j+k-1]+pd[i-1][j-1]-pd[i-1][j+k-1] - pd[i+k-1][j-1];
+                 sol+=cauta(s);
+            }
+    printf("%d\n",sol);
+    return 0;
+}

@@ -1,0 +1,42 @@
+#include <fstream>
+#include <queue>
+using namespace std;
+
+ifstream fin ("fractii3.in");
+ofstream fout ("fractii3.out");
+
+int n, k, a, b, i, sol;
+
+queue <pair <int, int> > Q;
+
+int frcmp(pair <int, int> a, pair <int, int> b) {
+    if (1LL * a.first * b.second < 1LL * b.first * a.second)
+        return -1;
+    if (1LL * a.first * b.second == 1LL * b.first * a.second)
+        return 0;
+    return 1;
+}
+
+int main() {
+    fin >> n >> k;
+    for (i = 0; i < n; ++i) {
+        fin >> a >> b;
+        if (a <= b) {
+            Q.push(make_pair (a + b, b));
+            continue;
+        }
+        if (!Q.size())
+            break;
+        while (frcmp (Q.front(), make_pair (a, b)) < 0)
+            Q.pop();
+        if (frcmp (Q.front(), make_pair (a, b)) == 0) {
+            Q.push(make_pair (Q.front().first + Q.front().second, Q.front().second));
+            Q.pop();
+        }
+    }
+    if (!Q.size()) {
+        fout << "failed at " << i << "\n";
+        return 0;
+    }
+    fout << Q.size();
+}

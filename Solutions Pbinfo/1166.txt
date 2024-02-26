@@ -1,0 +1,108 @@
+/*
+Time complexity: O(M * log N), ~100 points
+Paul Diac
+*/
+#include <stdio.h>
+#include <stdlib.h>
+#define NMax 100000
+#define MMax 100000
+#define llong long long
+
+FILE *fin = fopen("geometrie.in", "rt");
+FILE *fout = fopen("geometrie.out", "wt");
+
+typedef struct point {
+    int x, y;
+} point;
+
+int N, M;
+point a[NMax], q[NMax];
+
+long long area(point a, point b, point c) {
+    return (llong) a.x * b.y + (llong) a.y * c.x + (llong) b.x * c.y
+         - (llong) a.x * c.y - (llong) a.y * b.x - (llong) b.y * c.x; }
+
+long long areaTrap(point a, point b) { // 'below' trapezoid area, doubled, a.x < b.x
+    return (llong) (b.x - a.x) * (a.y + b.y);
+}
+
+typedef struct stack {
+    point p[NMax];
+    llong aLeft[NMax]; // area on left side, below
+    int top;
+} stack;
+
+stack up, dn; // up and down stack
+
+int getTangent(stack &st, point q, int sgn) {
+    int pi = st.top, step;
+    for (step = 1; step < pi; step <<= 1);
+    for (; step; step>>=1) {
+        if (pi-step-1 >= 0 && area(q, st.p[pi-step], st.p[pi-step-1]) * sgn < 0) {
+            pi -= step;
+        }
+    }
+    for (; pi > 0 && area(q, st.p[pi], st.p[pi-1]) * sgn < 0; pi--);
+    return pi;  
+}
+
+llong solveQuery(point q) { // stacks must have CH points with x < q.xlim
+
+    if (up.top == 0) {
+        return 0;
+    }
+
+    int upi = getTangent(up, q, 1);
+    int dni = getTangent(dn, q, -1);
+
+    llong rez = 0;
+    rez += up.aLeft[upi];
+    rez -= dn.aLeft[dni];
+    rez += areaTrap(up.p[upi], q);
+    rez -= areaTrap(dn.p[dni], q);
+    return rez;
+}
+
+void addPointToStack(stack &st, point p, int sign) {
+    for (; st.top > 0 && area(p, st.p[st.top], st.p[st.top-1]) * sign < 0; st.top--);
+    // no need to bsearch here, amortized complexity is linear
+    st.aLeft[st.top+1] = st.aLeft[st.top] + areaTrap(st.p[st.top], p);
+    st.p[++st.top] = p;
+}
+
+void solve() {
+
+    up.p[0] = a[0];
+    dn.p[0] = a[0];
+    int ai = 0, qi = 0; // A[] set and query idx
+
+    for (ai = 1; ai < N || qi < M; ai++) {
+
+        // answers queries with q[i].x <= a[ai].x
+        for (; qi < M && q[qi].x <= a[ai].x; qi++) {
+            fprintf(fout, "%.1lf\n", (double) solveQuery(q[qi]) / 2);
+        }
+
+        if (ai < N) {
+            // add point a[ai] to stacks
+            addPointToStack(up, a[ai], 1);
+            addPointToStack(dn, a[ai], -1);
+        }
+    }
+}
+
+int main() {
+
+    fscanf(fin, "%d %d", &N, &M);
+    for (int i = 0; i < N; i++) {
+        fscanf(fin, "%d %d", &a[i].x, &a[i].y);
+    }
+    for (int i = 0; i < M; i++) {
+        fscanf(fin, "%d %d", &q[i].x, &q[i].y);
+    }
+    solve();
+    
+    fclose(fin);
+    fclose(fout);
+    return 0;
+}

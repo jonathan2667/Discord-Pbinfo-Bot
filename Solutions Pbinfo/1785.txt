@@ -1,0 +1,144 @@
+#include <iostream>
+#include <iomanip>
+#include <fstream>
+#include <vector>
+#include <set>
+#include <queue>
+#include <algorithm>
+#define DN 1005
+#define x first
+#define y second
+using namespace std;
+  
+typedef pair<int,int> per;
+  
+int n,m,viz[DN][DN],nz,len[DN][DN],nrc,r2;
+int dx[]={0,1,0,-1},dy[]={1,0,-1,0};
+string mt[DN];
+vector<pair<int,per> > z;
+per a,b;
+  
+int ins(int a,int b) {
+  return a>=0 && b>=0 && a<n && b<m;
+}
+  
+//pot sa am segm de lungime 1
+int ie(int a,int b) {
+  int sim=0;
+  for(int d=0; d<4; ++d) {
+    int aa=a+dx[d],bb=b+dy[d];
+    if(ins(aa,bb) && mt[aa][bb]==mt[a][b]) ++sim;
+  }
+  return sim<2;
+}
+  
+set<per> s;
+vector<per> cp,_cp[DN][DN];
+  
+int lg;
+void getLen(int a,int b) {
+  if(s.find(make_pair(a,b))!=s.end()) return;
+  if(len[a][b]) {
+    lg=len[a][b];
+    s.insert(_cp[a][b].front()); s.insert(_cp[a][b].back());
+    return;
+  }
+  if(ie(a,b)) {
+    cp.push_back(make_pair(a,b));
+    s.insert(make_pair(a,b));
+  }
+  ++nrc;
+  ++lg;
+  viz[a][b]=1;
+  for(int d=0; d<4; ++d) {
+    int aa=a+dx[d],bb=b+dy[d];
+    if(ins(aa,bb) && mt[aa][bb]==mt[a][b] && !viz[aa][bb]) {
+      getLen(aa,bb);
+      --nrc;
+    }
+  }
+  len[a][b]=lg;
+}
+  
+void df(int a,int b) {
+  viz[a][b]=1;
+  for(int d=0; d<4; ++d) {
+    int aa=a+dx[d],bb=b+dy[d];
+    if(!ins(aa,bb)) continue;
+    if(mt[aa][bb]!='0' && ie(aa,bb)) {
+      lg=0; cp.clear();
+      getLen(aa,bb);
+      if(cp.size()) {
+        per a=cp.front(), b=cp.back();
+        _cp[a.x][a.y].push_back(a); _cp[a.x][a.y].push_back(b);
+        _cp[b.x][b.y].push_back(a); _cp[b.x][b.y].push_back(b);
+      }
+      if(lg) {
+        z.push_back(make_pair(lg,make_pair(a,b)));
+        //cout<<a<<' '<<b<<' '<<lg<<'\n';
+      }
+    }
+    if(mt[aa][bb]=='0' && !viz[aa][bb]) df(aa,bb);
+  }
+}
+  
+int px[DN][DN],py[DN][DN];
+void bf() {
+  queue<per> c;
+  px[a.x][a.y]=py[a.x][a.y]=-1;
+  int ok=0;
+  for(c.push(a);!c.empty() && !ok;) {
+    per fr=c.front(); c.pop();
+    //cerr<<fr.x<<' '<<fr.y<<'\n';
+    for(int d=0; d<4; ++d) {
+      per nx=make_pair(fr.x+dx[d],fr.y+dy[d]);
+      if(ins(nx.x,nx.y) && px[nx.x][nx.y]==0 && mt[nx.x][nx.y]=='0') {
+        px[nx.x][nx.y]=fr.x+1;
+        py[nx.x][nx.y]=fr.y+1;
+        c.push(make_pair(nx.x,nx.y));
+        if(nx==b) {
+          ok=1;
+          break;
+        }
+      }
+    }
+  }
+  for(;px[b.x][b.y]!=-1;) {
+    mt[b.x][b.y]='x';
+    b=make_pair(px[b.x][b.y]-1,py[b.x][b.y]-1);
+  }
+  mt[a.x][a.y]='x';
+}
+  
+  
+int main() {
+  ifstream f("mz.in");
+  ofstream g("mz.out");
+  f>>n>>m;
+  for(int i=0; i<n; ++i) f>>mt[i];
+  for(int i=0; i<n; ++i) for(int j=0; j<m; ++j) if(!viz[i][j] && mt[i][j]=='0') {
+    df(i,j);
+    //cout<<i<<' '<<j<<'\n';
+    sort(z.rbegin(),z.rend());
+    if(z.size()>1 && r2<z[0].first+z[1].first) {
+      r2=z[0].first+z[1].first;
+      a=z[0].second; b=z[1].second;
+      //cout<<a.x<<' '<<a.y<<' '<<b.x<<' '<<b.y<<' '<<r2<<'\n';
+    }
+    ++nz;
+    s.clear();
+    z.clear();
+    //cout<<"clear\n";
+  }
+  for(int i=0; i<n; ++i) {
+    for(int j=0; j<m; ++j) {
+      lg=0;
+      if(!viz[i][j] && ie(i,j)) getLen(i,j);
+      //cout<<fixed<<setw(3)<<len[i][j];
+    }
+    //cout<<'\n';
+  }
+  bf();
+  g<<nrc<<'\n'<<r2<<'\n';
+  for(int i=0; i<n; ++i) g<<mt[i]<<'\n';
+}

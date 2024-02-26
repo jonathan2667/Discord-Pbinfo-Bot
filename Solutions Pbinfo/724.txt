@@ -1,0 +1,56 @@
+//Marius Nicoli
+#include <fstream>
+using namespace std;
+#define P1 3
+#define P2 5
+
+long long N, i, j, x, y;
+
+long long transf(long long x, long long b) {
+    long long r = 0;
+    long long p = 1LL;
+    while (x) {
+        if (x%2 == 1LL) {
+            r+=p;
+        }
+        x/=2;
+        p*=b;
+    }
+    return r;
+}
+
+int main(){
+    ifstream f("puteri35.in");
+    f>>N;
+    f.close();
+    
+    ofstream g("puteri35.out");
+    
+    i = 1;
+    x = transf(i, P1);
+    j = 1;
+    y = transf(j, P2);
+    while (i<=N && j<=N) {
+        if (x<=y) {
+            g<<x<<"\n";
+            x = transf(++i, P1);
+        } else {
+            g<<y<<"\n";
+            y = transf(++j, P2);
+        }
+    }
+    
+    for (;i<=N;i++) {
+        g<<x<<"\n";
+        x = transf(i+1, P1);
+    }
+    
+    for (;j<=N;j++) {
+        g<<y<<"\n";
+        y = transf(j+1, P2);
+    }
+        
+    
+    g.close();
+    return 0;
+}

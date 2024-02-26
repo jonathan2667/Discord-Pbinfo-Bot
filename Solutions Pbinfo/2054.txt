@@ -1,0 +1,83 @@
+#include <stdio.h>
+
+struct marcare
+{
+    int l[151], c[151];
+    int dp, dp1, dp2;
+    int ds, ds1, ds2;
+}jucator[2];
+
+int cT, cS, maxim, jucatorul;
+
+int main()
+{
+    FILE *f,*g;
+    f=fopen("joc7.in","r");
+    g=fopen("joc7.out","w");
+    int n, k, i, nr, j, m, lin, col, p, mutari, joc, gata, c;
+    fscanf(f,"%d%d%d",&c,&n,&k);
+    m=n*n;
+    maxim=-1;
+    for(i=1;i<=k;i++)
+    {
+        j=i%2;//jucatorul care incepe runda
+        gata=0;
+        for(joc=0;joc<2;joc++)
+        {
+            for(p=1;p<=n;p++)
+                jucator[joc].l[p]=jucator[joc].c[p]=0;
+            jucator[joc].dp=jucator[joc].dp1=jucator[joc].dp2=0;
+            jucator[joc].ds=jucator[joc].ds1=jucator[joc].ds2=0;
+        }
+        mutari=m+1;
+        for(p=1; p<=m; p++)
+        {
+            joc=(j+p%2)%2;//jucatorul care marcheaza 0=T, 1=S
+            fscanf(f,"%d",&nr);
+            if(gata==1)
+                continue;
+            else//runda nu s-a incheiat
+            {   //determin linia si coloana celulei marcate
+                lin=nr/n;
+                col=nr%n;
+                if(col==0)
+                    col=n;
+                else
+                    lin++;
+                //actualizez corespunzator nr celulelor marcate
+                jucator[joc].l[lin]++;
+                jucator[joc].c[col]++;
+                if(lin==col)
+                    jucator[joc].dp++;
+                else if (lin==col+1)
+                        jucator[joc].dp1++;
+                    else if(lin+1==col)
+                            jucator[joc].dp2++;
+                if(lin+col==n+1)
+                    jucator[joc].ds++;
+                else if (lin+col==n)
+                        jucator[joc].ds1++;
+                    else if(lin+col==n+2)
+                            jucator[joc].ds2++;
+                //verific daca runda s-a incheiat
+                if(jucator[joc].l[lin]==n || jucator[joc].c[col]==n ||jucator[joc].dp==n ||
+                   jucator[joc].dp1==n-1||jucator[joc].dp2==n-1||jucator[joc].ds==n ||
+                   jucator[joc].ds1==n-1 ||jucator[joc].ds2==n-1)
+                    {
+                        gata=1;
+                        if(joc==0) cT++;
+                        else
+                            cS++;
+                        mutari=p;
+                    }
+            }
+        }
+        if(mutari>maxim && mutari<m+1)
+                maxim=mutari;
+    }
+    if(c==1)
+        fprintf(g,"%d %d\n",cT,cS);
+    else
+        fprintf(g,"%d\n",maxim);
+    return 0;
+}

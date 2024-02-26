@@ -1,0 +1,19 @@
+#include <iostream>
+using namespace std;
+int n, i, maxim, sol, x;
+int main () {
+    cin>>n;
+    sol = 0;
+    for (i=1;i<=n;i++) {
+        cin>>x;
+        if (i <= n/2) {
+            if (x > maxim)
+                maxim = x;
+        }
+        if (i > n/2)
+            if (x > maxim)
+                sol++;
+    }
+    cout<<sol;
+    return 0;
+}

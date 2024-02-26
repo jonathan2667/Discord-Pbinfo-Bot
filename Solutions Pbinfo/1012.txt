@@ -1,0 +1,34 @@
+#include <iostream>
+#define t 100019
+using namespace std;
+long long n,p,i,fact,fact1,prod,q;
+
+int main()
+{
+    cin >> n >> p;
+    if(n % p == 0)
+    {
+       // calculez (n/p) factorial
+       q = n / p;
+       fact = 1;
+       for(i = 1 ; i <= q ; i++) fact = (fact * i) % t;
+       // calculez (n/p) factorial la puterea p
+       prod = 1;
+       for(i = 1 ; i <= p ; i++) prod = (prod * fact) % t;
+    }
+    else if((n+1) % p == 0)
+            {
+                // calculez (n/p)+1 factorial
+                q = n / p  ;
+                fact = 1;
+                for(i = 1 ; i <= q ; i++) fact = (fact * i) % t;
+                fact1 = (fact * (q+1)) % t;
+                // calculez (n/p)+1 factorial la puterea p-1 ori (n/p) factorial
+                prod = 1;
+                for(i = 1 ; i <= p - 1 ; i++) prod = (prod * fact1) % t;
+                prod = (prod * fact) % t;
+            }
+          else prod = 0;
+     cout << prod;
+    return 0;
+}

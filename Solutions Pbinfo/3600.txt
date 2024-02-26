@@ -1,0 +1,60 @@
+#include <bits/stdc++.h>
+
+using namespace std;
+
+ifstream fin("numbers_tree.in");
+ofstream fout("numbers_tree.out");
+
+const int NMAX = 1e6 + 6;
+
+bitset < NMAX > sieve;
+
+void Eratostene() {
+    int limit = NMAX - 4;
+    for(int i = 4; i < limit; i += 2)
+        sieve[i] = true;
+    for(int i = 3; i * i < limit; i += 2)
+        if(!sieve[i])
+            for(int j = i * i; j < limit; j += 2 * i)
+                sieve[j] = true;
+}
+
+int main() {
+    int N, Q;
+    fin >> N >> Q;
+    Eratostene();
+    vector < int > a(N + 1);
+    for(int i = 1; i <= N; ++i)
+        fin >> a[i];
+    while(Q--) {
+        int type, st, dr;
+        fin >> type >> st >> dr;
+        if(type == 1) {
+            int val;
+            fin >> val;
+            for(int i = st; i <= dr; ++i)
+                a[i] = val;
+        }
+        else {
+            if(type == 2) {
+                int ans = 0;
+                for(int i = st; i <= dr; ++i)
+                    if(sieve[a[i]])
+                        ++ans;
+                fout << ans << '\n';
+            }
+            else {
+                int lgmax = 0, lg = 0;
+                for(int i = st; i <= dr; ++i)
+                    if(!sieve[a[i]])
+                        ++lg;
+                    else {
+                        lgmax = max(lgmax, lg);
+                        lg = 0;
+                    }
+                lgmax = max(lgmax, lg);
+                fout << lgmax << '\n';
+            }
+        }
+    }
+}

@@ -1,0 +1,57 @@
+#include <iostream>
+#include <stdio.h>
+#include <fstream>
+
+using namespace std;
+ifstream f("patrat2.in");
+ofstream g("patrat2.out");
+struct stea{
+    int x;
+    char s;
+    };
+int m,n,nrs,nrc,v[]={-1,-1,0,1,1,1,0,-1},w[]={0,1,1,1,0,-1,-1,-1};
+stea t[202][202];
+/* nrs-numar stele stralucitoare
+   nrc-numar constelatii patrate
+   v-modifica indicele de linie
+   w-modifica indicele de coloana
+*/
+int main()
+{
+    int k,sw,maxim=0; //maxim-retine latura celei mai mari constelatii
+    int i,j;
+    f>>m>>n;
+    for(i=1;i<=m;i++)
+        for(j=1;j<=n;j++)
+            f>>t[i][j].x;
+     for(i=1;i<=m;i++)
+        for(j=1;j<=n;j++) {
+            sw=1;
+            for(k=0;k<8;k++)   // verific cei 8 vecini
+                if(t[i][j].x<=t[i+v[k]][j+w[k]].x) {
+                    sw=0;
+                    k=8;
+                }
+            if(sw){
+                nrs++;  // numar stelele stralucitoare
+                t[i][j].s=1; // memorez steaua stralucitoare
+                }
+        }
+        g<<nrs<<'\n';
+        for(i=1;i<=m;i++)  // parcurg liniile
+            for(j=1;j<=n;j++)  // parcurg coloanele
+                if(t[i][j].s==1){  // daca gasesc o stea stralucitoare
+                    for(k=1;k<=n-j;k++)//caut urmatoarea stea stalucitoare
+                       if(t[i][j+k].s==1)  //daca o gasesc
+                         if(i+k<=m && t[i+k][j].s==1 && t[i+k][j+k].s==1){
+                           //verific daca exista stele stralucitoare in celelalte doua colturi
+                            nrc++;
+                            if(k+1>maxim)
+                                maxim=k+1;//retin maximum
+                         }
+                }
+          g<<nrc<<'\n'<<maxim;
+          f.close();
+          g.close();
+    return 0;
+}

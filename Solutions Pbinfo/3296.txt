@@ -1,0 +1,70 @@
+#include <bits/stdc++.h>
+using namespace std;
+#define smax 101
+ifstream f("convert_submatrix.in");
+ofstream g("convert_submatrix.out");
+char sir[smax];
+bool matrice[smax][8];
+void conversie_c(char c, bool binar[8])
+{
+    int i;
+    for (i = 0; i < 8; i++)
+        binar[7 - i] = c & (1 << i);
+}
+void conversie_sir(char* s, bool binar[smax][8])
+{
+    int i;
+    for (i = 0; s[i]; i++)
+        conversie_c(s[i], binar[i]);
+}
+int mini(int x, int y, int z)
+{
+    int mi=x;
+    if(y<mi)
+        mi=y;
+    if(z<mi)
+        mi=z;
+    return mi;
+}
+
+int maxi(int x, int y, int z)
+{
+    int ma=x;
+    if(y>ma)
+        ma=y;
+    if(z>ma)
+        ma=z;
+    return ma;
+}
+
+int submatrice(int nrl, int nrc, bool m[smax][8])
+{
+    int i, j, rez = 1;
+    int a[smax][8], b[smax][8];
+     for (i = 1; i < nrl; i++)
+    {
+        a[i][0] = !m[i][0];
+        b[i][0] = m[i][0];
+    }
+    for (j = 0; j < nrc; j++)
+    {
+        a[0][j] = !m[0][j];
+        b[0][j] = m[0][j];
+    }
+    for (i = 1; i < nrl; i++)
+        for (j = 1; j < nrc; j++)
+        {
+            a[i][j] = (m[i][j] ? 0 : mini(a[i - 1][j], a[i][j - 1], a[i - 1][j - 1]) + 1);
+            b[i][j] = (m[i][j] ? mini(b[i - 1][j], b[i][j - 1], b[i - 1][j - 1]) + 1 : 0);
+            rez = maxi(rez, a[i][j], b[i][j]);
+        }
+    return rez;
+}
+int main()
+{
+    f.get(sir,100);
+    conversie_sir(sir, matrice);
+    g<<submatrice(strlen(sir),8,matrice);
+    f.close();g.close();
+    return 0;
+}

@@ -1,0 +1,42 @@
+// =========================
+// = Solutie Oficiala 100p =
+// = Vintila Valentin Ioan =
+// =========================
+
+#include <bits/stdc++.h>
+
+using namespace std;
+
+int main()
+{
+    int n, p = 1, r = 1;
+    cin >> n;
+
+    // Calculam p
+    while(p < n) p *= 4;
+
+    while(p > 1)
+    {
+        if(n <= 2*p/4)
+        {
+            if(n > p/4)
+            {
+                r = 3-r;
+                n -= p/4;
+            }
+        }
+        else
+        {
+            if(n <= 3*p/4)
+            {
+                r = 3-r;
+                n -= 2*p/4;
+            }
+            else
+                n -= 3*p/4;
+        }
+        p /= 4;
+    }
+
+    cout << r;
+}

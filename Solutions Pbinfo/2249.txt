@@ -1,0 +1,59 @@
+#include <bits/stdc++.h>
+ 
+using namespace std;
+ 
+int a[20002], panouri[2002], n, T;
+int ap[20002], cnt, lgMin;
+queue<int> q;
+ 
+void Citire()
+{
+    int i, x;
+    ifstream fin("panouri.in");
+    fin >> n >> T;
+    for (i = 1; i <= n; i++)
+        fin >> a[i];
+    for (i = 1; i <= T; ++i)
+    {
+        fin >> x;
+        panouri[x] = 1;
+    }
+    fin.close();
+}
+ 
+void Rezolva()
+{
+    int i, x;
+    lgMin = 1000000;
+    for (i = 1; i <= n; ++i)
+    {
+        x = a[i];
+        q.push(x);
+        ap[x]++;
+        if (panouri[x] == 1 && ap[x] == 1) cnt++;
+        while (cnt == T)
+        {
+            if (lgMin > q.size())
+                lgMin = q.size();
+            x = q.front();
+            q.pop();
+            ap[x]--;
+            if (panouri[x] == 1 && ap[x] == 0) cnt--;
+        }
+    }
+    ofstream fout("panouri.out");
+    if (lgMin == 1000000) fout << "-1\n";
+    else
+    {
+        lgMin--;
+        fout << lgMin << "\n";
+    }
+    fout.close();
+}
+ 
+int main()
+{
+    Citire();
+    Rezolva();
+    return 0;
+}

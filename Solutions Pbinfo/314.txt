@@ -1,0 +1,28 @@
+#include <iomanip>
+#include <fstream>
+#include <iostream>
+#include <cassert>
+using namespace std;
+
+ifstream fin("colzero.in");
+ofstream fout("colzero.out");
+
+int n,m,a[11][11];
+
+int main(){
+    fin >> m >> n;
+    for(int i=1;i<=m;++i)
+        for(int j=1;j<=n;++j)
+            fin >> a[i][j];
+    int nr = 0;
+    for(int j=1;j<=n;++j){
+        int pp = 1;
+        for(int i=1;i<=m;++i)
+            if(a[i][j]!=0)
+                pp = 0;
+        if(pp)
+            nr ++;
+    }
+    fout << nr;
+    return 0;
+}

@@ -1,0 +1,349 @@
+// Varianta 100P - Algortimul de bază 10 (învățat la scoala)
+#include<bits/stdc++.h>
+using namespace std;
+
+bool mic(string str1,string str2)
+{
+    int n1=str1.length(),n2=str2.length();
+    if(n1<n2)
+        return true;
+    if(n1>n2)
+        return false;
+
+    for(int i=0;i<n1;i++)
+    {
+        if(str1[i]<str2[i])
+            return true;
+        else
+        if(str1[i]>str2[i])
+            return false;
+    }
+    return true;
+}
+
+string sx(string str1,string str2)
+{
+    int ls=0,lss=0,o1=0,o2=0,lmax,len;
+    if(str1.find('.')!=-1)
+        ls=str1.find('.'),o1=1;
+    if(str2.find('.')!=-1)
+        lss=str2.find('.'),o2=1;
+    lmax=max(ls,lss);
+    len=max(str1.size(),str2.size());
+    if(o1)
+    {
+        str1.erase(str1.begin()+ls),ls--;
+        ls=str1.size()-1-ls;
+    }
+    if(o2)
+    {
+        str2.erase(str2.begin()+lss),lss--;
+        lss=str2.size()-1-lss;
+    }
+    len=max(str1.size(),str2.size());
+    if(ls>lss)
+        for(int i=1;i<=ls-lss;i++)
+            str2+='0';
+    else
+    if(lss>ls)
+        for(int i=1;i<=lss-ls;i++)
+            str1+='0';
+    int t=0;
+    if (str1.length()>str2.length())
+        swap(str1,str2);
+    string str="";
+    int n1=str1.length(),n2=str2.length();
+    int dif=n2-n1;
+    for(int i=n1-1;i>=0;i--)
+    {
+        int sum=((str1[i]-'0')+(str2[i+dif]-'0')+t);
+        str.push_back(sum%10+'0');
+        t=sum/10;
+    }
+    for(int i=n2-n1-1;i>=0;i--)
+    {
+        int sum=((str2[i]-'0')+t);
+        str.push_back(sum%10+'0');
+        t=sum/10;
+    }
+    if(t)
+        str.push_back(t+'0');
+    reverse(str.begin(),str.end());
+    if(ls || lss)
+    str.insert(str.begin()+lmax+(str.size()-len),'.');
+    return str;
+}
+
+string px(string num1, string num2)
+{
+    int ls=0,lss=0,o1=0,o2=0,ls1=0,ls2=0,lmax;
+    if(num1.find('.')!=-1)
+        ls=num1.find('.'),o1=1,ls1=ls;
+    if(num2.find('.')!=-1)
+        lss=num2.find('.'),o2=1,ls2=lss;
+    if(o1)
+        ls1=num1.size()-1-ls1;
+    if(o2)
+        ls2=num2.size()-1-ls2;
+    lmax=ls1+ls2;
+    if(o1)
+    {
+        num1.erase(num1.begin()+ls),ls--;
+        ls=num1.size()-1-ls;
+    }
+    if(o2)
+    {
+        num2.erase(num2.begin()+lss),lss--;
+        lss=num2.size()-1-lss;
+    }
+    if(ls>lss)
+        for(int i=1;i<=ls-lss;i++)
+            num2+='0';
+    else
+    if(lss>ls)
+        for(int i=1;i<=lss-ls;i++)
+            num1+='0';
+    int n1=num1.size();
+    int n2=num2.size();
+    if(n1==0||n2==0)
+       return "0";
+    vector<int> rez(n1+n2,0);
+    int i_n1=0;
+    int i_n2=0;
+    for(int i=n1-1;i>=0;i--)
+    {
+        int t=0;
+        int n1=num1[i]-'0';
+        i_n2=0;
+        for(int j=n2-1;j>=0;j--)
+        {
+            int n2=num2[j]-'0';
+            int sum=n1*n2+rez[i_n1+i_n2]+t;
+            t=sum/10;
+            rez[i_n1+i_n2]=sum%10;
+            i_n2++;
+        }
+        if(t>0)
+            rez[i_n1+i_n2]+=t;
+        i_n1++;
+    }
+    int i=rez.size()-1;
+    while(i>=0 && rez[i]==0)
+       i--;
+    if(i==-1)
+       return "0";
+    string s="";
+    while(i>=0)
+        s+=to_string(rez[i--]);
+    if(ls1 || ls2)
+    s.insert(s.begin()+(s.size()-1-lmax),'.');
+    return s;
+}
+
+string dx(string str1,string str2)
+{
+    int ls=0,lss=0,o1=0,o2=0,lmax,len;
+    if(str1.find('.')!=-1)
+        ls=str1.find('.'),o1=1;
+    if(str2.find('.')!=-1)
+        lss=str2.find('.'),o2=1;
+    lmax=max(ls,lss);
+    len=max(str1.size(),str2.size());
+    if(o1)
+    {
+        str1.erase(str1.begin()+ls),ls--;
+        ls=str1.size()-1-ls;
+    }
+    if(o2)
+    {
+        str2.erase(str2.begin()+lss),lss--;
+        lss=str2.size()-1-lss;
+    }
+    len=max(str1.size(),str2.size());
+    if(ls>lss)
+        for(int i=1;i<=ls-lss;i++)
+            str2+='0';
+    else
+    if(lss>ls)
+        for(int i=1;i<=lss-ls;i++)
+            str1+='0';
+    if(mic(str1,str2))
+        swap(str1,str2);
+    string str = "";
+    if(str1[0]=='0')
+        return "0";
+    int n1=str1.length(),n2=str2.length();
+    int dif=n1-n2;
+    int t=0;
+    for(int i=n2-1;i>=0;i--)
+    {
+        int sub=((str1[i+dif]-'0')-(str2[i]-'0')-t);
+        if(sub<0)
+            sub+=10,t=1;
+        else
+            t=0;
+        str.push_back(sub+'0');
+    }
+    for(int i=n1-n2-1;i>=0;i--)
+    {
+        if(str1[i]=='0'&&t)
+        {
+            str.push_back('9');
+            continue;
+        }
+        int sub=((str1[i]-'0')-t);
+        if (i>0||sub>0)
+            str.push_back(sub+'0');
+        t=0;
+    }
+    reverse(str.begin(),str.end());
+    if(ls || lss)
+        str.insert(str.begin()+lmax+(str.size()-len),'.');
+    return str;
+}
+
+string srx(string s)
+{
+    string rez,temp,aux,p;
+    int ok=0,k,o=0,c=0,l;
+    if(s[0]=='-')
+        ok=1,s.erase(s.begin()+0);
+    if(s.find('.')==-1)
+    {
+        l=s.size();
+        if(s.size()%2)
+            k=s.size()/2+1;
+        else
+            k=s.size()/2;
+    }
+    else
+    {
+        k=s.find('.'),s.erase(s.begin()+k);
+        l=k;
+        if(k%2)
+            k=k/2+1;
+        else
+            k/=2;
+    }
+    s+="0000000000000000";
+    if(l%2)
+    {
+        o=1;
+        temp+=s[0];
+        while(c<9)
+        {
+            aux+=to_string(c++);
+            p=px(aux,aux);
+            if(!mic(p,temp))
+                break;
+            aux.pop_back();
+        }
+        rez+=--aux[0];
+        p=dx(temp,px(aux,aux));
+        while(p[0]=='0')
+            p.erase(p.begin()+0);
+        if(p!="")
+            temp=p;
+        else
+            temp="";
+    }
+    for(int i=o;i<s.size();)
+    {
+        c=-1;
+        temp+=s[i++];
+        temp+=s[i++];
+        if(temp=="00")
+        {
+            rez+='0';
+            temp="";
+            continue;
+        }
+        if(aux!="")
+            aux=px(rez,"2");
+        else
+        {
+            while(c<9)
+            {
+                c++;
+                if(c==10)
+                {
+                    aux+=to_string(--c);
+                    p=px(aux,aux);
+                    break;
+                }
+                else
+                    aux+=to_string(c);
+                p=px(aux,aux);
+                if(!mic(p,temp))
+                {
+                    if(c==9)
+                        c--;
+                    break;
+                }
+                if(c!=9)
+                    aux.pop_back();
+            }
+            if(c==9)
+                rez+=to_string(c);
+            else
+                rez+=--aux[0];
+            p=dx(temp,px(aux,aux));
+            while(p[0]=='0')
+                p.erase(p.begin()+0);
+            if(p!="")
+                temp=p;
+            else
+                temp="";
+            continue;
+        }
+        while(c<9)
+        {
+            c++;
+            if(c==10)
+            {
+                aux+=to_string(--c);
+                p=px(aux,to_string(c));
+                break;
+            }
+            else
+                aux+=to_string(c);
+            p=px(aux,to_string(c));
+            if(!mic(p,temp))
+            {
+                if(c==9)
+                    c--;
+                break;
+            }
+            if(c!=9)
+                aux.pop_back();
+        }
+        if(c==9)
+            rez+=to_string(c);
+        else
+            rez+=--aux[aux.size()-1];
+        c=aux[aux.size()-1]-'0';
+        p=dx(temp,px(aux,to_string(c)));
+        while(p[0]=='0')
+            p.erase(p.begin()+0);
+        if(p!="")
+            temp=p;
+        else
+            temp="";
+        if(rez.size()-k>8 && k<rez.size())
+            break;
+    }
+    rez.insert(rez.begin()+k,'.');
+    c=rez.find('.');
+    while(rez.size()-1-c>8)
+        rez.pop_back();
+    if(ok)
+        rez+='i';
+    return rez;
+}
+
+int main()
+{
+    string s;
+    cin>>s;
+    cout<<srx(s);
+}

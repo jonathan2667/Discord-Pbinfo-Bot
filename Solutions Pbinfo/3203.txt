@@ -1,0 +1,165 @@
+#include <fstream>
+
+using namespace std;
+ifstream f("simonah.in");
+ofstream g("simonah.out");
+long long n, p, sol, a, b, cif, i, j, u, h, c[10], suma, r;
+
+int main()
+{
+    f >> n >> p;
+    if(n < 10) sol = n % p;
+    else
+    if(n < 100)
+    {
+        if((n % 10) != (n / 10))
+           sol = n % p + ((n % 10) * 10 + n / 10) % p;
+        else sol = n % p;
+    }
+    else
+    switch(p)
+    {
+        case 2:
+           sol = 0;
+           cif = 0;
+           while(n != 0)
+           {
+               cif++;
+               c[n % 10]++;
+               n =n / 10;
+           }
+           a = 1;
+           for(i = 1; i < cif; i++)
+               a = a * i;
+           for(i = 1; i <= 9; i = i + 2)
+           if(c[i] != 0)
+           {
+                b = 1;
+                for(j = 1; j <= 9; j++)
+                    if(j != i)
+                    {
+                        for(u = 1; u <= c[j]; u++)
+                            b = b * u;
+                    }
+                    else
+                    {
+                        for(u = 1; u < c[j]; u++)
+                            b = b * u;
+                    }
+                 sol += a / b;
+           }
+           break;
+        case 3:
+           sol = 0;
+           cif = 0;
+           suma = 0;
+           while(n != 0)
+           {
+               cif++;
+               suma += n % 10;
+               c[n % 10]++;
+               n =n / 10;
+           }
+           a = 1;
+           b = 1;
+           for(i = 1; i <= cif; i++)
+               a = a * i;
+           for(j = 1; j <= 9; j++)
+           {
+              for(u = 1; u <= c[j]; u++)
+                  b = b * u;
+           }
+           sol = (a / b) * (suma % 3);
+           break;
+        case 4:
+           sol = 0;
+           cif = 0;
+           while(n != 0)
+           {
+               cif++;
+               c[n % 10]++;
+               n =n / 10;
+           }
+           a = 1;
+           for(i = 1; i <=cif-2; i++)
+              a = a * i;
+           for(i = 1; i <= 9; i++)
+             for(j = 1; j <= 9; j++)
+             if((i != j)and(c[i] > 0)and(c[j] > 0))
+           {
+               r = (i * 10 + j) % 4;
+               b = 1;
+               for(u = 1; u <= 9; u++)
+                if(u == i)
+               {
+                   for(h = 1; h < c[i]; h++)
+                     b = b * h;
+               }
+                else if(u == j)
+                     {
+                         for(h = 1; h < c[j]; h++)
+                            b = b * h;
+                     }
+                     else
+                     {
+                         for(h = 1; h <= c[u]; h++)
+                            b = b * h;
+                     }
+                sol += (a / b) * r;
+           }
+           else
+           if((i == j)and(c[i] > 1))
+           {
+                b = 1;
+                r = (i * 10 + j) % 4;
+                for(u = 1; u <= 9; u++)
+                if(u == i)
+                {
+                   for(h = 1; h < c[i]-1; h++)
+                     b = b * h;
+                }
+                else
+                {
+                   for(h = 1; h <= c[u]; h++)
+                      b = b * h;
+                }
+                 sol += (a / b) * r;
+           }
+
+           break;
+        case 5:
+           sol = 0;
+           cif = 0;
+           while(n != 0)
+           {
+               cif++;
+               c[n % 10]++;
+               n =n / 10;
+           }
+           a = 1;
+           for(i = 1; i < cif; i++)
+               a = a * i;
+           for(i = 1; i <= 9; i++)
+           if(c[i] != 0)
+           {
+                r = i % 5;
+                b = 1;
+                for(j = 1; j <= 9; j++)
+                    if(j != i)
+                    {
+                        for(u = 1; u <= c[j]; u++)
+                            b = b * u;
+                    }
+                    else
+                    {
+                        for(u = 1; u < c[j]; u++)
+                            b = b * u;
+                    }
+                sol += (a / b) * r;
+           }
+           break;
+    }
+    g << sol;
+
+    return 0;
+}

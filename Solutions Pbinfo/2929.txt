@@ -1,0 +1,104 @@
+#include <bits/stdc++.h>
+
+#define Nmax 1005
+#define Mmax 1000005
+#define ll long long
+
+using namespace std;
+
+ifstream fin("origami.in");
+ofstream fout("origami.out");
+
+int N, M;
+char *A[2][Mmax];
+char C[2 * Mmax];
+int L[Mmax], R[Mmax];
+int d[2 * Mmax];
+bitset <Mmax> pref, suf;
+
+ll solve(int t, int N, int M)
+{
+    for(int i = 1; i <= M; i++)
+        L[i] = INT_MAX / 2, R[i] = INT_MAX / 2;
+    for(int i = 1; i <= N; i++)
+    {
+        C[0] = '#';
+        int le = 0, ri = 0, len = 0;
+        for(int j = 1; j <= M; j++)
+            C[2 * j - 1] = A[t][i][j], C[2 * j] = '#';
+        int size = 2 * M;
+        d[0] = 0;
+        for(int j = 1; j <= size; j++)
+        {
+            if(j > ri)
+                len = 0;
+            else
+                len = min(ri - j, d[le + ri - j]);
+            while(j + len <= size && j - len >= 0 && C[j + len] == C[j - len])
+                len++;
+            len--;
+            d[j] = len;
+            if(j + len > ri)
+            {
+                ri = j + len;
+                le = j - len;
+            }
+        }
+        for(int j = 1; j <= M; j++)
+            R[j] = min(R[j], d[2 * j] / 2);
+        for(int j = 1; j <= M; j++)
+            L[j] = R[j - 1];
+    }
+    pref.reset();
+    suf.reset();
+    suf[1] = true;
+    int last = 1;
+    for(int i = 2; i <= M; i++)
+        if(L[i] > 0)
+        {
+            if(i - L[i] <= last)
+                suf[i] = true, last = i;
+        }
+    pref[M] = true;
+    last = M;
+    for(int i = M; i >= 1; i--)
+        if(R[i] > 0)
+        {
+            if(i + R[i] >= last)
+                pref[i] = true, last = i;
+        }
+    ll ret = 0;
+    int cnt = 0;
+    for(int i = 1; i <= M; i++)
+    {
+        if(suf[i])
+            cnt++;
+        if(pref[i])
+            ret += cnt;
+    }
+    return ret;
+}
+
+int main()
+{
+    fin >> N >> M;
+    for(int i = 1; i <= N; i++)
+        A[0][i] = new char[M + 5];
+    for(int i = 1; i <= M; i++)
+        A[1][i] = new char[N + 5];
+    for(int i = 1; i <= N; i++)
+    {
+        fin >> (C + 1);
+        A[0][i][0] = '#';
+        for(int j = 1; j <= M; j++)
+            A[0][i][j] = C[j];
+    }
+    for(int j = 1; j <= M; j++)
+    {
+        A[1][j][0] = '#';
+        for(int i = 1; i <= N; i++)
+            A[1][j][i] = A[0][i][j];
+    }
+    fout << solve(0, N, M) * solve(1, M, N) << "\n";
+    return 0;
+}

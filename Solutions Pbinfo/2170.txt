@@ -1,0 +1,77 @@
+#include <bits/stdc++.h>
+
+using namespace std;
+
+int n, c;
+int cnt;
+
+vector< pair<int,int> > v[2005];
+
+void Read()
+{
+    int i, x, y, k;
+    ifstream fin("dreptc.in");
+
+    fin >> n;
+    fin >> c;
+
+    for(i = 1; i <= n; i++)
+    {
+        fin >> x >> y >> k;
+        x += 1000;
+        y += 1000;
+        v[x].push_back({y, k});
+    }
+    fin.close();
+}
+
+void Contor(int L1, int L2)
+{
+    int i, j, N, M;
+    int color[6];
+    for (i = 1; i <= c; i++)
+        color[i] = 0;
+    N = v[L1].size();
+    M = v[L2].size();
+    i = j = 0;
+    while (i < N && j < M)
+    {
+        if (v[L1][i].first < v[L2][j].first)
+            i++;
+        else if (v[L1][i].first > v[L2][j].first)
+            j++;
+        else
+        {
+            if (v[L1][i].second == v[L2][j].second)
+                color[v[L1][i].second]++;
+            i++; j++;
+        }
+    }
+    for (i = 1; i <= c; i++)
+        if (color[i] > 1)
+            cnt += (color[i]*(color[i]-1)/2);
+}
+
+void Rezolvare()
+{
+    int i, L1, L2;
+    for (i = 0; i <= 2000; i++)
+        if (v[i].size() > 0)
+            sort(v[i].begin(), v[i].end());
+    cnt = 0;
+    for (L1 = 0; L1 < 2000; L1++)
+       if (v[L1].size() > 0)
+         for (L2 = L1 + 1; L2 <= 2000; L2++)
+            if (v[L2].size() > 0)
+                Contor(L1, L2);
+    ofstream fout("dreptc.out");
+    fout << cnt << "\n";
+    fout.close();
+}
+
+int main()
+{
+    Read();
+    Rezolvare();
+    return 0;
+}

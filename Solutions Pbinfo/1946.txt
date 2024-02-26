@@ -1,0 +1,38 @@
+#include <iostream>
+#include <fstream>
+using namespace std;
+
+ifstream fin("zece.in");
+ofstream fout("zece.out");
+
+unsigned int C;
+
+int a[1001], b[1001], N, k, cati, i, j;
+
+int main()
+{
+    fin>>C>>N>>k;
+    for(i=1; i<=N; i++) fin>>a[i];
+    for(i=1; i<=N; i++) b[i]=a[i];
+
+    for(i=1; i<=N-1; i++)
+        for(j=i+1; j<=N; j++)
+            if(a[i]<a[j]) swap(a[i], a[j]);
+
+
+if(C==1)
+    {
+       for(i=1; i<=k; i++) fout<<a[i]<<' ';
+       j=i;
+       while(a[j]==a[i-1]) {fout<<a[j]<<' '; j++;}
+    }
+if(C==2)
+    {
+
+      for(j=1; j<=k; j++)
+        for(i=1; i<=N; i++) if(b[i]==a[j] && a[j]!=a[j-1]) fout<<i<<' ';
+    }
+    return 0;
+}
+
+

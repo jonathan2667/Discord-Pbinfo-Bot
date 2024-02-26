@@ -1,0 +1,111 @@
+#include <iostream>
+#include <fstream>
+#include <vector>
+#include <algorithm>
+#include <set>
+#include <queue>
+#include <deque>
+#include <cassert>
+
+using namespace std;
+
+ifstream f("arbvalmax.in");
+ofstream g("arbvalmax.out");
+#define ll long long
+#define pb push_back
+#define mp make_pair
+#define sz size
+#define x first
+#define y second
+
+#define nmax 1000005
+#define inf 2000000002
+
+const int NMAX = 1e6;
+const int MMAX = 1e6;
+const int VALMAX = 2000000000;
+
+int n, m, val[nmax], with[nmax], withOut[nmax];
+vector<int> gf[nmax];
+pair< int,int > bestSon[nmax][2];
+
+void citeste(){
+    f >> n >> m;
+
+    assert(n >= 1 && n <= NMAX);
+    assert(m >= 1 && m <= MMAX);
+
+    for(int i=2; i<=n; ++i){
+        int x; f >> x;
+        assert(x >= 1 && x <= n);
+        gf[x].pb(i);
+    }
+    for(int i=1; i<=n; ++i){
+        f >> val[i];
+        assert(val[i] >= 1 && val[i] <= VALMAX);
+    }
+}
+
+void inJos(int nod){
+    for(int i=0; i<(int)gf[nod].sz(); ++i){
+        int vc = gf[nod][i];
+        inJos(vc);
+    }
+    pair<int,int> best[2];
+    for(int i=0; i<2; ++i) best[i] = mp(-inf, -1);
+
+    for(int i=0; i<(int)gf[nod].sz(); ++i){
+        int vc = gf[nod][i];
+        if ( best[0].x < max(val[vc], bestSon[vc][0].x) ){
+            best[1] = best[0];
+            best[0] = mp( max(val[vc], bestSon[vc][0].x), vc );
+        }else if ( best[1].x < max( val[vc], bestSon[vc][0].x ) ){
+            best[1] = mp( max(val[vc], bestSon[vc][0].x), vc );
+        }
+    }
+    for(int i=0; i<2; ++i){
+        bestSon[nod][i] = best[i];
+    }
+}
+
+void inSus(int nod){
+    for(int i=0; i<(int)gf[nod].sz(); ++i){
+        int vc = gf[nod][i];
+        if ( bestSon[nod][0].y == vc ){
+            withOut[vc] = max( withOut[nod], bestSon[nod][1].x );
+        }else withOut[vc] = max( withOut[nod], bestSon[nod][0].x );
+
+        if ( bestSon[nod][0].y == vc ){
+            with[vc] = max( with[nod], max( val[nod], bestSon[nod][1].x ) );
+        }else with[vc] = max( with[nod], max( val[nod], bestSon[nod][0].x ) );
+
+        inSus(vc);
+    }
+}
+
+void rezolva(){
+    inJos(1);
+    withOut[1] = -inf; with[1] = -inf;
+    inSus(1);
+
+    for(int i=1; i<=m; ++i){
+        int nod, tNod;
+        f >> tNod >> nod;
+        assert(tNod >= 1 && tNod <= n);
+        assert(nod >= 1 && nod <= n);
+        int ans = max( bestSon[nod][0].x, max( withOut[nod], with[tNod] ) );
+        assert(ans >= 1 && ans <= VALMAX);
+        g << ans << "\n";
+    }
+}
+
+int main(){
+    citeste();
+    rezolva();
+
+    f.close();
+    g.close();
+
+    return 0;
+}
+

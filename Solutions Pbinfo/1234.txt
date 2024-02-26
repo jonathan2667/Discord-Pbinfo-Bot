@@ -1,0 +1,104 @@
+#include<fstream>
+using namespace std;
+
+ifstream  fin("easydel.in");
+ofstream fout("easydel.out");
+char s[20002];
+int t[20002],nt;
+int colour_number, best_effort[5000], sub[2][5000], nsub[2], q[21][21], qtr[21][21], nr[30], ap[30];
+
+int effort(int subm, int colour){
+    //efortul de a sterge culoarea colour dintre cele ramase in complementara lui subm
+    int ef,i;
+    ef=0;
+    for(i=0;i<colour_number;i++){
+        if((subm&(1<<i))==0){
+            ef=ef+qtr[colour][i];
+        }
+    }
+    return ef;
+}
+
+void calcul(){
+    int i,j,k;
+    //q[a][b] = cu cat se misca spre stanga cuburile de culoare a daca se sterg cuburile de culoare b
+    for(i=0;i<nt;i++){
+        k=t[i];
+        nr[k]++;
+        for(j=0;j<colour_number;j++){
+            if(j!=k)
+                q[k][j]+=nr[j];
+        }
+    }
+    for(i=0;i<colour_number;i++){
+        for(j=0;j<colour_number;j++){
+            qtr[i][j] = q[j][i];
+        }
+    }
+}
+
+void solve(){
+    int i,j,k,k1,k2,bj,bf,jl,l;
+    for(i=0;i<(1<<colour_number);i++){
+        best_effort[i]=0;
+    }
+    nsub[1]=1;
+    sub[1][0]=0;
+    for(k=0;k<colour_number;k++)
+    {
+        k2=k%2;
+        k1=1-k2;
+        nsub[k2]=0;
+        for(i=0;i<nsub[k1];i++){
+            j=sub[k1][i];//una din submultimile anterioare
+            bj=best_effort[j];
+
+            for(l=0;l<colour_number;l++){
+                if((j&(1<<l))==0){
+                    //l este o culoare ce inca nu a fost stearsa
+                    jl=j|(1<<l);
+                    bf=effort(jl,l);
+                    if(best_effort[jl]==0){
+                        sub[k2][nsub[k2]]=jl;
+                        nsub[k2]++;
+                    }
+                    if(bj+bf>best_effort[jl]){
+                        best_effort[jl]=bj+bf;
+                    }
+                }
+            }
+        }
+    }
+}
+
+
+int main(){
+    int i,j;
+    fin>>s;
+    for(i=0;i<=30;i++)ap[i]=-1;
+    colour_number=0;
+    for(i=0;s[i]!=0;i++){
+        j=s[i]-48;
+        if(ap[j]==-1){
+            ap[j]=colour_number;
+            t[i]=colour_number;
+            colour_number++;
+        }
+        else{
+            t[i]=ap[j];
+        }
+    }
+    nt=i;
+    //am redenumit culorile in ordinea in care se intalnesc , de la stanga spre dreapta
+    //ca sa am spatiu compact de etichete de culori 1,2,...,colour_number
+    calcul();
+    solve();
+    fout<<best_effort[(1<<colour_number)-1]<<"\n";
+    fout.close();
+    fin.close();
+    return 0;
+}
+
+
+
+

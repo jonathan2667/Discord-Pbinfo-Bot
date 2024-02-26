@@ -1,0 +1,36 @@
+#include <bits/stdc++.h>
+using namespace std;
+typedef long long ll;
+
+struct my{
+    ll x,y,h;
+} V[1100],St[1100];
+
+int N,poz=1;
+double D[1100],D2[1100],gx,gy;
+
+double dist(my a,my b)
+{return sqrt((a.x-b.x)*(a.x-b.x)+(a.y-b.y)*(a.y-b.y));}
+
+int main()
+{
+    ifstream fin("mosia1.in");
+    ofstream fout("mosia1.out");
+    fin >> N;
+    for(int i = 1;i<=N;i++)
+    {
+        fin >> V[i].x >> V[i].y >> V[i].h;
+        gx+=V[i].x,gy+=V[i].y;
+    }
+    gx/=N,gy/=N;
+    sort(V+1,V+N+1,[&](my a,my b){return atan2(a.y-gy,a.x-gx) < atan2(b.y-gy,b.x-gx);});
+    V[0] = V[N]; V[N+1] = V[1];
+    for(int i = 1;i<=N;++i) D2[i] = D[i] = V[i].h*dist(V[i-1],V[i+1])/2.0;
+
+    D[N] = D2[1] = 0;
+    for(int i = 2;i<=N;++i) D[i] = max(D[i-1],D[i]+D[i-2]);
+    for(int i = 2;i<=N;++i) D2[i] = max(D2[i-1],D2[i]+D2[i-2]);
+
+    fout << fixed << setprecision(6) << max(D[N],D2[N]);
+    fout.close();
+}

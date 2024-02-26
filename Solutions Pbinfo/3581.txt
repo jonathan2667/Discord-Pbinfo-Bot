@@ -1,0 +1,27 @@
+#include <bits/stdc++.h>
+#define ABS(x) ((x) >= 0 ? (x) : -(x))
+
+using namespace std;
+
+ifstream fin ("agitatie.in");
+ofstream fout ("agitatie.out");
+
+int N, k, mx, j;
+vector < int > a, v, dp[2];
+
+int main () {
+  fin >> N;
+  a = v = vector < int > (N);
+  for (int i = 0; i < N; i ++) {
+    fin >> a[i] >> v[i];
+    mx = max (mx, a[i]);
+  }
+  dp[0] = dp[1] = vector < int > (mx + 2);
+  for (int i = N - 1; i >= 0; i --)
+    for (j = mx, k = 1 - k, dp[k][j + 1] = INT_MAX; j >= 0; j --)
+      dp[k][j] = min (ABS (a[i] + v[i] * j) + dp[1 - k][j], dp[k][j + 1]);
+  fout << dp[k][0];
+  fin.close();
+  fout.close();
+  return 0;
+}

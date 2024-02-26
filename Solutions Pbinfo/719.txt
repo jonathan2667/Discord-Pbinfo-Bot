@@ -1,0 +1,55 @@
+//Complexitate : O(N*M)
+//Memorie : O(M)
+
+#include <cstdio>
+#include <cstring>
+#define MAXM 255
+#define INF 10000000
+
+using namespace std;
+
+char A[MAXM];
+int D[MAXM];
+int minim, ant, i, j;
+int N, M;
+
+int main()
+{
+    freopen("minime.in","r",stdin);
+    freopen("minime.out","w",stdout);
+
+    scanf("%d %d\n", &N, &M);
+
+    for (j = 0; j < M; ++j)
+        D[j] = -INF;
+
+    for (i = 1; i <= N; ++i){
+        memset(A, 0, sizeof(A));
+        gets(A);
+
+        ant = -INF;
+        minim = 'z' + 1;
+        for (j = 0; j < M; ++j)
+            if (minim > A[j])
+                minim = A[j];
+
+        ant = -INF;
+        for (j = 0; j < M; ++j){
+            if (A[j] == minim)
+                ant = j;
+            if (D[j] < j - ant + 1)
+                D[j] = j - ant + 1;
+        }
+
+        printf("%c", minim);
+    }
+
+    minim = INF;
+    for (j = 0; j < M; ++j)
+        if (minim > D[j])
+            minim = D[j];
+
+    printf("\n%d\n", minim);
+
+    return 0;
+}

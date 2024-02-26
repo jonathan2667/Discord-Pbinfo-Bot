@@ -1,0 +1,62 @@
+#include <cstdio>
+#include <algorithm>
+#include <vector>
+#include <cassert>
+
+#define MOD 1000000007LL
+
+using namespace std;
+
+int n, m, p;
+vector <int> g[1000010];
+int dp[1000010], v[1000010];
+long long nr[1000010];
+
+void dfs (int nod)
+{
+    if (nod == n)
+    {
+        dp[nod] = 1;
+        nr[nod] = 1LL;
+
+        if (nod == v[ p - dp[nod] + 1 ]) ++dp[nod];
+        return;
+    }
+
+    for (auto &it : g[nod])
+    {
+        if (dp[it] == 0) dfs (it);
+
+        if (dp[it] > dp[nod]) dp[nod] = dp[it], nr[nod] = nr[it];
+        else if (dp[it] == dp[nod]) nr[nod] += nr[it];
+
+        nr[nod] %= MOD;
+    }
+
+    if (nod == v[ p - dp[nod] + 1 ]) ++dp[nod];
+}
+
+int main ()
+{
+
+    scanf ("%d %d %d", &n, &m, &p);
+
+    for (int i = 1; i <= p; ++i)
+    {
+        scanf ("%d", &v[i]);
+    }
+
+    for (int i = 1; i <= m; ++i)
+    {
+        int x, y;
+        scanf ("%d %d", &x, &y);
+
+        g[x].push_back (y);
+    }
+
+    dfs (1);
+
+    printf ("%lld\n", nr[1]);
+
+    return 0;
+}

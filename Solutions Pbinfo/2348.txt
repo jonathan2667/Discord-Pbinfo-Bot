@@ -1,0 +1,27 @@
+#include <iostream>
+#include <cstring>
+
+using namespace std;
+
+bool v(char c)
+{
+    int k=(int)c;
+    if(k==97||k==101||k==105||k==111||k==117) return true;
+    else return false;
+}
+
+char cm(char c[200]){
+    int n=strlen(c), s=0, cnt=0;
+    for(int i=0;i<n;i++){
+        if(c[i]!=' '&&!v(c[i])&&!isupper(c[i])) s+=(int)c[i], cnt++;
+    }
+    return (char)(s/(cnt));
+}
+
+char s[200];
+
+int main()
+{
+    cin.getline(s, 200);
+    cout<<cm(s);
+}

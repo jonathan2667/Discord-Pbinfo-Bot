@@ -1,0 +1,117 @@
+#include <iostream>
+#include <fstream>
+#include <algorithm>
+
+using namespace std;
+
+int  prim[100];
+int nrprim= 0 ;
+long long n ,a,b;
+long long sol[100000];
+int soln=0,v[10000];
+long long x;
+int  sumbase,sumexp ;
+
+void getprimenumbers () {
+    int i, j;
+    bool boolk;
+
+    for (i=2; i<=47 ;i++ ) {
+        boolk = true;
+        for (j=2 ;j<=i/2;j++)
+            if (  i % j == 0 )
+                boolk = false;
+        if ( boolk )
+            prim[++nrprim]=i;
+    }
+}
+
+int check (long long val ) {
+    int i, j=1;
+    sumbase = n =0;
+    for (i = nrprim ; i>0; i--) {
+        if (val%2 == 1) {
+            if (b/j>=prim[i])
+                j*=prim[i];
+            else
+                return 0 ;
+            n ++ ;
+            v[n]=prim[i];
+            sumbase+=prim[i];
+        }
+        val/=2;
+    }
+    return 1;
+}
+
+void back(int k) {
+    if ( k == n+1 ) {
+        if (sumexp==sumbase) {
+            sol[++soln]=x;
+        }
+        return ;
+    }
+
+    int i ;
+    for (i=1; b/x>=v[k] && sumexp+i<=sumbase;++i)  {
+        sumexp+=i;
+        x*=v[k];
+        back(k+1);
+        sumexp-=i;
+    }
+
+    for (; i>1 ; i--, x/=v[k]);
+}
+
+bool cmp (long long x, long long y )  { return x<y; }
+
+int main()
+{
+    int i,j;
+    ifstream f("cumpanit.in");
+    f>>a >> b;
+    getprimenumbers();
+
+    long long total= (1<<nrprim ) ;
+    for (i=1;i<total ;i++) {
+        if (check(i) ) {
+            x=1;
+            sumbase=0;
+            for (j =1 ; j<= n ;j++ )
+                sumbase+=v[j];
+            sumexp=0;
+            if (n<=5 )
+                back(1);
+        }
+    }
+
+
+
+    sort (sol+1 , sol + soln+1 ,  cmp ) ;
+
+    ofstream g("cumpanit.out");
+
+    for (i=1;i<=soln;i++)
+        if (sol[i]>=a && sol[i]<=b )
+            g <<sol[i]<<'\n';
+
+    for (i=1;i<=soln;i++) {
+        sumexp=0; sumbase=0;
+        for (j=1;j<=nrprim;j++) {
+            if (sol[i]%prim[j]==0) {
+                sumbase+=prim[j];
+                while (sol[i]%prim[j]==0) {
+                    sumexp ++ ;
+                    sol[i]/=prim[j];
+                }
+            }
+
+        }
+        if ( sumexp!=sumbase)
+            g<<"sursa gresita !! " ;
+    }
+
+    g.close();
+    f.close();
+    return 0;
+}

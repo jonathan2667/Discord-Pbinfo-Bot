@@ -1,0 +1,77 @@
+#include <fstream>
+#include <vector>
+#define N 100100
+#define mod 1000000007
+
+using namespace std;
+
+ifstream cin("arbore1.in");
+ofstream cout("arbore1.out");
+
+vector<int> v[N];
+int D[3][N], x, y, n;
+long long W[3][N];
+
+void dfs(int x, int p) {
+    D[1][x] = 1;
+    D[0][x] = 0;
+    D[2][x] = 1;
+    W[1][x] = 1;
+    W[0][x] = 1;
+    W[2][x] = 1;
+    
+    for (auto &it : v[x]) {
+        if (it != p) {
+            dfs(it, x);
+        }
+    }
+    
+    // Cazul 1. Stergem nodul
+    for (auto &it : v[x]) {
+        if (it != p) {
+            D[0][x] += D[2][it];
+            W[0][x] *= W[2][it];
+            W[0][x] %= mod;
+        }
+    }
+    
+    // Cazul 2. Nu stergem nodul
+    for (auto &it : v[x]) {
+        if (it != p) {
+            if (D[0][it] + 1 == D[1][it]) {
+                W[1][x] *= (W[0][it] + W[1][it]) % mod;
+                W[1][x] %= mod;
+                D[1][x] += D[0][it];
+            } else if (D[0][it] + 1 < D[1][it]) {
+                W[1][x] *= W[1][it];
+                W[1][x] %= mod;
+                D[1][x] += D[1][it] - 1;
+            } else {
+                W[1][x] *= W[0][it];
+                W[1][x] %= mod;
+                D[1][x] += D[0][it];
+            }
+        }
+    }
+    
+    // Calculam solutia pentru acest subarbore stiind cele 2 cazuri
+    D[2][x] = max(D[1][x], D[0][x]);
+    if (D[1][x] == D[0][x]) {
+        W[2][x] = (W[1][x] + W[0][x]) % mod;
+    } else if (D[1][x] > D[0][x]) {
+        W[2][x] = W[1][x];
+    } else {
+        W[2][x] = W[0][x];
+    }
+}
+int main () {
+    cin >> n;
+    for (int i = 1; i < n; ++i) {
+        cin >> x >> y;
+        v[x].push_back(y);
+        v[y].push_back(x);
+    }
+    dfs(1, 0);
+    cout << D[2][1] << " " << W[2][1];
+    return 0;
+}

@@ -1,0 +1,49 @@
+#include <bits/stdc++.h>
+
+using namespace std;
+
+/**  # desen tehnic
+
+    0 0 N N N N 0 0
+    0 0 N N N N 0 0
+    V V 0 0 0 0 E E
+    V V 0 0 0 0 E E
+    V V 0 0 0 0 E E
+    V V 0 0 0 0 E E
+    0 0 S S S S 0 0
+    0 0 S S S S 0 0
+
+**/
+
+int main()
+{
+    int nr = 1, n, a[101][101];
+    cin>>n;
+    /// generare clasica
+    for(int i=0;i<n;++i)
+        for(int j=0;j<n;++j)
+            a[i][j] = nr++;
+    /// vom roti elem patratului din zonele N, S, E si V cu 180 grade
+    /// N - S
+    for(int k=0; k<n/4; ++k)
+    {
+        int pas = 1;
+        for(int x=k, y=n/4, i=n-k-1, j=3*n/4-1; pas<=n/2; ++y, --j, ++pas)
+            swap(a[x][y], a[i][j]);
+    }
+    /// V - E
+    for(int k=0; k<n/4; ++k)
+    {
+        int pas = 1;
+        for(int x=n/4, y=k, i=3*n/4-1, j=n-k-1; pas<=n/2; ++x, --i, ++pas)
+            swap(a[x][y], a[i][j]);
+    }
+    /// afisare
+    for(int i=0;i<n;++i)
+    {
+        for(int j=0;j<n;++j)
+            cout<<a[i][j]<<' ';
+        cout<<'\n';
+    }
+    return 0;
+}

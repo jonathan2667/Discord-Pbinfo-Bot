@@ -1,0 +1,38 @@
+#include <bits/stdc++.h>
+
+using namespace std;
+
+char cuv[105] , s[105] , *p , virus[] = "virus";
+
+int main()
+{
+    freopen ("pbinfo.in" , "r" , stdin) ;
+    freopen ("pbinfo.out" , "w" , stdout) ;
+
+    int n ;
+    gets (s) ;
+    scanf ("%d\n" , &n) ;
+    int i ;
+    for (i = 1 ; i <= n ; ++ i)
+    {
+        gets (cuv) ;
+
+        p = strstr (s , cuv) ;
+
+        if (p != NULL)
+        {
+            printf ("DA\n") ;
+            return 0 ;
+        }
+
+        p = strstr (s , virus) ;
+
+        if (p != NULL)
+        {
+            printf ("DA\n") ;
+            return 0 ;
+        }
+    }
+    printf ("NU\n") ;
+    return 0;
+}

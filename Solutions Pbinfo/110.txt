@@ -1,0 +1,15 @@
+#include <iostream>
+#include <cstring>
+using namespace std;
+
+int main(){
+    char s[101];
+    cin >> s;
+    for(char *p=s; *p ; ++p){
+        char c = *p;
+        p[0] = 0;
+        cout << s << p+1 << endl;
+        p[0] = c;
+    }
+    return 0;
+}

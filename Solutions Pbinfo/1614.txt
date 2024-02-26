@@ -1,0 +1,44 @@
+#include <fstream>
+using namespace std;
+ifstream fin("litere1.in");
+ofstream fout("litere1.out");
+int ord[10001],p,n,i,j,pas,k,x;
+char v[10001];
+int main()
+{
+    fin>>p>>n;
+    for(i=1;i<=n;i++) fin>>v[i];
+    if(p==1)///1- nr de * de pe ultimul nivel
+    {
+        x=1;
+        while(x*x<n)x++;
+        fout<<x*x-n<<'\n';return 0;
+    }
+    if(p==2)///2- afisam prima litera de pe fiecare nivel
+    {
+        x=0;
+        while(x*x<n) {fout<<v[x*x+1]<<" ";x++;}
+        return 0;
+    }
+    /// 3 - ordinea literelor dupa rotire
+    x=1;
+    while(x*x<n) x++;
+    for(i=x*x;i>n;i--) v[i]='*';
+    ord[1]=(x-1)*(x-1)+1; k=1;ord[0]=0;
+    for(i=2;i<=x;i++)///i este nivelul
+    {
+        j=ord[1]+2*i-2;pas=2*x-1;
+        for(;k<i*i-1;j-=pas,pas-=2)
+        {
+            ord[++k]=j;ord[++k]=j-1;
+        }
+        ord[++k]=j;
+    }
+     for(i=1,j=1;i<=x;i++)
+       {
+            for(;j<i*i;j++)
+                if(v[ord[j]]!='*')fout<<v[ord[j]]<<" ";
+            fout<<v[ord[j++]]<<'\n';
+       }
+return 0;
+}

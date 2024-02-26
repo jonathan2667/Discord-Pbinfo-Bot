@@ -1,0 +1,72 @@
+/*
+    prof. Marius Nicoli
+    Complexitate O(n x n)
+*/
+#include <fstream>
+
+#define DIM 1002
+#define MOD 9901
+
+using namespace std;
+
+char a[DIM][DIM];
+char c;
+
+int v[DIM * 6];
+int n, p, i, j, sc, sp, sr, start, d, sol, per, k, pas, rest;
+
+int main () {
+    ifstream fin ("cubic.in");
+    ofstream fout("cubic.out");
+
+    fin>>n>>p;
+    p++;
+    for (i=1;i<=n;i++)
+        for (j=1;j<=n;j++)
+            fin>>a[i][j];
+
+    c = a[n/2+1][n/2+1];
+    if (c == '0') {
+        fout<<"0\n";
+        return 0;
+    }
+    for (i=1;i<=n;i++)
+        for (j=1;j<=n;j++)
+            if (a[i][j] == c)
+                a[i][j] = 1;
+            else
+                a[i][j] = 0;
+
+    sol = 1;
+    for (d=1, per = n-1, start = n/2+1;d<=n/2;d++, per-=2, start--) {
+        k = 0;
+        for (i=d;i<=n-d+1;i++)
+            v[++k] = a[d][i];
+        for (i=d+1;i<=n-d+1;i++)
+            v[++k] = a[i][n-d+1];
+        for (i=n-d; i>=d; i--)
+            v[++k] = a[n-d+1][i];
+        for (i=n-d; i>d; i--)
+            v[++k] = a[i][d];
+
+        for (i=1;i<=2*per;i++) {
+            v[++k] = v[i];
+        }
+        rest = p%per;
+        sp = sr = 0;
+        for (i=start, pas = 1;i<start + per;i++, pas++)
+            if (v[i] == v[i+per] && v[i] == v[i+2*per] && v[i] == v[i+3*per] && v[i] == 1) {
+                sp++;
+                if (pas <= rest)
+                    sr++;
+            }
+        sc = p/per * sp + sr;
+        sc %= MOD;
+
+        sol = sol * sc % MOD;
+    }
+
+    fout<<sol<<"\n";
+
+    return 0;
+}

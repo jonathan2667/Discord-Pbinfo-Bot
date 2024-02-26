@@ -1,0 +1,65 @@
+/// Solutie Horia cu vectori virtuali - 100p
+#include "cstdio"
+
+using namespace std;
+
+class Vector{
+private:
+    unsigned long long* elem;
+    unsigned long long lung;
+public:
+    Vector(unsigned long long s):elem{new unsigned long long[s]}, lung{s}{}
+    unsigned long long& operator[](unsigned long long i) {return elem[i];};
+    unsigned long long size() const {return lung;}
+};
+class Container_Virtual{
+public:
+    virtual unsigned long long& operator[](unsigned long long) = 0;
+    virtual unsigned long long size() const = 0;
+};
+class Vector_container: public Container_Virtual{
+    Vector v;
+public:
+    Vector_container(int s) : v(s){}
+
+    unsigned long long& operator[](unsigned long long i){return v[i];}
+    unsigned long long size() const {return v.size();}
+};
+
+void afis(Vector_container& v, unsigned long long k){
+    for(unsigned long long i=0 ; i!=k ; ++i)
+       printf("%llu ", v[i]);
+}
+bool prim(unsigned long long x){
+    if(x % 2 == 0)
+        return x == 2;
+    for(unsigned long long d=3 ; d*d<=x ; d+=2)
+        if(x % d == 0)
+            return false;
+    return true;
+}
+template<class T>
+T Minim(T a, T b){
+    return (a > b ? b : a);
+}
+int main(){
+    unsigned long long n, k, m=0;
+    unsigned long long msg = scanf("%llu%llu", &n, &k);
+    Vector_container v(n), a(10), b(10), c(10);
+    v[0] = 1;
+    for(unsigned long long i=2 ; i< 30 ; ++i)
+        if(prim(i)) a[m] = i, b[m] = 0, c[m] = i, ++ m;
+
+    for(unsigned long long i=1 ; i!=v.size() ; ++i){
+        unsigned long long minim = c[0];
+        for(unsigned long long i=0 ; i< k ; ++i)
+            minim = Minim(minim, c[i]);
+        v[i] = minim;
+        for(unsigned long long j=0 ; j< k ; ++j)
+            if(c[j] == minim)
+                c[j] = v[++b[j]] * a[j];
+    }
+    afis(v, n);
+    if(!msg)
+        return 0;
+}

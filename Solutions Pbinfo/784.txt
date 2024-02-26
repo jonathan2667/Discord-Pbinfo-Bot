@@ -1,0 +1,24 @@
+#include <iostream>
+using namespace std;
+
+int n,a[102][102] , V[102], H[102];
+
+int main()
+{
+    cin >> n;
+    for(int i = 1 ; i <= n ; ++i)
+        for(int j = 1 ; j <= n ; ++j)
+            cin >> a[i][j];
+    
+    for(int i = 1 ; i <= n ; ++i)
+        for(int j = 1 ; j <= n ; ++j)
+            V[i] += a[i][j], H[j] += a[i][j];
+    
+    int cnt = 0;
+    for(int i = 1 ; i <= n ; ++i)
+        for(int j = 1 ; j <= n ; ++j)
+            if(V[i] == H[j])
+                cnt ++;
+    cout << cnt << " ";
+    return 0;
+}

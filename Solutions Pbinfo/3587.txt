@@ -1,0 +1,28 @@
+#include <iostream>
+#define NMAX 470005
+using namespace std;
+int v[NMAX];
+int main()
+{
+    int n,k;
+    cin>>n;
+    for(int i=0;i<=n;++i)
+        cin>>v[i];
+    cin>>k;
+    cout<<v[k-1]<<'\n';
+    int t,h;
+    t=h=v[0];
+    do
+    {
+        t=v[t];
+        h=v[v[h]];
+    }while(t!=h);
+    t=v[0];
+    while(t!=h)
+    {
+        t=v[t];
+        h=v[h];
+    }
+    cout<<h;
+    return 0;
+}

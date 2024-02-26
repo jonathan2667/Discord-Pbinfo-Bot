@@ -1,0 +1,61 @@
+{Zoltan Szabo}
+program fibonacci;
+const cc=46337;
+type matrice=array[1..2,1..2] of longint;
+var i,n,k:longint;
+    f:text;
+procedure inmult(a,b:matrice;var c:matrice);
+var i,j,k:integer;
+begin
+  for i:=1 to 2 do
+    for j:=1 to 2 do
+      begin
+        c[i,j]:=0;
+        for k:=1 to 2 do
+          c[i,j]:=(c[i,j]+(a[i,k]*b[k,j]) mod cc) mod cc;
+      end;
+end;
+function fibo(n:longint):longint;
+var a,b,c:matrice;
+begin
+  a[1,1]:=0;a[1,2]:=1;
+  a[2,1]:=1;a[2,2]:=1;
+  c[1,1]:=1;c[1,2]:=0;
+  c[2,1]:=0;c[2,2]:=1;
+  n:=n-1;
+  while n>0 do
+    begin
+      if odd(n) then inmult(c,a,c);
+      n:=n div 2;
+      inmult(a,a,b);
+      a:=b;
+    end;
+  fibo:=(c[1,1]+c[1,2]) mod cc;
+end;
+begin
+      assign(f,'fibo.in');
+      reset(f);
+      readln(f,n);
+      close(f);
+      assign(f,'fibo.out');
+      rewrite(f);
+      if odd(n) then
+        begin
+          k:=n div 2;
+          writeln(f,'1');
+          writeln(f,k,' ',k+1);
+          writeln(f,fibo(k));
+          writeln(f,fibo(k+1));
+          writeln(f,fibo(n));
+        end
+      else
+        begin
+          k:=n div 2;
+          writeln(f,'0');
+          writeln(f,k-1,' ',k+1);
+          writeln(f,fibo(k-1));
+          writeln(f,fibo(k+1));
+          writeln(f,fibo(n));
+        end;
+      close(f);
+end.

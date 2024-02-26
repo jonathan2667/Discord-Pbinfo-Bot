@@ -1,0 +1,68 @@
+#include <stdio.h>
+#include <stdlib.h>
+using namespace std;
+struct segment {
+    int h;
+    int x1, x2;
+    long long nr_drumuri;
+}platforma[20010];
+
+int N, hM,xM,H;
+
+void citire()
+{
+    FILE *f=fopen("mario.in","r");
+    fscanf(f,"%d %d %d",&hM,&xM,&H);
+    fscanf(f,"%d",&N);
+    for (int i=0;i<N;i++)
+        fscanf(f, "%d %d %d",&platforma[i].h,&platforma[i].x1,&platforma[i].x2);
+    platforma[N].h=0;
+    platforma[N].x1=0;
+    platforma[N].x2=200001;
+    N++;
+    fclose(f);
+}
+void afisare()
+{
+    long long d;
+    FILE *f=fopen("mario.out","w");
+    fprintf(f,"%lld\n", platforma[N-1].nr_drumuri);
+    fclose(f);
+}
+int compare (const void * a, const void * b)
+{
+  segment *segmentA = (segment *)a;
+  segment *segmentB = (segment *)b;
+  return (segmentB->h-segmentA->h );
+}
+
+void cade(int h,int x,long long nr_drumuri)
+{
+    int i=0;
+    while (i<N && (h-platforma[i].h>H || h-platforma[i].h<=0 || x<platforma[i].x1 || x>platforma[i].x2))
+        i++;
+    if (i<N)
+        platforma[i].nr_drumuri+=nr_drumuri;
+}
+
+void calcul()
+{
+    cade(hM,xM,1);
+    for (int i=0;i<N-1;i++)
+    {
+        if (platforma[i].nr_drumuri)
+        {
+            cade(platforma[i].h,platforma[i].x1,platforma[i].nr_drumuri);
+            cade(platforma[i].h,platforma[i].x2,platforma[i].nr_drumuri);
+        }
+    }
+}
+
+int main()
+{
+    citire();
+    qsort(platforma,N,sizeof(segment),compare);
+    calcul();
+    afisare();
+    return 0;
+}

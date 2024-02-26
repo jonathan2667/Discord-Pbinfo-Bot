@@ -1,0 +1,100 @@
+#include <iostream>
+#include <fstream>
+
+using namespace std;
+unsigned p[1002][1002],a[3][1002],t,n,i,j,nr,m,d,poz,linie,k,j1,j2,elementcurent;
+int main()
+{
+    ifstream fin ("permutare2.in");
+    ofstream fout("permutare2.out");
+    p[1][1]=1;
+    linie=1;
+    while (fin>>t)
+        if (t==2)
+        {
+            fin>>n;
+            for (i=1;i<=2;++i)
+                for (j=1;j<=n;++j)
+                    fin>>a[i][j];
+            for (i=linie+1;i<=n+1;++i)
+            {
+                p[i][1]=1;
+                for (j=2;j<=i;++j)
+                {
+                    if (p[i-1][j]+p[i][j-1]>2000000005)
+                        p[i][j]=2000000005;
+                    else
+                        p[i][j]=p[i-1][j]+p[i][j-1];
+                }
+            }
+            linie=n+1;
+            nr=0;
+            m=n+1;  // cel mai mare prim-element posibil de pe linia a 2-a
+            d=0;   // diferenta pentru prelucrare recursiva, dupa fiecare pozitie scadem 2
+            poz=1;  // pozitia elementului curent de pe linia a doua a matricei
+            while (1)
+            {
+                if (a[2][poz]-d==m)
+                {
+                    nr++;
+                    break;
+                }
+                nr+=p[n+1][m-a[2][poz]+d];
+                ++poz;
+                d+=2;
+                m--;
+                n--;
+            }
+            fout<<nr<<"\n";
+        }
+        else
+        {
+            fin>>n>>k;
+            p[1][1]=1;
+            for (i=linie+1;i<=n;++i)
+            {
+                p[i][1]=1;
+                for (j=2;j<=i;++j)
+                    if (p[i-1][j]>2000000005-p[i][j-1])
+                        p[i][j]=2000000005;
+                    else
+                        p[i][j]=p[i-1][j]+p[i][j-1];            }
+            linie=n;
+            d=0;   // diferenta pentru prelucrare recursiva, se mareste din 2 in 2
+            j1=1;
+            j2=1;
+            elementcurent=1;
+            for (i=n;i>0 and k;i--)
+            {
+                m=i+2;
+                nr=0;j=1;
+                while(nr+p[i][j]<k)
+                {
+                    nr+=p[i][j];
+ //                   fout<<nr<<endl;
+                    m--;
+                    j++;
+                }
+                m--;
+                j++;
+                for(j=elementcurent;j<m+d;++j)
+                    a[1][j1++]=elementcurent++;
+                a[2][j2++]=elementcurent++;
+                k=k-nr;
+                d=d+2;
+            }
+            while (j2<=n)
+            {
+                a[2][j2]=a[2][j2-1]+1;
+                j2++;
+            }
+ //           fout<<2<<" "<<n<<" ";
+            for (j=1;j<=n;++j)
+                fout<<a[1][j]<<" ";
+            for (j=1;j<=n;++j)
+                fout<<a[2][j]<<" ";
+            fout<<endl;
+        }
+
+    return 0;
+}

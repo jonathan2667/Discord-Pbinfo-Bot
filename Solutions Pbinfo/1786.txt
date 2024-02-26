@@ -1,0 +1,67 @@
+#include<bits/stdc++.h>
+ 
+using namespace std;
+ 
+#define dbg(x) (cout<<#x<<" = "<<(x)<<'\n')
+ 
+typedef long long int lld;
+const int INF = (1LL << 30) - 1;
+const lld LINF = (1LL << 62) - 1;
+const int NMAX = 1e5;
+ 
+struct Event {
+    int tip, x, y, index;
+    Event() {}
+    Event(int _tip, int _x, int _y, int _index):
+        tip(_tip), x(_x), y(_y), index(_index) {}
+ 
+    bool operator<(const Event& that) const {
+        if (x * 1LL * that.y == y * 1LL * that.x)
+            return tip < that.tip;
+        return x * 1LL * that.y < y * 1LL * that.x;
+    }
+};
+ 
+int N, M, cnt, current;
+Event E[3 * NMAX + 5];
+int sol[NMAX + 5];
+ 
+int main() {
+    cin.sync_with_stdio(false);
+ 
+    freopen("nn.in", "r", stdin);
+    freopen("nn.out", "w", stdout);
+ 
+    scanf("%d%d", &N, &M);
+ 
+    for (int i = 1, x, y; i <= N; i++) {
+        scanf("%d%d", &x, &y);
+        E[++cnt] = Event(0, x, y, i);
+    }
+ 
+    for (int i = 1, x0, y0, x1, y1; i <= M; i++) {
+        scanf("%d%d%d%d", &x0, &y0, &x1, &y1);
+        E[++cnt] = Event(-1, x0, y0, i);
+        E[++cnt] = Event(1, x1, y1, i);
+        if (x0 * 1LL * y1 > x1 * 1LL * y0)
+            swap(E[cnt - 1].tip, E[cnt].tip);
+    }
+ 
+    sort(E + 1, E + cnt + 1);
+ 
+    for (int i = 1; i <= cnt; i++) {
+        //  printf("%d | %d %d | %d\n", E[i].tip, E[i].x, E[i].y, E[i].index);
+ 
+        if (E[i].tip == -1)
+            sol[E[i].index] -= current;
+        if (E[i].tip == 0)
+            current++;
+        if (E[i].tip == 1)
+            sol[E[i].index] += current;
+    }
+ 
+    for (int i = 1; i <= M; i++)
+        printf("%d\n", max(0, sol[i] - 1));
+ 
+    return 0;
+}

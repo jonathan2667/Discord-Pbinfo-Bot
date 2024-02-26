@@ -1,0 +1,72 @@
+#include <iostream>
+using namespace std;
+
+int main()
+{
+    int cif, m, n, a, b, c, d, e, f;
+    cin >> m;
+
+    /// a
+    n = m;
+    a = 0;
+    while (n > 0)
+    {
+        cif = n % 10;
+        n /= 10;
+        a = a + cif * cif;
+    }
+    cout << a << " ";
+
+    /// b
+    n = m;
+    b = 0;
+    while (n > 0)
+    {
+        cif = n % 10;
+        n /= 10;
+        if (cif % 2 == 1) b += cif;
+    }
+    cout << b << " ";
+
+    /// c
+    n = m;
+    c = 0;
+    while (n > 0)
+    {
+        cif = n % 10;
+        n /= 10;
+        if (cif % 3 == 0) c += cif;
+    }
+    cout << c << " ";
+
+    /// d
+    n = m;
+    d = 0;
+    while (n > 0)
+    {
+        cif = n % 10;
+        n /= 10;
+        if (cif > 5) d++;
+    }
+    cout << d << " ";
+
+    /// e
+    n = m;
+    e = 1;
+    while (n > 0)
+    {
+        cif = n % 10;
+        n /= 10;
+        if (cif != 0) e *= cif;
+    }
+    cout << e << " ";
+
+    /// f
+    n = m;
+    f = n % 10;
+    while (n > 9)
+        n /= 10;
+    f += n;
+    cout << f << "\n";
+    return 0;
+}

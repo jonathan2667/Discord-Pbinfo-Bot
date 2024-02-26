@@ -1,0 +1,27 @@
+#include <iostream>
+
+using namespace std;
+
+long long n;
+int maxim;
+int main () {
+    cin>>n;
+    if (n == 0) {
+        cout<<0;
+        return 0;
+    }
+    maxim = -1;
+    while (n!=0) {
+        if (n%2 == 0) {
+            if (n%10 > maxim)
+                maxim = n%10;
+        }
+        n /= 10;
+    }
+    if (maxim == -1)
+        cout<<10;
+    else
+        cout<<maxim;
+    
+    return 0;   
+}

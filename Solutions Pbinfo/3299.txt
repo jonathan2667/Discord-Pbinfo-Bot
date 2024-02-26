@@ -1,0 +1,75 @@
+#define TuTTy "Cosmin-Mihai Tutunaru"
+#include <cstdio>
+#define infile "mostenire.in"
+#define outfile "mostenire.out"
+#define nMax 131
+#define mMax 1013
+#define ll long long
+
+using namespace std;
+
+int cnt[nMax][mMax];
+char forest[nMax][mMax];
+int n, m;
+ll sol;
+
+void read() {
+    scanf("%d %d\n", &n, &m);
+    for (int i = 1; i < n+1; ++i) {
+        fgets(forest[i] + 1, mMax, stdin);
+    }
+}
+
+int getSum(int i1, int j1, int i2, int j2) {
+    return cnt[i2][j2] - cnt[i2][j1-1] - cnt[i1-1][j2] + cnt[i1-1][j1-1];
+}
+
+void solve() {
+    for (int i = 1; i < n+1; ++i) {
+        for (int j = 1; j < m+1; ++j) {
+            cnt[i][j] = cnt[i-1][j] + cnt[i][j-1] - cnt[i-1][j-1] +
+                (forest[i][j] - '0');
+        }
+    }
+
+    for (int i1 = 1; i1 < n+1; ++i1) {
+        for (int i2 = i1+2; i2 < n+1; ++i2) {
+            int lines = 0;
+            int cons = 0;
+            int h = i2 - i1 + 1;
+
+            for (int j = 1; j < m+1; ++j) {
+                if (forest[i1][j] != '1' || forest[i2][j] != '1') {
+                    lines = 0;
+                    cons = 0;
+                    continue;
+                }
+
+                if (getSum(i1, j, i2, j) == h) {
+                    cons++;
+                    sol += lines;
+                } else {
+                    lines += cons;
+                    cons = 0;
+                }
+            }
+        }
+    }
+}
+
+void write() {
+    printf("%lld\n", sol);
+}
+
+int main() {
+    freopen(infile, "r", stdin);
+    freopen(outfile, "w", stdout);
+
+    read();
+    solve();
+    write();
+
+    fclose(stdin);
+    fclose(stdout);
+    return 0;
+} 

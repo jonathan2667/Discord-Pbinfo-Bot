@@ -1,0 +1,41 @@
+// Popa Bogdan Ioan, clasa a 10-a, Colegiul National Aurel Vlaicu Orastie
+#include <bits/stdc++.h>
+#define md 666013
+#define nmax 1001
+using namespace std;
+ifstream fin("mpalind.in");
+ofstream fout("mpalind.out");
+bool P[nmax][nmax];
+int dp[nmax][nmax];
+char a[nmax];
+int n, M;
+int i, j;
+bool palind(int i, int j)
+{
+    for(;i < j; i++, j--)
+        if(a[i] != a[j])
+        return 0;
+    return 1;
+}
+int k;
+int main()
+{
+    fin >> (a + 1);
+    n = strlen(a + 1);
+    for(i = 1; i <= n; i++)
+        dp[i][i] = dp[i][i-1] = 1;
+    for(i = 1; i <= n; i++)
+        for(j = i; j <= n; j++)
+            P[i][j] = palind(i, j);
+    for(k = 1; k < n; k++)
+        for(i = 1; i + k <= n; i++)
+            for(j = i + k; j >= i; j--)
+                if(P[j][i + k])
+                dp[i][i + k] = (dp[i][i + k] + dp[i][j - 1]) % md;
+    for(fin >> M; M; M--)
+    {
+        fin >> i >> j;
+        fout << dp[i][j] << "\n";
+    }
+    return 0;
+}

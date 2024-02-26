@@ -1,0 +1,36 @@
+#include <fstream>
+using namespace std;
+
+#define MAX_S 401
+#define MAX_N 101
+#define FIRST 401
+
+long  long int a[MAX_S][MAX_N][FIRST];
+int N, S, F;
+
+ifstream fin("rec.in");
+ofstream fout("rec.out");
+
+int main()
+{
+    fin >> S >> N >> F;
+    fin.close();
+    S -= N*(F-1), F = 1;
+    for (int i = F; i <= S; i++)
+        a[i][1][i] = 1;
+
+    for (int n = 2; n <= N; n++)
+        for (int s =  n * F; s <= S; s++)
+            for (int k = F; k <= s - (n - 1) * F; k++)
+                if ( n * k < s )
+                    a[s][n][k] = 0;
+                else
+                    for (int p = F; p <= k; p++)
+                        a[s][n][k] += a[s-k][n-1][p];
+
+    long  long int K = 0;
+    for (int i = F; i <= S - (N-1) * F; i++)
+        K += a[S][N][i];
+    fout << K << '\n';
+    fout.close();
+}

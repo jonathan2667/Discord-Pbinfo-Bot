@@ -1,0 +1,11 @@
+#include <iostream>
+using namespace std;
+
+int main ()
+{
+    int n, F, B, T;
+    cin >> F >> B >> n;
+    T = (3 * F + 2 * B) * n;
+    cout << T << endl;
+    return 0;
+}

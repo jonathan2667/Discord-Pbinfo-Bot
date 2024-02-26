@@ -1,0 +1,68 @@
+/*
+    Solutie Veterani, AdiB, Info Oltenia, Echipe 9-10:
+
+*/
+#include <fstream>
+#include <algorithm>
+#define mod 666013
+#define nmax 300005
+using namespace std;
+ifstream f("veterani.in");
+ofstream g("veterani.out");
+int m, n;
+
+int euclid(int a, int b ,int *x , int *y)
+{
+    if (b == 0) {
+        *x = 1;
+        *y = 0;
+        return a;
+    }
+    int x0, y0;
+    int d = euclid(b, a%b, &x0, &y0);
+    *x = y0;
+    *y = x0 - (a/b) * y0;
+    return d;
+
+}
+int inversmodular(int n, int k)
+{
+    int x, y;
+    int d = euclid(n, k, &x, &y);
+    while (x < 0)
+        x += k;
+    return x;
+}
+int fact[nmax * 2], inv_fact[nmax * 2];
+
+int comb(int n, int k)
+{
+    int ret = 1LL * fact[n] * inv_fact[k] % mod * inv_fact[n - k] % mod;
+    return ret;
+}
+int main()
+{
+    int i, j, sol = 0;
+    f >> m >> n;
+    fact[0] = 1; inv_fact[0] = 1;
+
+    for (i = 1; i <= m + n; i++)
+        fact[i] = 1LL * fact[i - 1] * i % mod;
+
+    for (i = 1; i <= m + n; i++)
+        inv_fact[i] = inversmodular(fact[i], mod);
+
+    for (i = 0; i <= min(m, n); i++) {
+        //am fixat i pasi pe diagonala,
+        j = m + n - i;
+        //avem j pasi in total
+        //adunam la solutie : comb(j, i) * comb(j - i, n - i)
+        //combinari de j luate cate i = in cate feluri punem pasii diagonali
+        //combinari de j - i luate cate n - i , in cate feluri punem pasii verticali
+        int a = comb(j, i);
+        int b = comb(j - i, n - i);
+        sol = (1LL * sol + 1LL * a * b) % mod;
+    }
+    g << sol << '\n';
+    return 0;
+}

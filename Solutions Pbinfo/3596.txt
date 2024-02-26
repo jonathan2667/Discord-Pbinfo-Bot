@@ -1,0 +1,230 @@
+#include <fstream>
+#include <algorithm>
+using namespace std;
+int v[20];
+int cifre[20];
+int valcifra[129];
+int valcifra1[9];
+string convert(int a)
+{
+    int cnt=7,cj=a,cnt1=0;
+        while(cj>0)
+        {
+            cnt1++;
+            v[cnt]=cj%10;
+            cnt--;
+            cj/=10;
+        }
+        string s="";
+        for(int i=7-cnt1+1;i<=7;i++)
+        {
+            if(i==1)
+            {
+                for(int j=1;j<=v[i];j++)
+                    s=s+"(M)";
+            }
+            else if(i==2)
+            {
+                if(v[i]==9)
+                {
+                    s=s+"(C)";
+                    s=s+"(M)";
+                }
+                else if(v[i]==4)
+                {
+                    s=s+"(C)";
+                    s=s+"(D)";
+                }
+                else
+                {
+                    int val=v[i];
+                    if(val>=5)
+                        s=s+"(D)";
+                    val%=5;
+                    for(int j=1;j<=val;j++)
+                        s=s+"(C)";
+                }
+            }
+            else if(i==3)
+            {
+                if(v[i]==9)
+                {
+                    s=s+"(X)";
+                    s=s+"(C)";
+                }
+                else if(v[i]==4)
+                {
+                    s=s+"(X)";
+                    s=s+"(L)";
+                }
+                else
+                {
+                    int val=v[i];
+                    if(val>=5)
+                        s=s+"(L)";
+                    val%=5;
+                    for(int j=1;j<=val;j++)
+                        s=s+"(X)";
+                }
+            }
+            else if(i==4)
+            {
+                if(v[i]==9)
+                {
+                    s=s+"M";
+                    s=s+"(X)";
+                }
+                else if(v[i]==4)
+                {
+                    s=s+"M";
+                    s=s+"(V)";
+                }
+                else
+                {
+                    int val=v[i];
+                    if(val>=5)
+                        s=s+"(V)";
+                    val%=5;
+                    for(int j=1;j<=val;j++)
+                        s=s+"M";
+                }
+            }
+            else if(i==5)
+            {
+                if(v[i]==9)
+                {
+                    s=s+"C";
+                    s=s+"M";
+                }
+                else if(v[i]==4)
+                {
+                    s=s+"C";
+                    s=s+"D";
+                }
+                else
+                {
+                    int val=v[i];
+                    if(val>=5)
+                        s=s+"D";
+                    val%=5;
+                    for(int j=1;j<=val;j++)
+                        s=s+"C";
+                }
+            }
+            else if(i==6)
+            {
+                if(v[i]==9)
+                {
+                    s=s+"X";
+                    s=s+"C";
+                }
+                else if(v[i]==4)
+                {
+                    s=s+"X";
+                    s=s+"L";
+                }
+                else
+                {
+                    int val=v[i];
+                    if(val>=5)
+                        s=s+"L";
+                    val%=5;
+                    for(int j=1;j<=val;j++)
+                        s=s+"X";
+                }
+            }
+            else if(i==7)
+            {
+                if(v[i]==9)
+                {
+                    s=s+"I";
+                    s=s+"X";
+                }
+                else if(v[i]==4)
+                {
+                    s=s+"I";
+                    s=s+"V";
+                }
+                else
+                {
+                    int val=v[i];
+                    if(val>=5)
+                        s=s+"V";
+                    val%=5;
+                    for(int j=1;j<=val;j++)
+                        s=s+"I";
+                }
+            }
+        }
+    return s;
+}
+int main ()
+{
+    ifstream cin ("cifre_romane2.in");
+    ofstream cout ("cifre_romane2.out");
+    valcifra['I']=1;
+    valcifra['V']=2;
+    valcifra['X']=3;
+    valcifra['L']=4;
+    valcifra['C']=5;
+    valcifra['D']=6;
+    valcifra['M']=7;
+    valcifra1[1]=1;
+    valcifra1[2]=5;
+    valcifra1[3]=10;
+    valcifra1[4]=50;
+    valcifra1[5]=100;
+    valcifra1[6]=500;
+    valcifra1[7]=1000;
+    int cer,a;
+    cin>>cer;
+    if(cer==1)
+    {
+        cin>>a;
+        cout<<convert(a);
+    }
+    else
+    {
+        string numar;
+        cin>>numar;
+        int nrcif=0;
+        for(int i=0;i<numar.size();i++)
+        {
+            if(numar[i]=='(')
+            {
+                nrcif++;
+                cifre[nrcif]=valcifra[numar[i+1]]+6;
+                i+=2;
+            }
+            else
+            {
+                nrcif++;
+                cifre[nrcif]=valcifra[numar[i]];
+            }
+        }
+        int s=0;
+        for(int i=1;i<=nrcif;i++)
+        {
+            if(cifre[i]<cifre[i+1])
+            {
+                if(cifre[i]>7)
+                    s=s-valcifra1[cifre[i]-6]*1000;
+                else
+                    s=s-valcifra1[cifre[i]];
+            }
+            else
+            {
+                if(cifre[i]>7)
+                    s=s+valcifra1[cifre[i]-6]*1000;
+                else
+                    s=s+valcifra1[cifre[i]];
+            }
+        }
+        string ok=convert(s);
+        if(ok==numar)
+            cout<<s;
+        else
+            cout<<"Numar invalid";
+    }
+    return 0;
+}

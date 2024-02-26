@@ -1,0 +1,24 @@
+#include <iostream>
+#include <fstream>
+#include <cassert>
+
+#define NN 1005
+
+using namespace std;
+
+ifstream fin("secvente.in");
+ofstream fout("secvente.out");
+
+int n, v[NN];
+
+int main(){
+    fin >> n;
+    for(int i=1;i<=n;++i)
+        assert(fin>>v[i]);
+    int C = 1;
+    for(int i=2;i<=n;++i)
+        if(v[i]<v[i-1])
+        C++;
+    fout << C;
+    return 0;
+}

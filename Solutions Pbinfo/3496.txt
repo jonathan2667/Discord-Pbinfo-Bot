@@ -1,0 +1,67 @@
+#include <fstream>
+#define N 10001
+#define M 1000000007
+using namespace std;
+ifstream finu("shop.in");
+ofstream nasu("shop.out");
+int t, k, n, i, sol, d;
+int f[N], prod[5001];
+
+void factoriale()
+{
+    int m, p, pro, j;
+    f[0] = 1;
+    prod[0] = 1;
+    //aici se calculeaza factorialele pana la 5000!
+    //si produsele partiale de factoriale
+    for(i = 1; i <= 5000; i++)
+    {
+        f[i] = (1LL * f[i-1] * i) % M;
+        prod[i] = (1LL * prod[i-1] * f[i]) % M;
+    }
+    //aici calculam n!, unde n=k*(k+1)/2, pentru k>=100;
+    // la factorialul calculat anterior se adauga doi factori deodata
+    //produsul (j+2)*(j+3) difera de j*(j+1) prin 4*j+6
+    p = f[5000];
+    j = 5001;
+    pro = j*(j+1);
+    for(i = 100; i <= 5000; i++)
+    {
+        m = i*(i+1)/2;
+        while(j < m)
+        {
+            p = (1LL * p * pro) % M;
+            pro = (pro + 4 * j + 6) % M;
+            j = j + 2;
+        }
+        if(j == m+1) f[4901+i] = p;
+        else f[4901+i] = (1LL * p * m) % M;
+    }
+}
+
+int pw(int b, int e)
+{
+    if(e == 0) return 1;
+    if(e % 2 == 0)
+    {
+        int x = pw(b, e / 2);
+        return (1LL * x * x) % M;
+    }
+    else return (1LL * b * pw(b, e - 1)) % M;
+}
+
+int main()
+{
+    factoriale();
+    finu >> t;
+    for(i = 1; i <= t; i++)
+    {
+        finu >> k;
+        n = k * (k + 1) / 2;
+        if(n <= 5000) d = f[n];
+        else d = f[4901+k];
+        sol = (1LL * d * pw(prod[k],M-2)) % M;
+        nasu << sol << "\n";
+    }
+    return 0;
+}

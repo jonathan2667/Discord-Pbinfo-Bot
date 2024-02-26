@@ -1,0 +1,55 @@
+#include<stdio.h>
+int t,s,k,nr,j,i,l,per1,per2,p,z,it;
+int d[100009];
+int x[100009];
+int main()
+{
+    freopen("numere4.in","rt",stdin);
+    freopen("numere4.out","wt",stdout);
+    scanf("%d %d",&t,&k);
+    p=1;
+    for (i=1;i<k;i++)p=p*10;
+    for (it=1;it<=t;it++)
+    {
+        scanf("%d",&s);
+
+        for (i=0;i<p*10;i++)
+            d[i]=-1;
+        x[0]=1;
+        nr=1;
+        for (i=1;i<k;i++)
+        {
+            x[i]=0;
+            for (l=1;l<=k;l++)
+            {
+                if (i-l>=0)
+                    x[i]=(x[i]+x[i-l])%10;
+            }
+            nr=nr*10+x[i];
+            d[nr]=i;
+        }
+        for (i=k;i<=s; i++)
+        {
+            x[i]=0;
+            for (l=1;l<=k;l++)
+            {
+                if (i-l>=0)
+                    x[i]=(x[i]+x[i-l])%10;
+            }
+            nr=nr%p;
+            nr=nr*10+x[i];
+            if (d[nr]!=-1 && nr>0) {
+                per1=d[nr]; per2=i;break;
+            }
+            else d[nr]=i;
+        }
+        if (i>s)z=x[s];
+        else z=x[s%(per2-per1)];
+        printf("%d ",z);
+    }
+
+    fclose(stdout);
+    fclose(stdin);
+    return 0;
+}
+

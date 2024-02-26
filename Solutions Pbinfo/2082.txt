@@ -1,0 +1,54 @@
+#include <bits/stdc++.h>
+#define DMAX 730
+
+using namespace std;
+
+ifstream fin("sierpinski.in");
+ofstream fout("sierpinski.out");
+
+vector< vector<bool> > a(DMAX);
+int n, w;
+
+/// Functia care initializeaza "matricea":
+void init() {
+    for (int i = 1; i < DMAX; i++)
+        a[i].resize(DMAX);
+}
+
+/// Functia recursiva:
+void draw(int x, int y, int w) {
+    int pe3 = w / 3; // "Umplem" cu 1 patratul din mijloc:
+    for (int i = x + pe3; i <= x + 2 * pe3 - 1; i++)
+        for (int j = y + pe3; j <= y + 2 * pe3 - 1; j++)
+            a[i][j] = true;
+
+    // Dupa ce am format patrate de lungime minima (1), ne oprim:
+    if (pe3 == 1)
+        return;
+
+    // Umplem cele 8 patrate:
+    draw(x          , y          , pe3);
+    draw(x          , y +     pe3, pe3);
+    draw(x          , y + 2 * pe3, pe3);
+    draw(x +     pe3, y          , pe3);
+    draw(x +     pe3, y + 2 * pe3, pe3);
+    draw(x + 2 * pe3, y          , pe3);
+    draw(x + 2 * pe3, y +     pe3, pe3);
+    draw(x + 2 * pe3, y + 2 * pe3, pe3);
+}
+
+int main() {
+    fin >> n;
+    w = pow(3, n);
+    init();
+
+    draw(1, 1, w);
+    for (int i = 1; i <= w; i++) {
+        for (int j = 1; j <= w; j++)
+            fout << a[i][j] << ' ';
+        fout << '\n';
+    }
+
+    fout.close();
+    return 0;
+}

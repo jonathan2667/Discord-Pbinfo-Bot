@@ -1,0 +1,14 @@
+void FStergeDuplicate(Nod *&L)
+{
+    Nod *p, *q;
+    if (L == NULL) return;
+    if (L->next == NULL) return;
+    for (p = L; p->next != NULL; )
+        if (p->val == p->next->val)
+        {
+            q = p->next;
+            p->next = q->next;
+            delete q;
+        }
+        else p = p->next;
+}

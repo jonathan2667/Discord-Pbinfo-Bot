@@ -1,0 +1,44 @@
+#include <iostream>
+using namespace std;
+
+int n,m,a[101][101];
+
+int main()
+{
+    cin >> n >> m;
+    for(int i = 1 ; i <= n ; ++i)
+        for(int j = 1 ; j <= m ; ++j)
+            cin >> a[i][j];
+    
+    for(int i = 1 ; i <= n ; i ++)
+    {
+        //verificăm dacă a[i][1] este număr prim
+        bool prim = true;
+        int x = a[i][1];
+        if(x < 2)
+            prim = false;
+        if(x > 2 && x % 2 == 0)
+            prim = false;
+        for(int d = 3 ; d * d <= x && prim ; d += 2)
+            if(x % d == 0)
+                prim = false;
+        if(prim)
+        {
+            // daca a[i][1] este prim, oglindim linia i
+            for(int j =1 , k = m ; j < k ; j ++, k --)
+            {
+                int aux = a[i][j];
+                a[i][j] = a[i][k];
+                a[i][k] = aux;
+            }
+        }
+    }
+    
+    for(int i = 1 ; i <= n ; ++i)
+    {
+        for(int j = 1 ; j <= m ; ++j)
+            cout << a[i][j] << " ";
+        cout << endl;
+    }
+    return 0;
+}

@@ -1,0 +1,81 @@
+#include <iostream>
+#define M 1000000007
+#define ll long long
+using namespace std;
+ll n, k, p, i, s[101], numi, numa, inv, ins ;
+
+void gcd(ll &x, ll &y, int a, int b)
+{
+     if (!b)
+         x = 1, y = 0;
+     else
+     {
+         gcd(x, y, b, a % b);
+         ll aux = x;
+         x = y;
+         y = aux - y * (a / b);
+     }
+}
+
+ll fibo(ll m)
+{
+    ll a, b, c, d, x, y, z, t, u, v, w, q ;
+    a = 1 ; b = 1 ;
+    c = 1 ; d = 0 ;
+    x = 1 ; y = 0 ;
+    z = 0 ; t = 1 ;
+    m-- ;
+    while (m > 0)
+    {
+        if(m & 1)
+        {
+            u = (a * x + b * z) % M ;
+            v = (a * y + b * t) % M ;
+            w = (c * x + d * z) % M ;
+            q = (c * y + d * t) % M ;
+            x = u ; y = v ;
+            z = w ; t = q ;
+            m-- ;
+        }
+        u = (a * a + b * c) % M ;
+        v = (a * b + b * d) % M ;
+        w = (a * c + c * d) % M ;
+        q = (b * c + d * d) % M ;
+        a = u ; b = v ;
+        c = w ; d = q ;
+        m = m / 2 ;
+    }
+    return x ;
+}
+
+int main()
+{
+    cin >> n >> k >> p ;
+    
+    // calculez numitorul fractiei S vezi indicatii
+    
+    s[0] = 2 ;
+    s[1] = 1 ;
+    for (i = 2 ; i <= k ; i++)
+        s[i] = ( s[i-1] + s[i-2] ) % M ;
+    if (k % 2 == 0) numi = ( 2 - s[k] + M ) % M ;
+    else numi = ( -s[k] + M ) % M ;
+    
+    // calculez inversul modular al numitorului modulo M
+    
+    inv = 0 ;
+    gcd(inv, ins, numi, M);
+    if (inv <= 0)
+       inv = M + inv % M ;
+    
+    // calculez numaratorul fractiei S
+    
+    numa = (fibo(p) - fibo(k*n+k+p) + M) % M ;
+    if(k % 2 == 0) numa = (numa + fibo(k*n+p)) % M ;
+    else numa = (numa - fibo(k*n+p) + M) % M ;
+    if(p % 2 == 0) numa = (numa + fibo(k-p)) % M ;
+    else numa = (numa - fibo(k-p) + M) % M ;
+
+    cout << (numa * inv) % M ;
+    return 0;
+}

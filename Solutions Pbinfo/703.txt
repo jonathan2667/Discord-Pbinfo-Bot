@@ -1,0 +1,33 @@
+#include<stdio.h>
+int n, a[1000010], b[1000010];
+int i, j, p, ok;
+
+int main()
+{
+    freopen("salturi.in","rt",stdin);
+    freopen("salturi.out","wt",stdout);
+    scanf("%d",&n);
+    for (i=1;i<=n;i++)
+    {
+        scanf("%d",&a[i]);
+        if (i + a[i] > n) a[i] = n + 1 - i;
+    }
+
+    b[0]=0;
+    p=0;
+    a[0]=1;
+    ok=1;
+    for (i=0;i<=n && p<=n;i++)
+    {
+        if (p<i){ok=-1;break;}
+            for (j=p+1;j<=i+a[i];j++)
+            {
+                    b[j]=b[i]+1;
+                    p++;
+            }
+    }
+    if (ok==-1)b[n+1]=0;
+    printf("%d",b[n+1]-1);
+    fclose(stdout);
+    return 0;
+}

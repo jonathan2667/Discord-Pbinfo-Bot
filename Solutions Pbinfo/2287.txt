@@ -1,0 +1,62 @@
+/* Dobricean Ionut,  Bistrita-Nasaud
+ * 100 puncte
+ * Programare Dinamica si Parsare
+ * Complexitate O(Dim + n)
+*/ 
+
+#include <cstdio>
+#include <iostream>
+using namespace std;
+
+void Dynamic(); void Get (int &x);
+const int Dim = 100001 , mod = 666013;
+int D[Dim];
+int S[Dim];
+int n , X ;
+
+int main() {
+    freopen("grexy.in", "r", stdin);
+    freopen("grexy.out", "w", stdout);
+    Dynamic();
+    Get(n);
+    for ( int i = 1; i <= n; ++i) { 
+        Get(X);
+        cout << ( S[X] - D[X] + mod ) % mod << "\n";
+        }
+    
+}
+
+
+
+void Dynamic() {
+    
+    D[1] = 26; // toate literele sunt cuv palindromice
+    S[1] = 26;
+    for ( int i = 2; i < Dim; ++i) {
+        S[i] = (S[i-1] * 26 ) % mod; // numarul total de cuvinte
+        if( i % 2 ) 
+            D[i] = ( 26 * S[i / 2] ) % mod; // cuvintele de lungime impara
+            else
+                D[i] = S[i/2]; // cuvintele de lungime para
+        }
+                
+}
+
+
+const int Lim = 10000000;
+int u =  Lim - 1;
+char s[Lim];
+
+void Next () {
+    
+    if (++u == Lim)
+        std::fread(s, 1, Lim, stdin), u = 0;
+}
+
+void Get (int &x) {
+    
+    for (; s[u] < '0' || s[u] > '9'; Next());
+    for (x = 0; s[u] >= '0' && s[u] <= '9'; Next())
+           x = x * 10 + s[u] - '0';
+    
+}

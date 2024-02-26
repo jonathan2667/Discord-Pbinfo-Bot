@@ -1,0 +1,30 @@
+#include <iomanip>
+#include <fstream>
+#include <iostream>
+#include <cassert>
+using namespace std;
+
+ifstream fin("cifreord1.in");
+ofstream fout("cifreord1.out");
+
+int a[10];
+
+int main(){
+    int x;
+    while(fin >> x)
+        do
+        {
+            a[x%10]++;
+            x /= 10;
+        }
+        while(x);
+    x = 0;
+    for(int i=9 ; i>=0 ; --i)
+        for(int j = 1 ; j<= a[i] ; ++j){
+            fout << i << " ";
+            x ++;
+            if(x%20 == 0)
+                fout << endl;
+        }
+    return 0;
+}

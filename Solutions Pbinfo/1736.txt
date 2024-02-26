@@ -1,0 +1,111 @@
+/*
+    prof. Eugen Nodea
+    Complexitate : O(n) / deque / parsare
+*/
+# include <cstdio>
+# include <cstdlib>
+# include <deque>
+# define NMax 500005
+using namespace std;
+
+const int Lim = 1 << 16;
+deque <int> d;
+int i, j, n, m, st, dr, Lmax;
+long long costAct, costMinn;
+int H[NMax], costMaxim;
+int pos =  Lim - 1;
+char s[Lim];
+
+void Next()
+{
+    if (++pos == Lim)
+        fread(s, 1, Lim, stdin), pos = 0;
+}
+void Get(int &x)
+{
+    for (; s[pos] < '0' || s[pos] > '9'; Next());
+    for (x = 0; s[pos] >= '0' && s[pos] <= '9'; Next())
+        x = x * 10 + s[pos] - '0';
+}
+void bagaDeque(int poz)
+{
+    while (d.size() && H[poz] <= H[d.back()])
+        d.pop_back();
+
+    d.push_back(poz); ++dr;
+}
+
+bool avanseaza(int poz)
+{
+    int minn;
+    if (d.size()) minn=H[d.front()];
+             else minn=H[poz];
+
+    if (H[poz] >= minn) { /// aduc H[poz] la inaltimea minimului
+        long long costNou = costAct + (H[poz] - minn);
+        if (costNou <= costMaxim) {
+            bagaDeque (poz);
+            costAct = costNou;
+            return 1;
+        } else return 0;
+    } else { /// in acest caz trebuie sa le aduc pe toate celelate la inaltimea H[poz]
+             /// - toate anterioarele sunt la inaltimea minn
+             /// --> desi imi trebuie (minn - H[poz]) * NMax scanduri batai
+         long long costNou = costAct + 1LL * (minn - H[poz]) * (dr - st + 1);
+         if (costNou <= costMaxim) {
+            bagaDeque (poz);
+            costAct = costNou;
+            return 1;
+        } else return 0;
+    }
+}
+
+void scoate(int poz)
+{
+    int minn;
+    if (d.front() == poz) d.pop_front();
+
+    if (d.size()) minn=H[d.front()];
+             else minn=H[poz];
+    int Hact = H[poz]; /// cel pe care il scot
+
+    if (Hact >= minn) { /// Hact era adus la inaltimea minn prin (Hact - minn) stocniri
+        costAct -= (Hact - minn);
+        ++st;
+    } else { /// Hact era minimul pe acea secventa
+             /// --> asta inseamna ca toate celelate elemente erau aduse la inaltimea Hact
+             /// --> desi le urcam pe toate la inaltimea minn
+        costAct -= 1LL * (dr - st) * (minn - Hact);
+        ++st;
+    }
+}
+
+int main ()
+{
+    int x;
+
+    freopen("cuie.in",  "r", stdin);
+    freopen("cuie.out", "w", stdout);
+
+    Get(n);  Get(costMaxim);
+
+    for (int i=1; i<=n; ++i){
+        Get(x);
+        H[i] = x;
+    }
+
+    st = 1; costAct = 0;
+    /// mereu stiu lungimea si costul ca sa fac o subseventa maximala
+    /// care se termina pe pozitia i
+    for (int i=1; i<=n; ++i) {
+        while (! avanseaza (i)) {
+            scoate(st);
+        }
+        if (dr - st + 1 > Lmax) Lmax = dr - st + 1, costMinn = costAct;
+        else if (dr - st + 1 == Lmax && costAct < costMinn) costMinn = costAct;
+    }
+
+    printf("%d %lld\n", Lmax, costMinn);
+
+    return 0;
+}

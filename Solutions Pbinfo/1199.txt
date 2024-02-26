@@ -1,0 +1,287 @@
+#include <cstdio>
+#include <set>
+#include <vector>
+
+using namespace std;
+
+#define maxn 200010
+#define maxk 31
+#define maxl 201000
+
+int n, m;
+int p[maxn];
+int sp[maxn], nsp, who[maxn];
+int lant[maxn], d[maxn][2];
+int f[maxn], g[maxn], g2[maxn];
+vector<int> v[maxn], w[maxn];
+int conflict[maxk][maxk];
+
+int nl;
+struct lant
+{
+    int d[2][2];
+    int c1, c2;
+} l[maxl];
+
+pair<pair<int, int>, pair<int, int> > getChainResult(int a[])
+{
+    // Dinamica pe lant - d[i][j] = suma maxima din primele i noduri de pe lant
+    // j=0 daca am luat primul nod, j=1 daca nu
+
+    d[0][0]=d[0][1]=0;
+    d[1][0]=p[a[1]];
+    d[1][1]=0;
+
+    int lg=a[0];
+
+  //  printf("*%d ", a[1]);
+
+    for(int i=2; i<=lg; ++i)
+    {
+      //  printf("%d ", a[i]);
+        for(int j=0; j<2; ++j)
+            d[i][j]=max(d[i-2][j]+p[a[i]], d[i-1][j]);
+    }
+  //  printf("\n");
+    return make_pair(make_pair(d[lg][0], d[lg-1][0]), make_pair(d[lg][1], d[lg-1][1]));
+}
+
+void newChain(int i)
+{
+    ++nl;
+    if(g2[i]==0) //Nodul i este singur pe lant
+    {
+        l[nl].c1=who[v[i][0]];
+
+        if(g[i]>1)
+            l[nl].c2=who[v[i][1]];
+        else
+            l[nl].c2=nsp+1;
+
+        l[nl].d[0][0]=p[i];
+     /*   printf("%d %d\n", l[nl].c1, l[nl].c2);
+
+        for(int a=0; a<2; ++a)
+            for(int b=0; b<2; ++b)
+                printf("%d ", l[nl].d[a][b]);
+        printf("\n");*/
+        return;
+    }
+
+    //Capatul 1
+
+    l[nl].c1=nsp+1;
+    for(int j=0; j<v[i].size(); ++j)
+        if(g[v[i][j]]>2)
+            l[nl].c1=who[v[i][j]];
+
+    //Construieste lantul
+
+    lant[0]=0;
+    lant[++lant[0]]=i;
+
+    int x=w[i][0];
+
+    lant[++lant[0]]=x;
+
+    f[i]=f[x]=1;
+
+    while(g2[x]==2)
+    {
+        if(f[w[x][0]]==1)
+            x=w[x][1];
+        else
+            x=w[x][0];
+
+        f[x]=1;
+
+        lant[++lant[0]]=x;
+    }
+
+    //Capatul 2
+
+    l[nl].c2=nsp+1;
+    for(int j=0; j<v[x].size(); ++j)
+        if(g[v[x][j]]>2)
+            l[nl].c2=who[v[x][j]];
+
+    //valorile lantunului - l[nl].d[0/1][0/1] valoarea lantului daca
+    //am luat (1) sau n-am luat (0) fiecare din capete
+
+    pair<pair<int, int>, pair<int, int> > rez = getChainResult(lant);
+
+    l[nl].d[0][0]=rez.first.first;
+    l[nl].d[0][1]=rez.first.second;
+    l[nl].d[1][0]=rez.second.first;
+    l[nl].d[1][1]=rez.second.second;
+
+  /*  printf("%d %d\n", l[nl].c1, l[nl].c2);
+
+    for(int a=0; a<2; ++a)
+        for(int b=0; b<2; ++b)
+            printf("%d ", l[nl].d[a][b]);
+    printf("\n");*/
+}
+
+int solveCycle()
+{
+    //Luam nodul 1 si adaugam toate nodurile din ciclu
+    int x=1;
+
+    while(f[x]==0)
+    {
+        f[x]=1;
+        lant[++lant[0]]=x;
+
+        if(f[v[x][0]]==1)
+            x=v[x][1];
+        else
+            x=v[x][0];
+    }
+
+    pair<pair<int, int>, pair<int, int> > rez = getChainResult(lant);
+
+    //Consideram toate variantele mai putin cea in care luam atat primul cat si ultimul nod din lant
+    return max(rez.first.second, max(rez.second.second, rez.second.first));
+}
+
+int solveChain()
+{
+    //Construim lantul de la primul nod cu grad 1
+    int x=1;
+
+    for(int i=1; i<=n; ++i)
+        if(g[i]==1)
+            x=i;
+
+    while(f[x]==0)
+    {
+        f[x]=1;
+        lant[++lant[0]]=x;
+
+        for(int i=0; i<v[x].size(); ++i)
+            if(f[v[x][i]]==0)
+            {
+                x=v[x][i];
+                break;
+            }
+    }
+
+    pair<pair<int, int>, pair<int, int> > rez = getChainResult(lant);
+
+    //Oricare varianta e buna
+    return max(max(rez.first.first, rez.first.second), max(rez.second.first, rez.second.second));
+}
+
+int solve()
+{
+    int has1=0; //Graful are noduri cu grad 1 - Da = 1, Nu = 0
+    int has3=0; //Graful are noduri cu grad mai mare sau egal cu 3 - Da = 1, Nu = 0
+
+    for(int i=1; i<=n; ++i)
+    {
+        if(g[i]>2) //Nodul i este nod "special"
+        {
+            has3=1;
+            sp[nsp++]=i;
+            who[i]=nsp;
+        }
+        if(g[i]<2)
+            has1=1;
+    }
+
+    if(has1==0 && has3==0) //Nu are nici noduri de grad 1 nici mai mari ca 3 -> e ciclu
+        return solveCycle();
+    if(has3==0) //Nu are noduri de grad mai mare sau egal cu 3 -> e lant
+        return solveChain();
+
+    //Construim graful format doar din nodurile cu grad <= 2
+    for(int i=1; i<=n; ++i)
+    {
+        if(g[i]>2)
+            continue;
+
+        for(int j=0; j<v[i].size(); ++j)
+            if(g[v[i][j]]<=2)
+            {
+                w[i].push_back(v[i][j]);
+                ++g2[i];
+            }
+    }
+
+    //Procesam fiecare lant dintr-un nod care in noul graf are gradul <= 2
+    for(int i=1; i<=n; ++i)
+    {
+        if(g[i]>2 || f[i]==1 || g2[i]>1)
+            continue;
+
+        newChain(i);
+    }
+
+    //Conflict[i][j] = nu putem pune intr-o solutie si nodul special i si nodul special j
+    for(int i=0; i<nsp; ++i)
+    {
+        int nod=sp[i];
+        for(int j=0; j<v[nod].size(); ++j)
+            conflict[i+1][who[v[nod][j]]]=1;
+    }
+
+    int sol=0;
+
+    //Pentru configuratia i, bitul i = 1 daca luam nodul special i, 0 daca nu
+    for(int i=0; i<(1<<nsp); ++i)
+    {
+        int ok=1;
+        for(int j=0; j<nsp; ++j)
+            for(int k=0; k<nsp; ++k)
+                if(conflict[j+1][k+1] && ((i>>j)&1)==1 && ((i>>k)&1)==1)
+                    ok=0;
+
+        if(!ok)
+            continue;
+
+        int rez=0;
+
+        //Adaugam la solutia curenta nodurile speciale selectate
+        for(int j=0; j<nsp; ++j)
+            if((i>>j)&1)
+                rez+=p[sp[j]];
+
+        //Pentru fiecare lant selectam configuratia potrivita
+        for(int j=1; j<=nl; ++j)
+        {
+            int c1=l[j].c1-1;
+            int c2=l[j].c2-1;
+            rez+=l[j].d[(i>>c1)&1][(i>>c2)&1];
+        }
+
+        if(rez>sol)
+            sol=rez;
+
+    }
+
+    return sol;
+}
+
+int main()
+{
+    freopen("metrou.in", "r", stdin);
+    freopen("metrou.out", "w", stdout);
+
+    scanf("%d%d", &n, &m);
+    for(int i=1; i<=n; ++i)
+        scanf("%d", &p[i]);
+    for(int i=1; i<=m; ++i)
+    {
+        int a, b;
+        scanf("%d%d", &a, &b);
+        v[a].push_back(b);
+        v[b].push_back(a);
+        ++g[a];
+        ++g[b];
+    }
+
+    printf("%d\n", solve());
+
+    return 0;
+}

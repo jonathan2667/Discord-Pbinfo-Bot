@@ -1,0 +1,14 @@
+#include <fstream>
+using namespace std;
+ifstream fin ("xyz.in");
+ofstream fout ("xyz.out");
+int x, y, z, n;
+int main()
+{
+  fin >> x >> y >> z;
+  n = y;
+  for (int i = 1; i <= x - 1; i++)
+    n = n * 10 + z;
+  fout << n;
+  return 0;
+}

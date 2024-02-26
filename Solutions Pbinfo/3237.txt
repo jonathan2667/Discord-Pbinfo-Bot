@@ -1,0 +1,357 @@
+#include <iostream>
+#include <cstdlib>
+#include <time.h>
+#define ll long long
+using namespace std;
+ll m, n, k, i, j, a[10001], b[10001], h, f, u, w, nr, prod[10001], no, x,q;
+ll p[10001], viz[10001], pr[10001], vx[10001],vizz[10001],sir[10001];
+ll v[10001],nu,la,lb,temp[10001],tra, rest, ok;
+ll c[95][95];
+
+void gcd(ll &xa, ll &ya, ll ac, ll bc)
+{
+     if (!bc)
+         xa = 1, ya = 0;
+     else
+     {
+         gcd(xa, ya, bc, ac % bc);
+         ll aux = xa;
+         xa = ya;
+         ya = aux - ya * (ac / bc);
+     }
+}
+
+ll invers(ll xa, ll N)
+{
+    ll ins, inv=0;
+    gcd(inv, ins, xa, N);
+    if (inv <= 0)
+       inv = N + inv % N;
+    return inv;
+}
+
+void prime()
+{
+    p[1]=1;
+    nr = 0;
+    for(i = 2; i <= 10000; i++)
+      if(p[i]==0)
+      {
+        nr++;
+        pr[nr] = i;
+        j = i+i;
+        while(j <= 10000)
+        {
+            p[j] = 1;
+            j = j+i;
+        }
+      }
+}
+
+ll ab(ll e)
+{
+    if(e>0)return e;
+    else return -e;
+}
+
+void produs(ll y)
+{
+    ll t = 0, h, cif;
+    for(h = 1; h <= no; h++)
+    {
+        cif = (prod[h]*y+t)%10;
+        t = (prod[h]*y+t)/10;
+        prod[h] = cif;
+    }
+    while(t > 0)
+    {
+        no++;
+        prod[no] = t%10;
+        t = t/10;
+    }
+}
+
+void produs2(ll y)
+{
+    ll t = 0, h, cif;
+    for(h = 1; h <= nu; h++)
+    {
+        cif = (temp[h]*y+t)%10;
+        t = (temp[h]*y+t)/10;
+        temp[h] = cif;
+    }
+    while(t > 0)
+    {
+        nu++;
+        temp[nu] = t%10;
+        t = t/10;
+    }
+}
+
+void aduna1()
+{
+    ll t = 0, h, cif;
+    if(la <= nu)
+    {
+        for(h = 1; h <= la; h++)
+        {
+            cif = (a[h]+temp[h]+t)%10;
+            t = (a[h]+temp[h]+t)/10;
+            a[h] = cif;
+        }
+        for(h = la+1; h <= nu; h++)
+        {
+            cif = (temp[h]+t)%10;
+            t = (temp[h]+t)/10;
+            a[h] = cif;
+        }
+        la = nu;
+        while(t>0)
+        {
+            la++;
+            a[la] = t%10;
+            t = t/10;
+        }
+    }
+    else
+    {
+        for(h = 1; h <= nu; h++)
+        {
+            cif = (a[h]+temp[h]+t)%10;
+            t = (a[h]+temp[h]+t)/10;
+            a[h] = cif;
+        }
+        for(h = nu+1; h <= la; h++)
+        {
+            cif = (a[h]+t)%10;
+            t = (a[h]+t)/10;
+            a[h] = cif;
+        }
+
+        while(t>0)
+        {
+            la++;
+            a[la] = t%10;
+            t = t/10;
+        }
+    }
+}
+
+void aduna2()
+{
+    ll t = 0, h, cif;
+    if(lb <= nu)
+    {
+        for(h = 1; h <= lb; h++)
+        {
+            cif = (b[h]+temp[h]+t)%10;
+            t = (b[h]+temp[h]+t)/10;
+            b[h] = cif;
+        }
+        for(h = lb+1; h <= nu; h++)
+        {
+            cif = (temp[h]+t)%10;
+            t = (temp[h]+t)/10;
+            b[h] = cif;
+        }
+        lb = nu;
+        while(t>0)
+        {
+            lb++;
+            b[lb] = t%10;
+            t = t/10;
+        }
+    }
+    else
+    {
+        for(h = 1; h <= nu; h++)
+        {
+            cif = (b[h]+temp[h]+t)%10;
+            t = (b[h]+temp[h]+t)/10;
+            b[h] = cif;
+        }
+        for(h = nu+1; h <= lb; h++)
+        {
+            cif = (b[h]+t)%10;
+            t = (b[h]+t)/10;
+            b[h] = cif;
+        }
+
+        while(t>0)
+        {
+            lb++;
+            b[lb] = t%10;
+            t = t/10;
+        }
+    }
+}
+
+void scad_prod_din_a()
+{
+    ll h;
+    while(la > no)
+    {
+       for(h = 1; h <= la; h++)
+           if(a[h]>=prod[h])
+              a[h] = a[h]-prod[h];
+           else
+           {
+              a[h] = a[h]+10-prod[h];
+              a[h+1]--;
+           }
+       while(a[la]==0)la--;
+    }
+    ok = 1;
+    while((la==no)and(ok==1))
+    {
+        h = la;
+        while((a[h]==prod[h])and(h>=1))h--;
+        if(a[h]>prod[h])
+        {
+            ok = 1;
+            for(h = 1; h <= no; h++)
+               if(a[h]>=prod[h])
+                  a[h] = a[h]-prod[h];
+               else
+               {
+                  a[h] = a[h]+10-prod[h];
+                  a[h+1]--;
+               }
+            while(a[la]==0)la--;
+        }else ok = 0;
+    }
+}
+
+void scad_prod_din_b()
+{
+    while(lb > no)
+    {
+       ll h;
+       for(h = 1; h <= lb; h++)
+           if(b[h]>=prod[h])
+              b[h] = b[h]-prod[h];
+           else
+           {
+              b[h] = b[h]+10-prod[h];
+              b[h+1]--;
+           }
+       while(b[lb]==0)lb--;
+    }
+    ok = 1;
+    while((lb==no)and(ok==1))
+    {
+        h = lb;
+        while((b[h]==prod[h])and(h>=1))h--;
+        if(b[h]>prod[h])
+        {
+            ok = 1;
+            for(h = 1; h <= no; h++)
+               if(b[h]>=prod[h])
+                  b[h] = b[h]-prod[h];
+               else
+               {
+                  b[h] = b[h]+10-prod[h];
+                  b[h+1]--;
+               }
+            while(b[lb]==0)lb--;
+        }else ok = 0;
+    }
+}
+
+int main()
+{
+    prime();
+    cin >> m >> n;
+    k = 0;
+    for(i = 0; i < m; i++)
+       for(j = 0; j < n; j++)
+           if(c[i][j]==0)
+           {
+              k++;
+              for(h = 0; h < m; h++)
+                for(u = 0; u < n; u++)
+                  if((c[h][u]==0)and((ab(i-h)%pr[k])==0)and((ab(j-u)%pr[k])==0))
+                    {c[h][u] = pr[k];q++;}
+           }
+    no = 1;
+    prod[1] = 1;
+    for(j = 0; j < n; j++)
+        for(i = 0; i < m; i++)
+           if(viz[c[i][j]]==0)
+           {
+               produs(c[i][j]);
+               viz[c[i][j]]=1;
+           }
+    la = 1;
+    a[1] = 0;
+    for(j = 1; j < n; j++)
+        for(i = 0; i < m; i++)
+    {
+            w = c[i][j];
+            if(v[w]==0)
+            {
+                v[w] = 1;
+                nu = no;
+                tra = 0;
+                for(h = no; h >= 1; h--)
+                {
+                   tra = tra*10+prod[h];
+                   temp[h] = tra/w;
+                   tra = tra%w;
+                }
+                while(temp[nu]==0)nu--;
+                rest = 0;
+                for(h = nu; h >= 1; h--)
+                {
+                    rest = rest*10+temp[h];
+                    rest = rest%w;
+                }
+                x = invers(rest,w);
+                q = (w-j%w)*x;
+                produs2(q);
+                aduna1();
+
+            }
+    }
+    scad_prod_din_a();
+    lb = 1;
+    b[1] = 0;
+    for(i = 1; i < m; i++)
+        for(j = 0; j < n; j++)
+    {
+            w = c[i][j];
+            if(vx[w]==0)
+            {
+                vx[w] = 1;
+                nu = no;
+                tra = 0;
+                for(h = no; h >= 1; h--)
+                {
+                   tra = tra*10+prod[h];
+                   temp[h] = tra/w;
+                   tra = tra%w;
+                }
+                while(temp[nu]==0)nu--;
+                rest = 0;
+                for(h = nu; h >= 1; h--)
+                {
+                    rest = rest*10+temp[h];
+                    rest = rest%w;
+                }
+                x = invers(rest,w);
+                q = (w-i%w)*x;
+                produs2(q);
+                aduna2();
+
+            }
+    }
+    scad_prod_din_b();
+
+    for(i = lb; i >= 1; i--)
+        cout << b[i];
+    cout << " ";
+    for(i = la; i >= 1; i--)
+        cout << a[i];
+
+    return 0;
+}

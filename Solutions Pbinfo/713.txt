@@ -1,0 +1,78 @@
+/*
+    Solutie ce determina secv. palindromica in O(Lmax^2),
+    Lmax - lungimea maxima a unui sir
+    optimizata 100p
+    prof. Eugen Nodea
+*/
+# include <fstream>
+# include <cstring>
+
+using namespace std;
+
+ifstream fin("secvpal1.in");
+ofstream fout("secvpal1.out");
+
+char s[50003],c;
+int N, i, L, nr, S, j;
+int a[50003];
+
+inline int lmax(char s[])
+{
+    int st, dr, centru;
+    int k = 0, i, p = 0;
+    int Max = 0, n = strlen(s);
+    //pot avea un secv. pald. de lungime para sau impara
+    for(p=0; p<=1; ++p)
+    {
+        for(i=0; 2 * (n - i ) > Max; ++i)
+        {
+            //alegem centrul palindromului
+            centru = i;
+            st = dr = centru;   // palindrom cu nr. elem. par
+            k = -1;
+            if(p == 1)          // palindrom cu nr. elem. impar
+            {
+                ++dr;
+                k = 0;
+            }
+            //incercam sa marim palindromul in stanga si dreapta
+            while(s[st] == s[dr] && st>=0 && dr<n)
+            {
+                        k += 2;
+                        --st; ++dr;
+            }
+            if(k > Max)
+            {
+                Max = k;
+            }
+        }
+    }
+    return Max;
+}
+
+int main()
+{
+    fin >> N >>L;
+    fin.get();
+    for (i=1; i<=N; ++i)
+    {
+        fin.getline(s,50003);
+        a[i] = lmax(s);
+    }
+
+    i = 1; S = 0; nr = 0; j = 1;
+    while (i<=N)
+    {
+        while (S + a[j] <= L && j<=N)
+        {
+            S += a[j];
+            ++j;
+        }
+        if (S == L) nr ++;
+        S = S - a[i];
+        ++i;
+    }
+    fout << nr << "\n";
+    return 0;
+}
+

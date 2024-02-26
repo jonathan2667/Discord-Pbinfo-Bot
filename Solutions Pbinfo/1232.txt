@@ -1,0 +1,43 @@
+/*
+    Solutie Eugen Nodea
+    relatie de recurenta: nr(n, k) = nr(n, k-1)+nr(n-1, k)-nr(n-1, k-n)
+    complexitate: O(n * k)
+*/
+# include <fstream>
+# define Mod 30103
+# define NMax 125001
+using namespace std;
+
+ifstream f("kswap.in");
+ofstream g("kswap.out");
+
+int n, k;
+int nr0[NMax], nr[NMax];
+
+int main ()
+{
+    int i, j, m;
+
+    f >> n >> k;
+
+    nr0[1] = 0;
+    nr0[0] = 1;
+    for(i=2; i<=n; ++i)
+    {
+        nr[0] = 1;
+        m=(i*i - i + 2) >> 1;
+        for(j=1; j<=m; ++j)
+        {
+            if(j<i)
+                nr[j] = (nr[j-1] + nr0[j]) % Mod;
+            else
+                nr[j] = (Mod + nr[j-1] + nr0[j] - nr0[j-i]) % Mod;
+        }
+        for(j=1; j<=m; ++j)
+            nr0[j] = nr[j];
+    }
+
+    g << nr[k] << "\n";
+
+    return 0;
+}

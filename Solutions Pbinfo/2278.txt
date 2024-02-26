@@ -1,0 +1,42 @@
+/* 
+ * File:   main.c
+ * Author: alexc
+ * Project name: Inmultirea matricilor
+ * 
+ * Created on 09 noiembrie 2017, 07:27
+ */
+
+#include <stdio.h>
+#include <stdlib.h>
+
+int A[1001][1001], B[1001][1001], lA, cA, lB, cB, i, j, k, s;
+int main() {
+    FILE *f = fopen("mmultiplication.in", "r");
+    FILE *g = fopen("mmultiplication.out", "w");
+    //citire A
+    fscanf(f, "%d%d", &lA, &cA);
+    for (i=1; i<=lA; i++)
+        for (j=1; j<=cA; j++)
+            fscanf(f, "%d", &A[i][j]);
+    //citire B
+    fscanf(f, "%d%d", &lB, &cB);
+    for (i=1; i<=lB; i++)
+        for (j=1; j<=cB; j++)
+            fscanf(f, "%d", &B[i][j]);
+    if (cA != lB) {
+        //verifica daca e posibila inmultirea
+        fprintf(g, "-1");
+        return 0;
+    }
+    //inmultire si afisare
+    for (i=1; i<=lA; i++) {
+        for (j=1; j<=cB; j++) {
+            s = 0;
+            for (k=1; k<=cA; k++)
+                s+= (A[i][k]*B[k][j]);
+            fprintf(g, "%d ", s);
+        }
+        fprintf(g, "\n");
+    }
+    return 0;
+}

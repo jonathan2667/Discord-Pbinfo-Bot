@@ -1,0 +1,40 @@
+#include <cstdio>
+#include <algorithm>
+#define NMAX 1000005
+
+using namespace std;
+
+int sweep_rack(int *rack,int n)
+{
+    int res=0;
+    int cand=0;
+    for(int i=0; i<n;++i){
+        if(rack[i]==cand)
+            cand=0;
+        else if(rack[i]<cand)
+            res=max(res,rack[i]);
+        else{
+            res=max(res,cand);
+            cand=rack[i];
+        }
+    }
+    return max(res,cand);
+}
+
+int *read_rack(int n){
+  int *res;
+  res=(int *) malloc(n*sizeof(int));
+  for (int i=0;i<n;++i)
+    scanf("%d",&res[i]);
+  return res;
+}
+
+int main(){
+freopen("gr.in","r",stdin);
+freopen("gr.out","w",stdout);
+
+    int n;
+    scanf("%d",&n);
+    printf("%d\n",max(sweep_rack(read_rack(n),n), sweep_rack(read_rack(n),n)));
+}
+ 

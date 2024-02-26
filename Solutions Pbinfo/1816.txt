@@ -1,0 +1,152 @@
+//solutie 100 puncte
+#include <cstdio>
+#include <assert.h>
+#include <vector>
+#include <algorithm>
+#define nmax 100000
+FILE *f,*g;
+using namespace std;
+
+struct pancake
+{
+    int weight, radius, index;
+    pancake(){};
+    pancake(int W, int R, int I):weight(W),radius(R),index(I){}
+};
+
+struct arb_node
+{
+    int weight,length,index;
+    arb_node(){}
+    arb_node(int W, int L, int I):weight(W),length(L), index(I) {}
+    bool operator >(const arb_node other)
+    {
+        if (weight > other.weight)
+            return true;
+        else
+            if (weight == other.weight && length > other.length)
+                return true;
+            else if (weight == other.weight && length == other.length && index < other.index)
+                return true;
+        return false;
+    }
+    arb_node operator+(const pancake other)
+    {
+        return arb_node(weight + other.weight, length+1, other.index);
+    }
+};
+
+arb_node Max(arb_node x, arb_node y)
+{
+    if (x > y)
+        return x;
+    else
+        return y;
+}
+
+arb_node arb[nmax*4+10];
+pancake v_dirt[nmax+10], v[nmax+10];
+int t[nmax+10];
+int n, start, finish, Pos, maxRadius;
+arb_node Val, maxim;
+
+bool compare_function(const pancake left,const pancake right)
+{
+    return (left.radius < right.radius);
+}
+
+void normalize()
+{
+    sort(v_dirt+1, v_dirt+n+1,compare_function);
+    maxRadius = 0;
+    for (int i = 1;i <= n; i++)
+    {
+        if (v_dirt[i].radius != v_dirt[i-1].radius)
+            maxRadius++;
+        v[v_dirt[i].index] = v_dirt[i];
+        v[v_dirt[i].index].radius = maxRadius;
+    }
+}
+
+void Update(int nod, int left, int right)
+{
+    if ( left == right )
+    {
+        if (Val > arb[nod])
+            arb[nod] = Val;
+        return;
+    }
+
+    int div = (left+right)/2;
+    if ( Pos <= div ) Update(2*nod,left,div);
+    else              Update(2*nod+1,div+1,right);
+
+    arb[nod] = Max( arb[2*nod], arb[2*nod+1] );
+}
+
+void Query(int nod, int left, int right)
+{
+    if ( start <= left && right <= finish )
+    {
+        if ( arb[nod] > maxim ) maxim = arb[nod];
+        return;
+    }
+
+    int div = (left+right)/2;
+    if ( start <= div ) Query(2*nod,left,div);
+    if ( div < finish ) Query(2*nod+1,div+1,right);
+}
+
+
+void solve()
+{
+    arb_node answer = arb_node(0,0,0);
+    int answer_index = 0;
+
+    for (int i = 1;i <= n;i++)
+    {
+        maxim = arb_node(0,0,0);
+        start = v[i].radius+1;
+        finish = maxRadius;
+        Query(1,1,maxRadius);
+        t[i] = maxim.index;
+
+        Pos = v[i].radius;
+        Val = maxim + v[i];
+        Update(1,1,maxRadius);
+
+        if (Val > answer)
+        {
+            answer = Val;
+            answer_index = i;
+        }
+    }
+    fprintf(g,"%d %d\n",answer.weight, answer.length);
+    vector<int> solution;
+    for (int i = answer_index; i != 0; i=t[i])
+        solution.push_back(i);
+    for (int i = solution.size()-1;i >= 0;i--)
+        fprintf(g,"%d ", solution[i]);
+}
+
+int main() {
+    f = fopen("unicorn.in","r");
+    g = fopen("unicorn.out","w");
+
+    fscanf(f,"%d",&n);
+    assert(n <= 100000);
+    for (int i = 1;i <= n; i++)
+    {
+        int radius, weight;
+        fscanf(f,"%d%d",&radius, &weight);
+        assert(radius <= 1000000000);
+        assert(weight <= 1000);
+        v_dirt[i] = pancake(weight, radius, i);
+    }
+
+    normalize();
+    solve();
+    fclose(g);
+
+    return 0;
+}

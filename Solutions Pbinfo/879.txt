@@ -1,0 +1,117 @@
+#include <iostream>
+#include <fstream>
+#include <cstring>
+using namespace std;
+
+ifstream fin("egalitati.in");
+ofstream fout("egalitati.out");
+
+int V[26] , n , uz[26];
+char S[100][31];
+
+int parsare(char * s);
+void determinare(int p);
+
+int parsare(char * s)
+{
+    //sirul s poate fi A op B, op = +, *, sau s poate fi A
+    // A , B pot fi litere sau numere naturale
+    char * p;
+    char op;
+    int startA = 0, startB; // pozitia de start pentru A, respectiv B
+    // determinam tipul operatiei
+    p = strchr(s , '+');
+    if(p)
+        op = '+', startB = p - s + 1;
+    else
+    {
+        p = strchr(s , '*');
+        if(p)
+            op = '*', startB = p - s + 1;
+        else
+            op = 0; // nu avem operatie
+    }
+    int A , B;
+    // determinam valoarea lui A
+    int i = startA;
+    while(s[i] == ' ')
+        i ++;
+    if(s[i] >= 'a' && s[i] <= 'z')
+        if(uz[s[i]-'a'])
+            A = V[s[i]-'a'];
+        else
+        {
+            determinare(s[i]-'a');
+            A = V[s[i]-'a'];
+        }
+    else
+    {
+        A = 0;
+        while((s[i] >= '0' && s[i] <= '9'))
+            A = 10 * A + s[i] - '0' , i ++;
+    }
+    if(op != 0) 
+    {
+        // determinam valoarea lui B
+        i = startB;
+        while(s[i] == ' ')
+            i ++;
+        if(s[i] >= 'a' && s[i] <= 'z')
+            if(uz[s[i]-'a'])
+                B = V[s[i]-'a'];
+            else
+            {
+                determinare(s[i]-'a');
+                B = V[s[i]-'a'];
+            }
+        else
+        {
+            B = 0;
+            while((s[i] >= '0' && s[i] <= '9'))
+                B = 10 * B + s[i] - '0' , i ++;
+        }
+        if(op == '+')
+            A += B;
+        else
+            A *= B;
+    }
+    return A;
+}
+
+void determinare(int p)
+{
+    if(uz[p])
+        return ;
+    char L = 'a' + p;
+    for(int i = 1 ; i <= n ; i ++)
+        if(S[i][0] == L)
+        {
+            uz[p] = 1;
+            int j = 0;
+            while(S[i][j] != '=')
+                j ++;
+            j ++;
+            while(S[i][j] == ' ')
+                j ++;
+            V[p] = parsare(S[i] + j);
+            return; 
+        }
+}
+
+int main(){
+    fin >> n;
+    fin.getline(S[0] , 31);
+    for(int i = 1 ; i <= n ; i ++)
+        fin.getline(S[i] , 31);
+    fin.close();
+    
+    for(int i = 0 ; i < 26 ; i ++)
+        determinare(i);
+    
+    for(int i = 0 ; i < 26 ; i ++)
+        if(uz[i])
+            fout << (char)('a' + i) << " = " << V[i] << "\n";
+    
+    fout.close();
+    return 0;
+}

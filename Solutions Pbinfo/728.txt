@@ -1,0 +1,114 @@
+#include <cstdio>
+#include <algorithm>
+#include <vector>
+
+#define Nmax 1000
+
+using namespace std;
+
+int N, K, rez;
+vector< pair< int, int > > v;
+vector< int > x, X, uz(Nmax, 0);
+
+int main() {
+    freopen("triburi.in", "r", stdin);
+    freopen("triburi.out", "w", stdout);
+
+    scanf("%d %d\n", &N, &K);
+    for (int i = 0; i < N; ++i) {
+        int h1, m1, h2, m2;
+        scanf("%d %d %d %d\n", &h1, &m1, &h2, &m2);
+        v.push_back(make_pair(h1 * 60 + m1, h2 * 60 + m2));
+    }
+
+    sort(v.begin(), v.end());
+    
+    for (vector< pair< int, int > > :: iterator it = v.begin(); it != v.end(); ++it) {
+        x.push_back(it->second);
+    }
+
+    for (int i = 0; i < K; ++i) {
+        x[i] += v[K-1].first + v[i].first;
+        uz[i] = 1;
+    }
+
+    X.assign(x.begin(), x.end());
+    sort(X.begin(), X.end());
+    rez = max(X[K-1], v[K-1].first);
+
+    for (int i = K; i < N && v[i].first < rez; ++i) {
+        uz[i] = 1;
+        x[i] += 2 * v[i].first;
+        
+        for (int j = 0; j < i; ++j)
+            if (uz[j]) 
+                x[j] += v[i].first - v[i-1].first;
+
+        int min = -1, poz = -1;
+        for (int j = 0; j < i; ++j)
+            if ((uz[j]) && (min > x[j] || min == -1)) {
+                min = x[j];
+                poz = j;
+            }
+
+        uz[poz] = 0;
+        x[poz] -= v[i].first + v[poz].first;
+
+        X.assign(x.begin(), x.end());
+        sort(X.begin(), X.end());
+        if (max(X[K-1], v[i].first) < rez) 
+            rez = max(X[K-1], v[i].first);
+
+    }
+
+
+
+    for (int i = 0; i < N; ++i) swap(v[i].first, v[i].second);
+    sort(v.begin(), v.end());
+    x.clear();
+    uz.assign(Nmax, 0);
+
+    for (vector< pair< int, int > > :: iterator it = v.begin(); it != v.end(); ++it) {
+        x.push_back(it->second);
+    }
+
+    for (int i = 0; i < K; ++i) {
+        x[i] += v[K-1].first + v[i].first;
+        uz[i] = 1;
+    }
+
+    X.assign(x.begin(), x.end());
+    sort(X.begin(), X.end());
+    if (rez > max(X[K-1], v[K-1].first))
+        rez = max(X[K-1], v[K-1].first);
+
+    for (int i = K; i < N && v[i].first < rez; ++i) {
+        uz[i] = 1;
+        x[i] += 2 * v[i].first;
+        
+        for (int j = 0; j < i; ++j)
+            if (uz[j]) 
+                x[j] += v[i].first - v[i-1].first;
+
+        int min = -1, poz = -1;
+        for (int j = 0; j < i; ++j)
+            if ((uz[j]) && (min > x[j] || min == -1)) {
+                min = x[j];
+                poz = j;
+            }
+
+        uz[poz] = 0;
+        x[poz] -= v[i].first + v[poz].first;
+
+        X.assign(x.begin(), x.end());
+        sort(X.begin(), X.end());
+        if (max(X[K-1], v[i].first) < rez) 
+            rez = max(X[K-1], v[i].first);
+
+    }
+
+    printf("%d %d\n", rez / 60, rez % 60);
+        
+    return 0;
+}
+

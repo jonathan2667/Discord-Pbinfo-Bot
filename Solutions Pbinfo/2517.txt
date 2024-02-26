@@ -1,0 +1,58 @@
+#include<fstream>
+#include<cstdlib>
+#include<ctime>
+#include<iostream>
+using namespace std;
+ifstream  fin("panou.in");
+ofstream fout("panou.out");
+int hmax,P[100009],Q,h,H,h1,h2,hh,d,p,i,c,c1,c2;
+int T[21][100009],w[100009];
+long long pr,pmax,pmax1,pmax2;
+
+int main(){
+  ///test();
+  fin>>hmax>>Q;
+  p=0;d=1;
+  for(h=1;h<=hmax;h++){
+    fin>>P[h];
+    T[0][h]=P[h];
+    if(2*d<=h){
+      d=d+d; p++;
+    }
+    w[h]=p;
+  }
+  d=1;
+  for(p=1;(1<<p)<=hmax;p++){
+    d=d+d;
+    for(i=1;i+d-1<=hmax;i++){
+      T[p][i]=max(T[p-1][i],T[p-1][i+d/2]);
+    }
+  }
+  for(i=1;i<=Q;i++){
+    fin>>H;
+    hh=min(hmax,H);
+    pmax1=0;
+    for(h=1;h*h<=H && h<=hmax;h++){
+      pr=(long long)(H/h)*P[h];
+      if(pr>pmax1){
+        pmax1=pr;
+      }
+    }
+
+    pmax2=0;
+    while(h<=hmax && h<=H){
+      c=H/h;
+      h1=min(h*c+h-1,H)/c;
+      p=w[h1-h+1];d=(1<<p);
+      pr=max(T[p][h],T[p][h1-d+1]);
+      if(pr*c>pmax2){
+        pmax2=pr*c;
+      }
+      h=h1+1;
+    }
+    pmax=max(pmax1,pmax2);
+    fout<<pmax<<"\n";
+  }
+  fout.close();
+  return 0;
+}

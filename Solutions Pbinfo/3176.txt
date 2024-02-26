@@ -1,0 +1,13 @@
+///Popa Sebastian
+#include <fstream>
+using namespace std;
+ifstream f("fibo0.in");
+ofstream g("fibo0.out");
+int N;
+int main()
+{
+    for(int a,b;f>>a>>b;)
+        N+=(b%a==0);
+    g<<N;
+    return 0;
+}

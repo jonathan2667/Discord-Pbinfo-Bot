@@ -1,0 +1,47 @@
+#include<bits/stdc++.h>
+using namespace std;
+
+ifstream in("pilot.in");
+ofstream out("pilot.out");
+
+int n,x,d,p,a,nrp,nrs,nrl;
+
+int main()
+{
+    in>>n>>x;
+    for(int i=1;i<=n;i++)
+    {
+        in>>p>>a;
+        int u=p;
+        int y=a;
+        int r=u%y;
+        while(r)
+        {
+            u=y;
+            y=r;
+            r=u%y;
+        }
+        int cmmdc=y;
+        if(cmmdc%x==0)
+        {
+            nrs++;
+            int nrdivp=0;
+            for(int j=2;j*j<=cmmdc;j++)
+            {
+                if(cmmdc%j==0)
+                {
+                    nrdivp++;
+                    while(cmmdc%j==0)
+                        cmmdc/=j;
+                }
+            }
+            if(cmmdc!=1)
+                nrdivp++;
+
+            if(nrdivp==2)
+                nrl++;
+        }
+    }
+    out<<nrs<<" "<<nrl;
+    return 0;
+}

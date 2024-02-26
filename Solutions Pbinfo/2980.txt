@@ -1,0 +1,68 @@
+//Em. Cerchez - 100
+#include <stdio.h>
+#define MMAX 102
+#define NMAX 10002
+
+struct casa {char cod; int c, v;};
+struct jucator {int sl, se, pas, unde; char out;};
+
+struct jucator J[MMAX];
+struct casa C[NMAX];
+int n, m, a, b, nr, X, cerinta, nrout;
+int main()
+{int i, L, E, cine=0, sum=-1,jmax;
+ char culoare;
+ FILE *fin=fopen("valutar.in","r");
+ FILE * fout=fopen("valutar.out", "w");
+
+ fscanf(fin,"%d\n%d %d %d\n%d %d %d %d %d\n",&cerinta,&a,&b,&nr,&n,&m,&L,&E,&X);
+ for (i=1; i<=n; i++)
+     fscanf(fin,"%c %d %d\n", &C[i].cod, &C[i].c, &C[i].v);
+ for (i=1; i<=m; i++)
+     {J[i].unde=1; J[i].sl=L; J[i].se=E;}
+ for (i=1; i<=X; i++)
+     {
+     if (nrout==m) break;
+     do {cine++; if (cine>m) cine=1;} while (J[cine].out);
+     nr=(a*nr+b)%n+1;
+     J[cine].unde+=nr; if (J[cine].unde>n) J[cine].unde-=n;
+     culoare=C[J[cine].unde].cod;
+     if (culoare=='A') { continue;}
+        else
+        if (culoare=='R') J[cine].pas++;
+           else
+           if (culoare=='G') //cumpar euro
+              {
+               if (J[cine].sl>=J[cine].unde*C[J[cine].unde].c)
+                  {//cumpar euro
+                   J[cine].se+=J[cine].unde;
+                   J[cine].sl-=J[cine].unde*C[J[cine].unde].c;
+                  }
+                  else
+                  if (J[cine].pas>0) J[cine].pas--;
+                     else {J[cine].out=1; nrout++;}
+              }
+              else //vand euro
+              if (J[cine].se>=J[cine].unde)
+                 {
+                  J[cine].se-=J[cine].unde;
+                  J[cine].sl+=J[cine].unde*C[J[cine].unde].v;
+                }
+                else
+                if (J[cine].pas>0) J[cine].pas--;
+                    else {J[cine].out=1; nrout++;}
+     }
+
+ if (cerinta==1)
+     fprintf(fout,"%d\n",m-nrout);
+     else
+     {
+      for (i=1; i<=m; i++)
+          if (!J[i].out)
+             if (J[i].se>sum) {sum=J[i].se; jmax=i;}
+      fprintf(fout,"%d\n",jmax);
+     }
+ fclose(fout);
+ return 0;
+
+}

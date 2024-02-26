@@ -1,0 +1,28 @@
+#include <iostream>
+
+using namespace std;
+int k,n,i,r[11];
+int main()
+{
+    cin>>n;
+    k=0;
+    while(n!=0)
+    {
+        k++;
+        r[k]=n%16;
+        n=n/16;
+    }
+    for(i=k;i>=1;i--)
+      if(r[i]<10)cout<<r[i];
+           else
+           {
+               if(r[i]==10)cout<<'A';
+               if(r[i]==11)cout<<'B';
+               if(r[i]==12)cout<<'C';
+               if(r[i]==13)cout<<'D';
+               if(r[i]==14)cout<<'E';
+               if(r[i]==15)cout<<'F';
+
+           }
+    return 0;
+}

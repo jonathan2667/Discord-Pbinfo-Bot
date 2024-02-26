@@ -1,0 +1,76 @@
+//ggt prin decompunere in factori primi
+//descompunerea prin eratostene
+//formula euler
+
+const nmax = 20000;
+var fi,fo:text;
+var fp:array[1..nmax,1..10] of integer;
+    nrfp:array[1..nmax] of byte;
+    sita:array[1..nmax] of integer;
+
+function euler(n:longint):longint;
+var i,p:longint;
+begin
+  p := n;
+  for i := 1 to nrfp[n] do
+    p := (p div fp[n][i])*(fp[n][i] - 1);
+  euler := p
+end;
+
+function ggt1(n1,n2:longint):longint;
+var j:integer;
+begin
+  ggt1 := 2;
+  for j := 1 to nrfp[n2] do
+    if n1 mod fp[n2][j]=0 then exit;
+  ggt1:=1;
+end;
+
+
+var dx,dy,mini,maxi,i,j,x1,x2,y1,y2,ct,max,d,aux,nrprim:longint;
+
+begin
+  assign(fi,'mins.in'); reset(fi);
+  readln(fi,x2,y2);
+  close(fi);
+
+  dx := x2-x1-1;  //calcul coordonate "active"
+  dy := y2-y1-1;
+  if dx<dy then begin mini := dx; maxi := dy end
+  else begin mini := dy; maxi := dx end;
+  nrfp[1] := 1;
+  fp[1][1] := 1;
+
+  //construiesc tabloul de factori primi
+  for i := 2 to mini do
+   if sita[i]=0 then
+     begin
+       j := i;
+       while j<=mini do
+         begin
+           inc(nrfp[j]);
+           fp[j][nrfp[j]]:=i;
+           sita[j]:=1;
+           inc(j,i)
+         end;
+     end;
+
+
+  for i := 2 to mini do
+      ct := ct + euler(i);
+
+  ct := ct*2;
+
+  ct := ct+maxi-mini;
+
+  for i := mini+1 to maxi do
+    for j := 2 to mini do
+      if ggt1(i,j)=1 then
+       inc(ct);
+
+
+  assign(fo,'mins.out'); rewrite(fo);
+  writeln(fo,ct+1);
+  close(fo);
+
+end.

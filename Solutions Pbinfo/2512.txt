@@ -1,0 +1,93 @@
+#include <bits/stdc++.h>
+#define MOD 1234577
+#define inFile "xnk.in"
+#define outFile "xnk.out"
+using namespace std;
+
+int X, n, K, answer;
+int f[1050000]; /// f[i] = i! modulo MOD
+
+void Citire()
+{
+    ifstream fin(inFile);
+    fin >> X >> n >> K;
+    fin.close();
+}
+
+void Factoriale()
+{
+    int i, w;
+    f[0] = f[1] = 1;
+    w = 1 << 20;
+    for (i = 2; i <= w; i++)
+        f[i] = 1LL * f[i - 1] * i % MOD;
+}
+
+inline int LgPut(int a, int n)
+{
+    int p = 1;
+    while (n > 0)
+    {
+        if (n % 2 == 1)
+            p = 1LL * p * a % MOD;
+        n /= 2;
+        a = 1LL * a * a % MOD;
+    }
+    return p;
+}
+
+inline int Aranj(int n, int k)
+{
+    return 1LL * f[n] * LgPut(f[n-k], MOD - 2) % MOD;
+}
+
+inline int Comb(int n, int k)
+{
+    int rez;
+    rez = 1LL * f[n] * LgPut(f[n-k], MOD - 2) % MOD;
+    rez = 1LL * rez * LgPut(f[k], MOD - 2) % MOD;
+    return rez;
+}
+
+void Rezolva()
+{
+    int i, L, m, M, S, w;
+    m = X - 1;
+    M = n - X;
+    ofstream fout(outFile);
+
+    if (X == n)
+    {
+        if (K == 1) fout << f[n] << "\n";
+        else fout << "0\n";
+        fout.close();
+        return;
+    }
+
+    L = n / (1 << (K - 1));
+    if (m < L - 1)
+    {
+        fout << "0\n";
+        fout.close();
+        return;
+    }
+    answer = 1LL * n * Aranj(m, L - 1) % MOD;
+    S = 0;
+    w = m - L + 1;
+    for (i = 1; i <= L; i++)
+      if (M >= i && w >= L - i)
+       S = (S + 1LL * Comb(M,i) * Aranj(L, i) * Aranj(w, L - i)) % MOD;
+
+    answer = 1LL * answer * S % MOD;
+    answer = 1LL * answer * f[n - 2 * L] % MOD;
+    fout << answer << "\n";
+    fout.close();
+}
+
+int main()
+{
+    Citire();
+    Factoriale();
+    Rezolva();
+    return 0;
+}

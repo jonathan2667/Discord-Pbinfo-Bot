@@ -1,0 +1,99 @@
+#include <stdio.h>
+
+typedef int matrice[55][55];
+
+//-----------------------------------------------------------------------------------------
+// citirea matricei din fisierul de intrare
+void citire_matrice(matrice A, int *numar_linii, FILE **fisier) {
+    fscanf(*fisier, "%d", &(*numar_linii));
+
+    int i, j;
+    for(i = 1; i <= *numar_linii; i++)
+        for(j = 1; j <= *numar_linii; j++)
+            fscanf(*fisier, "%d", &A[i][j]);
+}
+
+//-----------------------------------------------------------------------------------------
+// afisarea matricei in fisierul de isire
+void afisare_matrice(matrice A, int numar_linii, FILE **fisier) {
+    int i, j;
+    for(i = 1; i <= numar_linii; i++) {
+        for(j = 1; j <= numar_linii; j++)
+            fprintf(*fisier, "%d ", A[i][j]);
+        fprintf(*fisier, "\n");
+    }
+}
+
+//-----------------------------------------------------------------------------------------
+// functie care determina daca un numar este prim
+int prim(int numar) {
+    if(numar % 2 == 0 || numar < 3)
+        return (numar == 2);
+    int d;
+    for(d = 3; d * d <= numar; d += 2)
+        if(numar % d == 0)
+            return 0;
+    return 1;
+}
+
+//-----------------------------------------------------------------------------------------
+// functie care determina daca un numar este superprim
+int superprim(int numar) {
+    int p = 1, aux = numar, copie = numar;
+    while(copie > 9) {
+        p *= 10;
+        copie /= 10;
+    }
+
+    do {
+        if(prim(aux))
+            return 1;
+        aux = (aux % p) * 10 + aux / p;
+    }while(aux != numar);
+    
+    return 0;
+}
+
+//-----------------------------------------------------------------------------------------
+// functie care interschimba elementele A[i][j] cu A[k][p]
+void interschimbare(matrice A, int i, int j, int k, int p) {
+    int aux = A[i][j];
+    A[i][j] = A[k][p];
+    A[k][p] = aux;
+}
+
+//-----------------------------------------------------------------------------------------
+// functie care interschimba elementele din triunghiul superior si cel inferior
+void interschimbare_triunghi_superior_inferior(matrice A, int numar_linii) {
+    int i, j;
+    for(i = 1; i <= numar_linii / 2; i++)
+        for(j = i + 1; j + i <= numar_linii; j++)
+            interschimbare(A, i, j, numar_linii - i + 1, j);
+}
+
+//-----------------------------------------------------------------------------------------
+// functie care interschimba elementele superprime din triunghiul din dreapta si cel din stanga
+void interschimbare_superprime(matrice A, int numar_linii) {
+    int i, j;
+    for(j = 1; j <= numar_linii / 2; j++)
+        for(i = j + 1; i + j <= numar_linii; i++)
+            if(superprim(A[i][j]) && superprim(A[i][numar_linii - j + 1]))
+                interschimbare(A, i, j, i, numar_linii - j + 1);
+}
+
+
+int main() {
+    FILE *fin = fopen("matrice.in", "r");
+    FILE *fout = fopen("matrice.out", "w");
+
+    matrice A;
+    int numar_linii;
+
+    citire_matrice(A, &numar_linii, &fin);
+    interschimbare_triunghi_superior_inferior(A, numar_linii);
+    interschimbare_superprime(A, numar_linii);
+
+    afisare_matrice(A, numar_linii, &fout);
+
+    return 0;
+}

@@ -1,0 +1,80 @@
+#include <fstream>
+#define INF 1000000000
+#define DIM 100010
+#define SCHIMBA_MAXIM 1
+#define EGAL_MAXIM 2
+using namespace std;
+
+int v[DIM], t[DIM], urm[DIM], s[DIM], dupa[DIM], ma[DIM];
+int n, m, maxim, maximAnterior, pozMaxim, pozMaximAnterior, p, rep, i, varf;
+
+int main () {
+    ifstream fin ("maxime.in");
+    ofstream fout("maxime.out");
+    fin>>n;
+    maximAnterior = -1;
+    maxim = -1;
+    pozMaximAnterior = -1;
+    maximAnterior = -1;
+    v[n+1] = INF;
+
+    for (i=1;i<=n+1;i++) {
+        if (i <= n)
+            fin>>v[i];
+        if (v[i] > maxim) {
+            maximAnterior = maxim;
+            pozMaximAnterior = pozMaxim;
+            maxim = v[i];
+            pozMaxim = i;
+
+            if (urm[pozMaximAnterior] == -1) {
+                urm[pozMaximAnterior] = i;
+            }
+
+            ///urm[pozMaximAnterior] = i;
+            urm[pozMaxim] = -1;
+            t[i] = SCHIMBA_MAXIM;
+
+        } else {
+            if (urm[pozMaxim] == -1 && v[i]>=maximAnterior) {
+                urm[pozMaxim] = i;
+                if (v[i] == maximAnterior)
+                    ma[pozMaxim] = 1;
+            }
+            if (v[i] == maxim) {
+                t[i] = EGAL_MAXIM;
+                rep++;
+            }
+        }
+    }
+    s[0] = n+1;
+    dupa[s[0]] = 0;
+    varf = 0;
+    for (i=n;i>=1;i--) {
+        while (v[i] > v[ s[varf] ])
+            varf--;
+        if (v[i] == v[ s[varf] ])
+            dupa[i] = 1+dupa[ s[varf] ];
+        else
+            dupa[i] = dupa[ s[varf] ];
+        s[++varf] = i;
+    }
+
+    fin>>m;
+    for (i=1;i<=m;i++) {
+        fin>>p;
+        if (t[p] == 0)
+            fout<<rep<<" ";
+        else
+            if (t[p] == EGAL_MAXIM)
+                fout<<rep-1<<" ";
+            else
+                if (t[p] == SCHIMBA_MAXIM) {
+                    if (ma[p])
+                        fout<<1 + rep - dupa[p] + dupa[ urm[p] ]<<" ";
+                    else
+                        fout<<rep - dupa[p] + dupa[ urm[p] ]<<" ";
+                }
+    }
+    return 0;
+}

@@ -1,0 +1,120 @@
+{ momente palindromice varianta 2: k intervale;
+  solutie "oficiala-oficiala": pentru fiecare interval
+  determina cate zile complete sunt cu 699 momente /zi
+  precalculeaza numarul de palindroame in fiecare moment al zilei
+  apoi determina cate momente sunt in prima zi de la momentul initial
+  pana la 23:59:59 si in ultima de la 0:00:00 pana la momentul final
+}
+
+const zifin : array[1..12] of integer = (31,28,31,30,31,30,31,31,30,31,30,31);
+
+var ora1,min1,sec1,luna1,zi1,ora2,min2,sec2,luna2,zi2 : longint;
+    zi,luna,ora,min,sec : longint;
+    st,dr,mj,i,k,nr,ctz,ct1,ct2,ct3 : longint;
+    fi,fo : text;
+    mom : array[-1..90000] of longint;
+
+
+function inv(nr : longint) : longint;
+begin
+  inv := 0;
+  while nr>0 do
+    begin
+      inv := inv*10+nr mod 10;
+      nr := nr div 10
+    end;
+end;
+
+
+procedure precalc;
+var ora,min,sec,i:longint;
+
+begin
+  ora := 0;
+  min := 0;
+  sec := 1;
+
+  for  i := 1 to 24*3600-1 do
+   begin
+
+     nr := ora*10000 + min*100 + sec;
+     if inv(nr) = nr then
+       mom[i] := mom[i-1]+1
+     else
+       mom[i] := mom[i-1];
+
+     inc(sec);
+     if sec=60 then
+        begin
+          sec := 0;
+          inc(min)
+        end;
+      if min=60 then
+        begin
+          min := 0;
+          inc(ora);
+        end;
+   end;
+end;
+
+
+begin
+
+   mom[0] := 1;
+
+   precalc;
+
+  assign(fo,'momente.out');
+  assign(fi,'momente.in');
+  rewrite(fo);
+  reset(fi);
+  readln(fi,k);
+
+  for i := 1 to k do
+
+  begin
+
+  ct3 := 0; ct2 := 0; ct1 := 0; ctz := 0;
+
+
+  read(fi,luna1,zi1,ora1,min1,sec1);
+  read(fi,luna2,zi2,ora2,min2,sec2);
+
+
+  if ora1+min1+sec1=0 then
+        ctz:=1;
+
+  luna := luna1;
+  zi := zi1;
+  while not ((zi=zi2) and (luna=luna2)) do
+    begin
+        inc(zi);
+        if zifin[luna]+1=zi then
+        begin
+         zi := 1;
+         inc(luna)
+        end;
+        inc(ctz);
+      end;
+  dec(ctz);
+
+
+  ct2 := 699*ctz;               //zile complete*699 /zi
+
+  nr := ora1*3600 + min1*60 + sec1;
+
+  if nr>0 then
+    ct1 := 699 - mom[nr-1]
+  else
+    ct1 := 0;
+
+  nr := ora2*3600 + min2*60 + sec2;
+
+  ct3 := mom[nr];
+
+  writeln(fo,ct1+ct2+ct3);
+
+ end;
+
+  close(fo);
+end.

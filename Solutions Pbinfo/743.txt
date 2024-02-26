@@ -1,0 +1,102 @@
+{$r-}
+const nmax = 10000;
+      kmax = 10;
+var f,g:text;
+    n1,n2,n3,aux,q,kmx,k,buf,nl,nc,i,j,sum:integer;
+    a : array[1..201,1..201] of longint;
+    x:array[0..nmax,0..kmax] of integer;
+
+begin
+  kmx:=0;
+  assign(g,'operatii.out'); rewrite(g);
+  for i := 0 to nmax do
+    x[i][0]:=nmax;
+
+  for i := 1 to trunc(sqrt(nmax)) do
+  begin
+    x[i*i][0]:=1;
+    x[i*i][1]:=i*i
+  end;
+
+  for i := 1 to nmax do
+   if x[i][0]=nmax then
+     for n1 := 1 to trunc(sqrt(i)) do
+       begin
+        aux := i-n1*n1;
+        if aux>0 then
+        if trunc(sqrt(aux)) = sqrt(aux) then
+          begin
+            x[i][0]:=2;x[i][1]:=n1*n1;x[i][2]:=aux; break;
+          end;
+       end;
+
+  for i := 1 to nmax do
+   if x[i][0]=nmax then
+    for n1 := 1 to trunc(sqrt(i)) do
+     if x[i][0] = nmax then
+      for n2 := n1 to trunc(sqrt(i-n1*n1)) do
+        begin
+          aux:=i-n1*n1-n2*n2;
+          if trunc(sqrt(aux))=sqrt(aux) then
+          begin
+            x[i][0]:=3;x[i][1]:=n1*n1;x[i][2]:=n2*n2;x[i][3]:=aux; break;
+          end;
+        end
+      else break;
+
+
+  for i := 1 to nmax do
+   if x[i][0]=nmax then
+    for n1 := 1 to trunc(sqrt(i)) do
+    if x[i][0]=nmax then
+      for n2 := n1 to trunc(sqrt(i-n1*n1)) do
+      if x[i][0]=nmax then
+       for n3 := n2 to trunc(sqrt(i-n1*n1-n2*n2)) do
+        begin
+          aux:=i-n1*n1-n2*n2-n3*n3;
+          if trunc(sqrt(aux))=sqrt(aux) then
+          begin
+            x[i][0]:=4;x[i][1]:=n1*n1;x[i][2]:=n2*n2;x[i][3]:=n3*n3;
+            x[i][4]:=aux; break;
+          end;
+        end
+      else break
+    else break;
+{
+    for i := 1 to nmax do
+    begin
+    write(g,i,' ');
+    for j := 1 to x[i][0] do
+        write(g,x[i][j],' ');
+    writeln(g);
+
+    if x[i][0]=nmax then
+        writeln('upsi la ',i);
+    end;
+}
+    assign(f,'operatii.in'); reset(f);
+
+  readln(f,nl,nc);
+  for i := 1 to nl do
+    for j := 1 to nc do
+     begin
+       read(f,buf);
+       if x[buf][0]>kmx then
+         kmx := x[buf][0];
+       a[i][j] := buf;
+     end;
+  close(f);
+
+
+  writeln(g,kmx);
+
+  for k := 1 to kmx do
+      for i := 1 to nl do
+      begin
+        for j := 1 to nc do
+          write(g,trunc(sqrt(x[a[i,j],k])),' ');
+        writeln(g)
+      end;
+
+  close(g);
+end.

@@ -1,0 +1,24 @@
+#include <iostream>
+#include <cmath>
+#define PI 3.14159265
+using namespace std;
+
+int main()
+{
+    double x;
+    cin>>x;
+    int s=sin(x*PI/180)*1000,c=cos(x*PI/180)*1000;
+    if(s<0)
+    {
+        s=-s;
+        cout<<'-';
+    }
+    cout<<s/1000<<"."<<(s/100)%10<<(s/10)%10<<s%10<<" ";
+    if(c<0)
+    {
+        c=-c;
+        cout<<'-';
+    }
+    cout<<c/1000<<"."<<(c/100)%10<<(c/10)%10<<c%10;
+    return 0;
+}

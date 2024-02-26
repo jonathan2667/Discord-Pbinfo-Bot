@@ -1,0 +1,65 @@
+#include <bits/stdc++.h>
+#define tip long long
+using namespace std;
+ifstream f("armonica.in");
+ofstream g("armonica.out");
+tip b;
+void factorizare(tip),bkt(tip,tip);
+vector<pair<tip,tip>>F,sol;
+vector<pair<int,int>> V;
+int main()
+{
+    f>>b;
+    if(b%2)
+        factorizare(b);
+    else
+        factorizare(b/2);
+    bkt(0,1);
+    g<<sol.size()<<'\n';
+    for(auto it:sol)
+        g<<it.first<<' '<<it.second<<'\n';
+    return 0;
+}
+void factorizare(tip k)
+{
+    for(tip i=2;i*i<=k;i++)
+        if(k%i==0)
+    {
+        tip e=0;
+        while(k%i==0)
+        {
+            e++;k/=i;
+        }
+        F.push_back({i,2*e});
+    }
+    if(k>1)
+        F.push_back({k,2});
+}
+void bkt(tip p,tip d)
+{
+    if(p==F.size())
+    {
+        tip a,c,x;
+        if(b%2)
+        {
+            x=b*b/d;
+            a=(b+d)/2;
+            c=(b+x)/2;
+        }
+        else
+        {
+            x=b*b/4/d;
+            a=b/2+d;
+            c=b/2+x;
+        }
+        //g<<d<<' '<<x<<'\n';
+        sol.push_back({a,c});
+        return;
+    }
+    tip i=F[p].first,j=F[p].second,m=1;
+    for(tip q=0;q<=j;q++)
+    {
+        bkt(p+1,d*m);
+        m*=i;
+    }
+}

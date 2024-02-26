@@ -1,0 +1,19 @@
+#include <iostream>
+#include <cstring>
+using namespace std;
+
+int main(){
+    char s[201]; // in sir vom insera caractere, il declaram mai decat dimensiunea din enunt
+    char t[201]; // un sir auxiliar
+    cin.getline(s , 201); // sirul contine spatii; trebuie citi cu getline
+    //pentru a nu avea probleme al inserare, parcurgem sirul invers
+    for(int i = strlen(s) - 1 ; i >= 0 ; i --)
+        if(strchr("aeiou",s[i]) != NULL)
+        {
+            //inserarea o facem folosind strcpy
+            strcpy(t , s + i);
+            strcpy(s + i + 1 , t);
+        }
+    cout << s ;
+    return 0;
+}

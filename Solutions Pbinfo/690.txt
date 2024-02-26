@@ -1,0 +1,152 @@
+/*rezolvare
+- analizam fiecare piesa in momentul citirii ei din fisier
+    - daca piesa curenta ar trebui rotita(fiindca am obtine un numar nai mare prin rotirea ei)
+        - O ROTIM si analizam ce se intampla in acest caz:
+            - calculam numarul pieselor ce pot fi eliminate
+            - calculam cate din cele eliminate erau rotite (actualizam astfel numarul rotirilor ce au fost recuperate in urma eliminarilor)
+            - verificam daca in urma actualizarii numerului de rotiri, piesa curenta putea fi cu adevarat rotita(daca in acest moment numarul rotirilor >0)
+                - daca NU MAI avem rotiri, inseamna ca piesa curenta NU POATE fi rotita(nr_rotiri=0) si
+        - O ROTIM LA LOC si (reluam calculele pieselor ce se vor elimina pentru acest caz)
+
+- memoram piesa in vectorul solutie
+- la sfarsit, daca mai sunt eliminari de efectuat, le vom aplica  de la dreapta la stanga, elementelor din vectorul solutie
+
+*Pentru cazul in care exista piese alaturate care au aceeasi valoare(putem forma acelasi numar cu cele doua cifre de pe piese)
+am memorat numarul lor de aparitii(NU am pastrat fiecare piesa in vector)
+- In acest fel am determinat cazul de eliminare al pieselor duplicat.
+
+
+N - nr de piese,
+el - nr de eliminari,
+rot - nr de rotiri
+nr_rez - nr elementelor din vectorul rez
+rot_e - numarul de rotiri eliminate din vectorul rez la pasul curent
+elim  - numarul de eliminari efectuate la pasul curent
+elim_dup_total - numarul total de duplicate eliminate exceptand cele din nr_rez
+elim_dup - numarul de duplicate eliminate din nr_rez
+
+*/
+
+
+#include<fstream>
+using namespace std;
+ifstream in("domino1.in");
+ofstream out("domino1.out");
+
+struct pereche{
+               int x,y,nr;// nr- numarul format de cele doua cifre scrise pe piesa
+               int r; //memoram 1 daca piesa e rotita
+               int apar;//numaram aparitiile pieselor alaturate care  sunt identice(cu cele 2 cifre putem forma acelasi numar
+             } piesa,rez[10005];
+
+int n,el,rot,nr_rez,rot_e,elim,elim_dup,elim_dup_total;
+
+void rotire_init()//rotire initiala
+{
+    if(piesa.x<piesa.y) //rotim piesa pentru ca am obtine un nr mai mare decat daca nu am roti-o
+    {
+        swap(piesa.x,piesa.y);
+        piesa.r=1;
+    }
+    else
+        piesa.r=0;
+
+    piesa.nr=piesa.x*10+piesa.y;//formam nr
+    piesa.apar=0;
+}
+void rotire() //rotire inapoi
+{
+    swap(piesa.x,piesa.y);
+    piesa.r=0;//marcam faptul ca piesa nu a fost rotita
+    piesa.nr=piesa.x*10+piesa.y;//refacem nr
+}
+
+void extract() //stergere piese, eliminam cat mai multe piese care sunt mai mici decat piesa curenta
+{
+    rot_e=elim=elim_dup_total=0;
+    elim_dup=0;
+
+    while(nr_rez-elim>0&&piesa.nr>rez[nr_rez-elim].nr&&elim+elim_dup_total+elim_dup<el)
+    {
+        if(rez[nr_rez-elim].r-elim_dup>0)
+            rot_e++;
+        if(rez[nr_rez-elim].apar-elim_dup>0)
+            elim_dup++;
+        else
+        {   elim_dup_total+=elim_dup;
+            elim++;
+            elim_dup=0;
+        }
+    }
+
+}
+
+void final_el() //eliminari finale
+{
+
+    while(el){
+        if(!rez[nr_rez].apar)
+        {
+            nr_rez--;
+            el--;}
+        else
+            if(el>=rez[nr_rez].apar)
+            {
+                el-=rez[nr_rez].apar;
+                rez[nr_rez].apar=0;
+            }
+            else
+            {
+
+                rez[nr_rez].apar-=el;
+                el=0;
+            }
+    }
+
+}
+void afisare()
+{
+    for(int i=1;i<=nr_rez;i++)
+    {
+        do{
+            out<<rez[i].x<<rez[i].y;
+        } while(rez[i].apar--);
+    }
+
+}
+
+
+int main()
+{ int i;
+
+    in>>n>>rot>>el;
+    for(i=1;i<=n;i++)
+    {
+        in>>piesa.x>>piesa.y;
+        rotire_init();
+        extract();
+        if(rot+rot_e-piesa.r<0)//nu avem rotiri suficiente, rotim la loc piesa rotita initial
+        {
+            rotire();
+            extract();
+        }
+        nr_rez=nr_rez-elim;////stabilim numarul de elemente din solutia DE PANA ACUM
+        rez[nr_rez].apar-=elim_dup;
+        el-=(elim+elim_dup_total+elim_dup);
+        rot+=rot_e-piesa.r;//calculam numarul de rotiri
+        if(piesa.nr==rez[nr_rez].nr)//adaugam piesa la solutie, daca a fost adaugata o piesa de aceeasi valoare Nu o memoram doar actualizam apritiile ei
+        {
+            rez[nr_rez].apar++;
+            rez[nr_rez].r+=piesa.r;
+        }
+        else
+            rez[++nr_rez]=piesa;
+
+    }
+    final_el();//eliminari finale
+    afisare();
+    out<<'\n';
+    in.close();
+    out.close();
+    return 0;
+}

@@ -1,0 +1,101 @@
+#include <cstdio>
+#include <cassert>
+#include <vector>
+
+using namespace std;
+
+#define mlog 20
+#define maxn 100010
+
+int n, b, sol;
+int s[maxn], p[maxn], t[maxn];
+int stk0, stk[maxn], ps[maxn], pp[maxn];
+int st[mlog][maxn], dp[mlog][maxn];
+vector<int> v[maxn];
+
+int cbin()
+{
+    int left=0, right=stk0, sol=stk0;
+
+    while(left<=right)
+    {
+        int med=(left+right)/2;
+        if(ps[stk0]-ps[med]<=b)
+        {
+            sol=med;
+            right=med-1;
+        }
+        else
+            left=med+1;
+    }
+
+    return sol;
+}
+
+void df(int nod)
+{
+    stk[++stk0]=nod;
+    ps[stk0]=s[nod]+ps[stk0-1];
+    pp[stk0]=p[nod]+pp[stk0-1];
+
+    int up = cbin();
+
+    st[0][nod]=stk[stk0-1];
+    dp[0][nod]=pp[stk0-1];
+
+    for(int i=1; st[i-1][st[i-1][nod]]!=0; ++i)
+    {
+        st[i][nod]=st[i-1][st[i-1][nod]];
+        dp[i][nod]=min(dp[i-1][nod], dp[i-1][st[i-1][nod]]);
+    }
+
+    if(up!=stk0)
+    {
+        int p2=0;
+        while((1<<(p2+1))<=stk0-up)
+            ++p2;
+
+        sol=max(sol, pp[stk0]-min(dp[p2][nod], dp[p2][stk[up+(1<<p2)]]));
+    }
+
+    int fiu;
+
+    for(int i=0; i<v[nod].size(); ++i)
+    {
+        fiu=v[nod][i];
+        if(fiu==t[nod])
+            continue;
+
+        t[fiu]=nod;
+        df(fiu);
+    }
+
+    --stk0;
+}
+
+int main()
+{
+    freopen("spiridusi.in", "r", stdin);
+    freopen("spiridusi.out", "w", stdout);
+
+    scanf("%d%d", &n, &b);
+    for(int i=1; i<=n; ++i)
+        scanf("%d", &s[i]);
+    for(int i=1; i<=n; ++i)
+        scanf("%d", &p[i]);
+
+    for(int i=1; i<n; ++i)
+    {
+        int a, b;
+
+        scanf("%d%d", &a, &b);
+        v[a].push_back(b);
+        v[b].push_back(a);
+    }
+
+    df(1);
+
+    printf("%d\n", sol);
+
+    return 0;
+}

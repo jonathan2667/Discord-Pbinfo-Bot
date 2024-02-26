@@ -1,0 +1,33 @@
+#include <iostream>
+
+using namespace std;
+long long n, k, p, x, sol;
+
+int main()
+{
+    cin >> n;
+    if(n == 1) sol = 3;
+    else 
+    if(n == 2) sol = 9;
+    else
+    {
+            k = n % 2020;
+            sol = (k * k + 3 * k + 8) % 2020;
+            p = 1 ;
+            x = 2;
+            n = n-3;
+            while (n > 0)
+            {
+                if (n & 1)
+                {
+                    p = ( p * x) % 2020;
+                    n-- ;
+                }
+                x = (x * x) % 2020 ;
+                n = n /2 ;
+            }
+            sol = (sol * p) % 2020;
+    }
+    cout << sol;
+    return 0;
+}

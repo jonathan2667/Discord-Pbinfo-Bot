@@ -1,0 +1,97 @@
+/*  Solutie 100 puncte
+    Complexitate: O(n * n + m  )
+    prof. Constantin Galatan
+*/
+#include <fstream>
+using namespace std;
+
+ifstream fin("pseudobil.in");
+ofstream fout("pseudobil.out");
+
+typedef unsigned short M[2 * 1501][1501];
+M su, sd, pu, pd;
+M a, b;
+unsigned sc[1501], ss[1501], s[1501];
+int m, n, K, L, D, n1, n2, T;
+
+inline void SumPart(M su, M sd, M a);
+
+int main()
+{
+    fin >> T >> n >> K >> D;
+    if ( T == 1 )  // rezolv numai cerinta a)
+    {
+        int nr = D - 1;
+        n1 = nr;
+        while ( true )
+        {
+            nr -=2;
+            if ( nr < 0 ) break;
+            n1 += 2 * nr;
+        }
+        fout << n1 << '\n';
+    }
+    else
+    {
+        int x, y;
+        for ( int i = 0; i < K; ++i )
+        {
+            fin >> x >> y;
+            b[n + y - x][y] = 1;
+            a[x + y - 1][y] = 1;
+            s[y]++;
+        }
+
+        for ( int j = 1; j <=  n; ++j )
+            ss[j] = ss[j - 1] + s[j];
+        L = D / 2 + 1;
+
+        SumPart(su, sd, a);
+        SumPart(pd, pu, b);
+        int A, B, C, D, E, F;
+        fin >> m;
+
+        for ( int i = 0; i < m; ++i )
+        {
+            fin >> x >> y;
+
+            A = ss[y - L]; B = K - ss[y + L - 1];
+            if ( y > x + y - 2 )
+                C = su[x + y - 2][y - 1];
+            else
+                C = su[x + y - 2][y];
+            C -= su[x + y - 2][y - L];
+            D = pu[n - x + y + 1][y + L - 1] - pu[n - x + y + 1][y];
+            int X = x + 2 * (L - 1);
+            if ( y > n - X + y  -  1)
+                E = pd[n - X + y  -  1][y - 1];
+            else
+                E = pd[n - X + y  -  1][y];
+            E -= pd[n - X + y   -1][y - L];
+            F = sd[X + y   ][y + L - 1] - sd[X + y ][y];
+            n2 = K - (A + B + C + D + E + F);
+
+            fout << n2 << '\n';
+        }
+    }
+    fin.close();
+    fout.close();
+    return 0;
+}
+
+void SumPart(M su, M sd, M a)
+{
+    int sp[1501];
+    for ( int d = 1; d < 2 * n; ++d )
+    {
+        for (int j = 0; j <= n; ++j )
+            sp[j] = 0;
+        for ( int j = max(d - n + 1, 1); j <= min(d, n) ; ++j )
+        {
+            sp[j] = sp[j - 1] + a[d][j];
+            su[d][j] = su[d - 1][j] + sp[j];
+            if ( j >= d ) su[d][j] += su[d - 1][j - 1];
+            sd[d][j] = ss[j] - su[d][j] + sp[j];
+        }
+    }
+}

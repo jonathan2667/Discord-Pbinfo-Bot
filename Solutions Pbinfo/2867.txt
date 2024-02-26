@@ -1,0 +1,82 @@
+///Solutie oficiala modificata
+#include <fstream>
+#include <algorithm>
+#include <vector>
+#include <cassert>
+
+#define MOD (1<<13)
+
+using namespace std;
+
+long long a[32], dp[17200000];
+int cnt[MOD + 100], led[MOD + 100];
+
+ifstream fin("norela.in");
+ofstream fout("norela.out");
+
+void precalc ()
+{
+    for (int i = 0; i <= MOD + 5; ++i)
+    {
+        int ci = i;
+        for (; ci > 0; ci >>= 1)
+        {
+            if (ci & 1) ++cnt[i];
+            ++led[i];
+        }
+    }
+}
+
+int main ()
+{
+
+    int n, m;
+    fin>>n>>m;
+
+    precalc ();
+
+    assert (1 <= n && n <= 60);
+    assert (1 <= m && m <= 24);
+
+    for (int i = 1; i <= m; ++i)
+    {
+        int q;
+        fin>>q;
+
+        assert (1 <= q && q <= n);
+
+        for (int j = 1; j <= q; ++j)
+        {
+            int x;
+            fin>>x;
+
+            assert (1 <= x && x <= n);
+
+            a[m - i + 1] |= (1LL << (1LL * (x - 1)));
+        }
+    }
+
+    int sol, mi = 400;
+    for (int i = 1; i < (1 << m); ++i)
+    {
+        int bit;
+        if (i >> 13) bit = led[i >> 13] + 13;
+        else bit = led[i];
+
+        dp[i] = (dp[i ^ (1 << (bit - 1))] ^ a[bit]);
+
+        if (dp[i] == (1LL << (1LL * n)) - 1LL)
+        {
+            int x = cnt[i >> 13] + cnt[i & ((1 << 13) - 1)];
+            if (mi >= x) mi = x, sol = i;
+        }
+    }
+
+    fout<<mi<<'\n';
+    assert (mi < 400);
+
+    for (int j = m - 1; j >= 0; --j)
+        if (sol & (1 << j)) fout<<m-j<<' ';
+
+    return 0;
+}

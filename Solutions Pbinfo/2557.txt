@@ -1,0 +1,56 @@
+#include <fstream>
+#define V 1234567
+#define M 100
+using namespace std;
+ifstream in("kbin.in");
+ofstream out("kbin.out");
+long long s,sp2f,c[M][M],p2[M],sp2[M],b[M];
+int main()
+{
+    long long a,k;
+    in>>a>>k;
+    long long x=a,n=0;
+    int sb=0;
+    while(x>0){
+        b[n]=x%2;
+        sb+=b[n];
+        x/=2;
+        n++;
+    }
+    p2[0]=1;
+    sp2[0]=1;
+    c[0][0]=1;
+    for(int i=1;i<=n;i++){
+        p2[i]=p2[i-1]*2;
+        p2[i]%=V;
+        sp2[i]=sp2[i-1]+p2[i];
+        sp2[i]%=V;
+        c[i][0]=1;
+        for(int j=1;j<=i;j++){
+            c[i][j]=c[i-1][j-1]+c[i-1][j];
+            c[i][j]%=V;
+        }
+    }
+    if(p2[n-1]==a){
+        s=c[n-2][k-1]*sp2[n-2];
+    }
+    else{
+        int ik,i;
+        for(i=n-1,ik=k;i>0 && ik>0;i--){
+            if(b[i]==1){
+                s+=sp2[i-1]*c[i-1][ik-1];
+                s%=V;
+                s+=sp2f*c[i][ik];
+                s%=V;
+                ik--;
+                sp2f+=p2[i];
+                s%=V;
+            }
+        }
+        if(ik==0 && sp2f!=a)
+            s+=sp2f;
+    }
+    s%=V;
+    out<<s<<'\n';
+    return 0;
+}

@@ -1,0 +1,38 @@
+#include <fstream>
+#include <cstring>
+
+using namespace std;
+
+ifstream fin("capslock.in");
+ofstream fout("capslock.out");
+
+const int MaxN = 300;
+char s[MaxN];
+short int n;
+
+bool capslock;
+
+int main()
+{
+    fin.getline(s, MaxN);
+    n = strlen(s);
+
+    for(short int i = 0; i < n; ++i)
+    {
+        if(s[i] == ' '){
+            fout << ' ';
+            continue;
+        }
+
+        if(s[i] == '#'){
+            capslock = !capslock;
+            continue;
+        }
+
+        if(capslock == true)
+            fout << (char)((int)s[i] - 32);
+        else
+            fout << s[i];
+    }
+    return 0;
+}

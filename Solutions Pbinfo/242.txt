@@ -1,0 +1,56 @@
+#include <iomanip>
+#include <fstream>
+#include <iostream>
+#include <cassert>
+using namespace std;
+
+ifstream fin("interclasm.in");
+ofstream fout("interclasm.out");
+
+int a[100005],n, b[100005], m, c[200005], k;
+
+int main(){
+    int x;
+    fin >> x;
+    fin >> n;
+    for(int i=1;i<=n;++i){
+        fin >> a[i];
+    }
+    fin >> m;
+    for(int i=1;i<=m;++i){
+        fin >> b[i];
+    }
+    int i=1,j=1;
+    k = 0;
+    while(i<=n && j<=m)
+        if(a[i]<b[j])
+            if(a[i]%x == 0)
+                c[++k] = a[i] , i++;
+            else
+                i++;
+        else
+            if(a[i]>b[j])
+                if(b[j]%x == 0)
+                    c[++k] = b[j] , j++;
+                else
+                    j++;
+            else
+                i++, j++;
+    if(i<=n)
+        while(i<=n)
+            if(a[i]%x == 0)
+                c[++k] = a[i] , i++;
+            else
+                i++;
+    else
+        while(j<=m)
+            if(b[j]%x == 0)
+                    c[++k] = b[j] , j++;
+                else
+                    j++;
+    for(int i=1;i<=k;++i)
+    {
+        fout << c[i] << " ";
+    }
+    return 0;
+}

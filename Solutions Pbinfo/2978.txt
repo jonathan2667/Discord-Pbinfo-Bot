@@ -1,0 +1,70 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+int Test, N, cifra, nc, x,  P, T, i, y ,nr, nz;
+long long Max, p, nrc;
+
+int main()
+{
+    freopen ("aur.in", "r", stdin);
+    freopen ("aur.out", "w", stdout);
+    scanf("%d\n%d", &Test, &N);
+    if(Test >= 2) scanf("%d\n", &T);
+    if(Test == 3) P = T;
+
+    p = 1;
+
+    for (i = 1; i <= N; i++)
+    {
+        scanf("%d", &x); y = nz = 0;
+        while (x %10 == 0) {nc++; x/=10; nz++;}
+        while (x)
+        {
+            nc++;
+            y = y*10 + x%10;
+            x/=10;
+        }
+         while(y){
+            nr++;
+            if(nr==T) cifra=y%10;
+            if(nr<=P)
+            {
+                nrc = nrc*10+y%10;
+                p*=10;
+            }
+            if(nr==P)
+            {
+                p/=10;
+                Max=nrc;
+            }
+            if(nr>P)
+                nrc = nrc%p *10 + y%10;
+            if(nrc>Max) Max = nrc;
+            y/=10;
+        }
+        while (nz){
+            nr++;
+            if(nr==T) cifra=0;
+            if(nr<=P)
+            {
+                nrc = nrc*10;
+                p*=10;
+            }
+            if(nr==P)
+            {
+                p/=10;
+                Max=nrc;
+            }
+            if(nr>P)
+                nrc = nrc%p *10;
+            if(nrc>Max) Max = nrc;
+            nz--;
+        }
+    }
+
+    if(Test==1)printf("%d\n", nc);
+    if(Test==2)printf("%d\n", cifra);
+    if(Test==3)printf("%lld\n", Max);
+
+    return 0;
+}

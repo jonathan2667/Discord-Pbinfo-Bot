@@ -1,0 +1,38 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+ifstream in("ghem.in");
+ofstream out("ghem.out");
+
+const int DIM = 505;
+
+bool oki[DIM][DIM];
+int mat[DIM][DIM];
+
+int dx[2] = {0, 1}, dy[2] = {1, 0};
+
+int main(void) {
+    int n, x, y; char ch;
+    in >> n >> x >> y >> ch;
+    for (int i = 1, k = 1; i <= n; ++i)
+        for (int j = 1; j <= n; ++j)
+            mat[i][j] = k++;
+    for (int i = 0; i <= n + 1; ++i)
+        oki[0][i] = oki[n + 1][i] = oki[i][0] = oki[i][n + 1] = true;
+    int d = (ch == 'O') ? 0 : 1;
+    for (int nr = 1; nr <= 4 * (n + 4); ++nr, d ^= 1) {
+        for (int v = -1; v <= 1; v += 2) {
+            while (true) {
+                if (!oki[x][y])
+                    out << mat[x][y] << " ";
+                oki[x][y] = true;
+                int nx = x + dx[d] * v, ny = y + dy[d] * v;
+                if (!oki[nx][ny]) {
+                    x = nx; y = ny;
+                } else
+                    break;
+            }
+        }
+    }
+    return 0;
+} 

@@ -1,0 +1,52 @@
+#include<bits/stdc++.h>
+
+using namespace std;
+
+int nr, N, code[4][4], dp[100][15][15], old[15], cnt[15];
+const int mod = 1000003;
+
+bool maxD1 (int i, int j)
+{
+    return (-1 <= i - j && i - j <= 1);
+}
+
+int main ()
+{
+freopen ("protection.in", "r", stdin);
+freopen ("protection.out", "w", stdout);
+
+scanf ("%d", &N), N --;
+for (int i=0; i<3; i++)
+    for (int j=0; j<3; j++)
+        code[i][j] = ++nr;
+for (int i=0; i<3; i++)
+    for (int j=0; j<3; j++)
+        for (int k=0; k<3; k++)
+            for (int p=0; p<3; p++)
+                if (maxD1 (i, k) && maxD1 (j, p) && (i != k || j != p))
+                    dp[0][code[i][j]][code[k][p]] ++;
+for (int i=1; (1LL << i) <= N; i++)
+    for (int j=1; j<=9; j++)
+        for (int k=1; k<=9; k++)
+            for (int p=1; p<=9; p++)
+                dp[i][j][p] = ((long long) dp[i][j][p] + 1LL * dp[i - 1][j][k] * dp[i - 1][k][p]) % mod;
+for (int i=1; i<=9; i++)
+    cnt[i] = 1;
+for (int i=0; (1LL << i) <= N; i++)
+    if (N & (1LL << i))
+    {
+        memcpy (old, cnt, sizeof (cnt));
+        memset (cnt, 0, sizeof (cnt));
+        for (int j=1; j<=9; j++)
+            for (int k=1; k<=9; k++)
+                cnt[k] = ((long long) cnt[k] + 1LL * old[j] * dp[i][j][k]) % mod;
+    }
+int ans = 0;
+for (int i=1; i<=9; i++)
+{
+    ans += cnt[i];
+    if (ans >= mod) ans -= mod;
+}
+printf ("%d\n", ans);
+return 0;
+}

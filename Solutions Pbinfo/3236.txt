@@ -1,0 +1,35 @@
+#include <bits/stdc++.h>
+
+using namespace std;
+
+ifstream f("parimpar2.in");
+ofstream g("parimpar2.out");
+
+int main(){
+    int x,i_impar,p_par,numere_pare=0,numere_impare=0,numar_par=-1,numar_impar=-1;
+
+    f>>i_impar>>p_par;
+
+    while(f>>x)
+        if(x%2==0)
+        {
+            numere_pare++;
+            if(numere_pare==p_par)
+                numar_par=x;
+        }
+        else
+            {
+                numere_impare++;
+                if(numere_impare==i_impar)
+                    numar_impar=x;
+            }
+
+    if(numar_par==-1||numar_impar==-1)
+        g<<"Nu Exista";
+    else
+        g<<numar_par<<" "<<numar_impar;
+
+    f.close();
+    g.close();
+    return 0;
+}

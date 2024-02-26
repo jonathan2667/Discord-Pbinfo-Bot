@@ -1,0 +1,101 @@
+program sablon;
+var fisier,g:text;
+exp,s:string;
+n,i,j,k:integer;
+p:integer;
+gasit:boolean;
+x:array[1..1000]of string;
+
+function f(exp,s:string):boolean;
+var i:integer;ok:boolean;
+begin
+if exp='' then if s='' then f:=true
+                       else f:=false
+          else
+ if (exp[1]>='a')and(exp[1]<='z') then
+  if s<>'' then
+   if s[1]=exp[1] then
+                    begin
+                    delete(exp,1,1);
+                    delete(s,1,1);
+                    f:=f(exp,s)
+                    end
+                  else {s[1]<>exp[1]} f:=false
+           else {s=''} f:=false
+ else
+  if exp[1]='?' then
+   if s<>'' then
+              begin
+              delete(exp,1,1);
+              delete(s,1,1);
+              f:=f(exp,s)
+              end
+            else f:=false
+  else {exp[1]='*'}
+   begin
+   delete(exp,1,1);
+   ok:=f(exp,s);
+   for i:=1 to length(s) do
+    begin
+    delete(s,1,1);
+    ok:=ok or f(exp,s);
+    end;
+   f:=ok;
+   end;
+end;
+
+begin
+assign(fisier,'masca.in');
+reset(fisier);
+readln(fisier,p);
+readln(fisier,exp);
+readln(fisier,n);
+if p=2 then
+begin
+k:=0;
+for i:=1 to n do
+ begin
+ readln(fisier,s);
+ if f(exp,s) then
+  begin
+  gasit:=false;
+  for j:=1 to k do
+   if s=x[j] then gasit:=true;
+  if not(gasit) then
+   begin inc(k);
+   x[k]:=s;
+   end;
+  end;
+ end;
+close(fisier);
+end
+else
+begin
+k:=0;
+for i:=1 to n do
+ begin
+ readln(fisier,s);
+  begin
+  gasit:=false;
+  for j:=1 to k do
+   if s=x[j] then gasit:=true;
+  if not(gasit) then
+   begin inc(k);
+   x[k]:=s;
+   end;
+  end;
+ end;
+close(fisier);
+end;
+
+{writeln(exp);
+for j:=1 to k do
+ writeln(x[j],' DA');
+
+writeln('nr=',k);}
+
+assign(g,'masca.out');
+rewrite(g);
+writeln(g,k);
+close(g);
+end.

@@ -1,0 +1,7 @@
+void oglindit(int x,int &y){
+  y = 0;
+  while(x){
+    y = 10*y + x%10;
+    x /=10;
+  }
+}

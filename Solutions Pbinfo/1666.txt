@@ -1,0 +1,55 @@
+/*
+    solutie oficiala - Potra Vlad
+    complexitate : O(N+M)
+*/
+#include <iostream>
+#include <fstream>
+#include <vector>
+using namespace std;
+
+const int Nmax = 27040 + 1;
+const int Mmax = 27040 + 1;
+
+ifstream is ("arbrush.in");
+ofstream os ("arbrush.out");
+
+int N, M;
+int D[Nmax];        // D[x] = marimea subarborelui lui x
+int Root;
+vector <int> Tree[Nmax];
+bool Viz[Nmax];
+
+void DFS(int x);
+
+int main()
+{
+    is >> N >> M >> Root;
+    for (int i = 1, a, b; i < N; ++i)
+    {
+        is >> a >> b;
+        Tree[a].push_back(b);
+        Tree[b].push_back(a);
+    }
+    DFS(Root);
+
+    for (int i = 1, x; i <= M; ++i)
+    {
+        is >> x;
+        os << (D[x] * (D[x]-1)) / 2 << '\n';
+    }
+
+    is.close();
+    os.close();
+};
+
+void DFS(int x)
+{
+    Viz[x] = 1;
+    D[x] = 1;
+    for (const auto& y : Tree[x])
+        if (Viz[y] == 0)
+        {
+            DFS(y);
+            D[x] += D[y];
+        }
+};

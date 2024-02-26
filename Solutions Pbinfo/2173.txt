@@ -1,0 +1,72 @@
+#include <cstdio>
+#define NMAX 101
+#define KMAX 103
+#define MOD 30011
+
+using namespace std;
+
+int N, K, arb[NMAX][NMAX],
+    rad, p[NMAX];
+
+void readinput()
+{
+    int i;
+    int a, b;
+
+    freopen( "iepuri1.in", "r", stdin );
+    scanf( "%d%d", &N, &K );
+
+    for(i = 0; i < N - 1; i++ )
+    {
+        scanf( "%d%d", &a, &b );
+        arb[a][ ++arb[a][0] ] = b;
+        p[b]=a;
+    }
+    for( i = 1; i <= N; i++ )
+        if( !p[i] ) rad = i;
+}
+
+int m[NMAX][KMAX];
+
+void go( int rad )
+{
+    int i, k;
+    for(i = 1; i <= arb[rad][0]; i++ )
+        go( arb[rad][i] );
+
+    for(k = K; k >= 1; k-- )
+    {
+        m[rad][k] = 1;
+        for(i = 1; i <= arb[rad][0]; i++ )
+            {
+                m[ arb[rad][i] ][ k + 1 ] += m[ arb[rad][i] ][ k + 2 ];
+                m[ arb[rad][i] ][ k + 1 ] %= MOD;
+
+                int temp = m[rad][k];
+                temp *= m[ arb[rad][i] ][ k + 1 ];
+                m[rad][k] = temp % MOD;
+            }
+    }
+}
+
+void writeoutput()
+{
+    int sum = 0;
+
+    for( int i = 1; i <= K; i++ )
+    {
+        sum += m[rad][i];
+        sum %= MOD;
+    }
+
+    freopen("iepuri1.out", "w", stdout );
+    printf("%d\n", sum);
+}
+
+int main()
+{
+    readinput();
+    go( rad );
+    writeoutput();
+    return 0;
+}

@@ -1,0 +1,13 @@
+// 100 de puncte O(Q * log N)
+#include <fstream>
+using namespace std;
+ifstream f("xor1.in");
+ofstream g("xor1.out");
+int q,i,j,p,P,s,a,b,m;
+int main()
+{
+    for(f>>q>>i>>j>>a>>b>>m;q;g<<s<<'\n',q--,i=(a*i+b)%m,j=(a*j+b)%m)
+        for(p=0,P=1,s=0;P<=j;p++,P<<=1)
+            s|=(((i+P)&(j-P))==0)<<p;
+    return 0;
+}

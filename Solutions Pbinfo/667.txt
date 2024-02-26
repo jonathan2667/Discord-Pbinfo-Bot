@@ -1,0 +1,27 @@
+#include <iostream>
+using namespace std;
+
+int a[601][601], n, m;
+int v[1000005];
+
+int main(){
+    //ciurul lui eratostene
+    v[1] = v[0] = 1;
+    for(int i = 2 ; i * i <= 1000000 ; i++)
+        for(int j = 2 ; i * j <= 1000000 ; j ++)
+            v[i*j] = 1;
+    
+    cin  >> n >> m;
+    for (int i = 1 ;i <= n ; ++i)
+        for(int j = 1 ; j <= m ; ++j)
+            cin >> a[i][j];
+    
+    int cnt = 0;
+    for(int j = 1 ; j <= m ; j ++) 
+        for (int i = 1 ;i <= n ; i ++) 
+            if(j % 2 == 1)
+                if(v[a[i][j]] == 0)
+                    cnt ++;
+    cout << cnt;
+    return 0;
+}

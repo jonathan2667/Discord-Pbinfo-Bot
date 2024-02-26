@@ -1,0 +1,14 @@
+void numar(int n, int *a,int &k){
+    int min=a[0], max=a[0];
+    for(int i=1;i<n;++i){
+        if(a[i]>max)
+            max = a[i];
+        if(a[i]<min)
+            min = a[i];
+    }
+    int x = min;
+    k=max;
+    while(x)
+        k*=10, x/=10;
+    k+=min;
+}

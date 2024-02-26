@@ -1,0 +1,16 @@
+#include <iostream>
+using namespace std;
+
+int main()
+{
+    int i, j, k, c1, c2, n;
+    cin >> c1 >> c2;
+    for (i = c1; i <= 9; i++)
+        for (j = 0; j <= 8; j += 2)
+            for (k = 0; k <= c2; k++)
+            {
+                n = i * 1000 + j * 100 + k * 10 + j;
+                cout << n << "\n";
+            }
+    return 0;
+}

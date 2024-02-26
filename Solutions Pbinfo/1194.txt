@@ -1,0 +1,109 @@
+// prof. Ionel Vasile Pit-Rada
+
+#include <fstream>
+using namespace std;
+
+long long   a[1000][1000], b[1000][1000], best[1000][1000];
+int         m, n, v;
+int         col_top, col_bottom, row_left, row_right;
+
+
+long long sum(long long (*a)[1000], int p, int q, int m, int n)
+{
+    long long s = 0L;
+
+    for (int i = 0; i < m; i++)
+        for (int j = 0; j < n; j++)
+            s += a[p + i][q + j];
+
+    return s;
+}
+
+
+void reflect_x(long long (*a)[1000], int p, int q, int m, int n)
+{
+    for (int i = 0; i < m; i++)
+        for (int j = 0; j < n/2; j++)
+            swap(a[p + i][q + j], a[p + i][q + n - j - 1]);
+}
+
+
+void reflect_y(long long (*a)[1000], int p, int q, int m, int n)
+{
+    for (int i = 0; i < m/2; i++)
+        for (int j = 0; j < n; j++)
+            swap(a[p + i][q + j], a[p + m - i - 1][q + j]);
+}
+
+
+long long bestGain(long long (*a)[1000], int p, int q, int m, int n)
+{
+    long long   maxLeft, gain;
+
+    for (int j = 0; j <= n; j++)
+        for (int i = m; i >= 0; i--)
+            b[i][j] = ((i == m) || (j == 0)) ? 0 : b[i + 1][j] + a[p + i][q + j - 1];
+
+    for (int j = 1; j <= n; j++)
+    {
+        maxLeft = best[0][j-1];
+        for (int i = 0; i <= m; i++)
+        {
+            maxLeft    = max<long long>(maxLeft, best[i][j-1]);
+            best[i][j] = maxLeft + b[i][j];
+        }
+    }
+
+    gain = best[0][n];
+    for (int i = 0; i <= m; i++)
+        gain = max<long long>(gain, best[i][n]);
+
+    return gain;
+}
+
+
+int main()
+{
+    ifstream    f("fence.in");
+    ofstream    g("fence.out");
+    long long   gain;
+    int p;
+    f >> p;
+    f >> m >> n >> v;
+    f >> col_top >> col_bottom >> row_left >> row_right;
+    col_top--; col_bottom--; row_left--; row_right--;
+    for (int i = 0; i < m; i++)
+        for (int j = 0; j < n; j++)
+        {
+            f >> a[i][j];
+            a[i][j] -= v;
+        }
+
+    gain = sum(a, 0, 0, m, n)
+         - sum(a, 0, 0, row_left, col_top)
+         - sum(a, 0, col_top + 1, row_right, n - col_top - 1)
+         - sum(a, row_left + 1, 0, m - row_left - 1, col_bottom)
+         - sum(a, row_right + 1, col_bottom + 1, m - row_right - 1, n - col_bottom - 1);
+    if(p == 1)
+    {
+        g << gain << endl;
+    }
+    else
+    {
+        reflect_x(a, 0, 0, row_left, col_top);
+        reflect_x(a, row_left + 1, 0, m - row_left - 1, col_bottom);
+        reflect_y(a, row_left + 1, 0, m - row_left - 1, col_bottom);
+        reflect_y(a, row_right + 1, col_bottom + 1, m - row_right - 1, n - col_bottom - 1);
+
+        gain += bestGain(a, 0, 0, row_left, col_top)
+              + bestGain(a, 0, col_top + 1, row_right, n - col_top - 1)
+              + bestGain(a, row_left + 1, 0, m - row_left - 1, col_bottom)
+              + bestGain(a, row_right + 1, col_bottom + 1, m - row_right - 1, n - col_bottom - 1);
+        g << gain;
+    }
+    g.close();
+
+    return 0;
+}
+
+

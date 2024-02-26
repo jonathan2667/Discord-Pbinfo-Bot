@@ -1,0 +1,62 @@
+# include <fstream>
+# include <cstring>
+using namespace std;
+
+ifstream f("scrabble.in");
+ofstream g("scrabble.out");
+
+char piesa[25][3], s[51];
+int litere[121], n;
+char sol[51];
+int ap[25], st[25], kmax;
+
+void back(int k)
+{
+    for(int x=1; x<=n; ++x){
+        st[k] = x;
+        if (!ap[st[k]]){
+            ap[st[k]] = 1;
+            if ((litere[piesa[st[k]][0]] != litere[piesa[st[k-1]][1]]) || k == 1){
+                    s[2*k-2] = piesa[st[k]][0];
+                    s[2*k-1] = piesa[st[k]][1];
+                    if (k > kmax) {
+                        s[2*k] = '\0';
+                        strcpy(sol, s);
+                        kmax = k;
+                    }
+                    else if (k == kmax) {
+                            if (strcmp(s, sol) > 0) {
+                                strcpy(sol, s);
+                            }
+                    }
+                    if (k < n) back(k+1);
+                }
+            ap[st[k]] = 0;
+        }
+    }
+}
+int main()
+{
+    f >> n;
+    for(int i=1; i<=n; ++i){
+        f >> piesa[i];
+
+        char c1 = piesa[i][0];
+        char c2 = piesa[i][1];
+
+        if (strchr("AEIOU", c1)){
+            litere[c1] = 2; ///vocale
+            litere[c2] = 1; ///consoane
+        }
+        else {
+            litere[c2] = 2;
+            litere[c1] = 1;
+        }
+    }
+
+    back(1);
+
+    g << sol << '\n';
+
+    return 0;
+}

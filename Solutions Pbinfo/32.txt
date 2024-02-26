@@ -1,0 +1,11 @@
+void P(int &n, int c){
+    int v[15];
+    int nrc=0;
+    while(n){
+        if(n%10!=c)
+            v[++nrc] = n%10;
+        n /= 10;
+    }
+    for( ; nrc; --nrc)
+        n = 10*n + v[nrc];
+}

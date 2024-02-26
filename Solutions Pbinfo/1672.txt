@@ -1,0 +1,105 @@
+#include <fstream>
+#include <cmath>
+using namespace std;
+ifstream fin("civilizatie.in");
+ofstream fout("civilizatie.out");
+#define nrCiv 2001 // numarul maxim de civilizatii
+int p // tipul de cerinta
+    ,n // mumarul de civilizatii
+    ,nx,ny // dimensiunile hartii
+    ,x[nrCiv],y[nrCiv] // coordonatele initiale ale oraselor
+    ,dxyMin[nrCiv] // timpul pana la atingerea marginilor
+    ,dMin[nrCiv] // timpul pana la oprire
+    ,difMin[nrCiv][nrCiv] // distata dintre oricare doua civilizatii
+    ,difMin2[nrCiv][nrCiv] // timpul minim dintre oricare doua civilizatii
+    ,lMin[nrCiv] // minimele pe linii
+    ,jlMin[nrCiv]; // pozitia minimului pe linii
+unsigned long long t // timpul pt cerinta 1
+                ,ct[nrCiv]; // suprafata ocupata de orase
+int main()
+{
+    fin>>p>>nx>>ny>>t>>n;
+    if(p==1){
+        unsigned long long ct=ct+2*t*(t-1)+1;;
+        fout<<ct<<'\n';
+    }
+    else{
+        for(int i=1;i<=n;i++)
+            fin>>x[i]>>y[i];
+        // minime pana la margini
+        for(int i=1;i<=n;i++){
+            int dxMin=min(nx-x[i]+1,x[i]),dyMin=min(ny-y[i]+1,y[i]);
+            dxyMin[i]=min(dxMin,dyMin);
+        }
+        // calcul distantei initiale pana la celelalte civilizatii
+        for(int i=1;i<=n;i++){
+            lMin[i]=nx+ny;
+            for(int j=1;j<=n;j++){
+                difMin[i][j]=abs(x[i]-x[j])+abs(y[i]-y[j])+1;
+                difMin2[i][j]=difMin[i][j]/2;
+                if(difMin2[i][j]<lMin[i] && i!=j){
+                    lMin[i]=difMin2[i][j];jlMin[i]=j;
+                }
+            }
+        }
+        // selectare orase in ordinea opriri expansiunii
+        int nr=0;
+        while(nr<n)
+        {
+            // cautare minim
+            int mMin=nx+ny,iMin,jMin,im=0;
+            for(int i=1;i<=n;i++){
+                if(mMin>lMin[i] && !dMin[i]){
+                    mMin=lMin[i];iMin=i;jMin=jlMin[i];im=0;
+                }
+                if(mMin>dxyMin[i] && !dMin[i]){
+                    mMin=dxyMin[i];im=i;
+                }
+            }
+            // calcul timp de oprire oras selectat si ajustare timpi pentru celelalte
+            int i=iMin,j=jMin;
+            if(im!=0){
+                i=im;dMin[i]=dxyMin[i];
+            }
+            else {
+                if(dMin[i]){ // civilizatia i verificata deja
+                    i=jMin;j=iMin;
+                }
+                dMin[i]=difMin2[i][j];
+            }
+            nr++;
+            lMin[i]=nx+ny;
+            for(int k=1;k<=n;k++) // pt toate elementele de pe col i
+                if(!dMin[k] || !dMin[i])
+                    if(difMin2[k][i]!=dMin[i]){
+                        difMin2[k][i]=difMin2[i][k]=difMin[k][i]-dMin[i];
+                        if(difMin2[k][i]<lMin[i] && k!=i && (!dMin[k] || !dMin[i])){
+                            lMin[i]=difMin2[k][i];jlMin[i]=k;
+                        }
+                        if(jlMin[k]==i){
+                            lMin[k]=nx+ny;
+                            for(int ik=1;ik<=n;ik++) // pt toate elementele de pe linia k
+                                if(difMin2[k][ik]<lMin[k] && k!=ik ){
+                                    lMin[k]=difMin2[k][ik];jlMin[k]=ik;
+                                }
+                        }
+                    }
+        }
+        // calcul suprafete
+        for(int i=1;i<=n;i++){
+            t=dMin[i];
+            ct[i]=2*t*(t-1)+1;
+        }
+        unsigned long long tot=0;
+        int dMax=0;
+        for(int i=1;i<=n;i++){
+            tot=tot+ct[i];
+            if(dMax<dMin[i])
+                dMax=dMin[i];
+        }
+        fout<<(unsigned long long)nx*ny-tot<<'\n';
+        fout<<dMax<<'\n';
+    }
+    return 0;
+}
+

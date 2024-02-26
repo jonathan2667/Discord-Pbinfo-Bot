@@ -1,0 +1,23 @@
+#include <iostream>
+#include <cstdlib>
+
+using namespace std;
+
+int main(){
+    int n,a,b, dmin, nrd;
+    cin >> n >> a >> b;
+    dmin = abs(a-b), nrd=1;
+    a = b;
+    for(int i=3 ; i<=n ; ++i)
+    {
+        cin >> b;
+        if(abs(a-b)>dmin)
+            dmin = abs(a-b), nrd = 1;
+        else
+            if(abs(a-b)==dmin)
+                nrd++;
+        a = b;
+    }
+    cout << dmin << " " << nrd;
+    return 0;
+}

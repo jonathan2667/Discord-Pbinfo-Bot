@@ -1,0 +1,36 @@
+#include <iostream>
+using namespace std;
+int main(){
+    int n, x, y, p, Xi, Yi;
+    int totalc = 0, totalu = 0;
+    cin >> n >> x >> y >> p;
+    if(p == 1){
+        for(int i = 1; i <= n; i++){
+            cin >> Xi >> Yi;
+            totalu += Xi;
+            totalc += Yi;
+        }
+        cout << totalu << " " << totalc << " " << totalu - totalc;
+    }
+    else{
+        int total = 0;
+        bool ok ;
+        for(int i = 1; i <= n; i++){
+            if(i == x){
+                if(total >= y){
+                    ok = 0;
+                    break;
+                }
+                else{
+                    ok = 1;
+                    break;
+                }
+            }
+            cin >> Xi >> Yi;
+            total += (Xi - Yi);
+        }
+        if(ok) cout << "NU";
+        else cout << "DA";
+    }
+    return 0;
+}

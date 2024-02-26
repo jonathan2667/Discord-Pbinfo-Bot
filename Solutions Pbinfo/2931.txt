@@ -1,0 +1,41 @@
+#include<bits/stdc++.h>
+using namespace std;
+
+ifstream in("parap.in");
+ofstream out("parap.out");
+
+long long v[100002],w[12],vf[10002];
+
+long long trans(long long x)
+{
+    long long i,sol=0,p=1;
+    while(x!=0)
+    {
+        w[x%10]++;
+        x/=10;
+    }
+    for(i=0;i<=9;i++)
+    {
+        sol+=p*(w[i]%2);
+        p*=2;
+        w[i]=0;
+    }
+    return sol;
+}
+
+int main()
+{
+    in.tie(NULL);
+    ios::sync_with_stdio(false);
+    long long n,i,x,sol=0;
+    in>>n;
+    for(i=1;i<=n;i++)
+    {
+        in>>x;
+        v[i]=trans(x);
+        sol+=vf[v[i]];
+        vf[v[i]]++;
+    }
+    out<<sol;
+    return 0;
+}

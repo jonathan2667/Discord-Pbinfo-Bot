@@ -1,0 +1,16 @@
+void sumdif()
+{
+    int rez = 0;
+    if ((rez = fgetc(stdin)))
+    {
+        if (fgetc(stdin) == '-')
+        {
+            if (!printf("%d\n", rez - fgetc(stdin))) {}
+        }
+        else
+        {
+            if (!printf("%d\n", rez + fgetc(stdin) - 48*2)) {}
+        }
+    }
+
+}

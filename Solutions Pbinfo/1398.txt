@@ -1,0 +1,79 @@
+/*
+ Acest program calculeaza determinantul unei matrici transformand elementele de sub diagonala in zerouri
+ probabil aceasta este cea mai eficienta modalitate, desi nu cea mai interesanta :)
+*/
+#include <fstream>
+#include <iostream>
+using namespace std;
+
+void citire_matrice(double a[100][100],int &n)
+{
+  ifstream fin("determinant.in");
+  fin>>n;
+  for(int i=1;i<=n;i++)
+    for(int j=1;j<=n;j++)
+      fin>>a[i][j];
+  fin.close();
+}
+
+double determinant(double a[100][100],int n)
+{
+  //ideea de baza : facem zero sub diagonala principala
+  //in acest caz, determinantul este produsul de pe diagonala
+  int i,j,k,poz,semn=1;
+  double p;
+  //iau fiecare element de pe diag princ
+  for(i=1;i<n;i++)
+  {
+    //daca elementul a[i][i] este zero, ii caut un inlocuitor, pe coloana in jos
+    if(a[i][i]==0)
+    {
+      for(j=i+1,poz=0;j<=n && !poz;j++)
+        if(a[j][i]!=0)
+          poz=j;
+      //daca nu gasesc, determinantul este zero
+      if(!poz)
+        return 0;
+      //daca gasesc, schimb liniile i cu poz
+      for(j=i;j<=n;j++)
+        p=a[i][j],a[i][j]=a[poz][j],a[poz][j]=p;
+      semn*=-1;
+    }
+    //fac zero pe coloana i, sub diag princ
+    for(j=i+1;j<=n;j++)
+    {
+      //calculez valoarea cu care inmultesc linia i si adun la linia j
+      p=-a[j][i]/a[i][i];
+      for(k=i;k<=n;k++)
+        a[j][k]+=p*a[i][k];
+    }
+    //aici afisez matricea transformata, ca sa vad cum se modifica
+    for(j=1;j<=n;j++)
+    {
+      for(k=1;k<=n;k++)
+        printf("%7.0f",a[j][k]);
+      printf("\n");
+    }
+    printf("=====================================\n");
+    ////////////////////////////////////////////////////////
+  }
+  //calculez produsul de pe diag princ
+  p=semn;
+  for(i=1;i<=n;i++)
+    p*=a[i][i];
+  return p;
+}
+
+int main()
+{
+  double a[100][100];
+  int n;
+  citire_matrice(a,n);
+  ofstream fout("determinant.out");
+  double rezultat = determinant(a,n);
+  fout << fixed << rezultat;
+  cout << fixed << rezultat;
+  fout.close();
+  return 0;
+}
+

@@ -1,0 +1,45 @@
+#include <fstream>
+#include <algorithm>
+using namespace std;
+ifstream f("minioni.in");
+ofstream g("minioni.out");
+const int MM = 101;
+const int KK = 505;
+int t[MM];
+long long dp[MM][KK];
+
+inline long long suma(int n)
+ {
+    return (long long)n * (n + 1) / 2;
+ }
+
+inline long long rezolva_cladire(int n, int k)
+{
+    int p = k + 1;
+    int mp = n/p;
+    int bp = (n+p-1)/p;
+    int nmaj = n%p;
+    int nmic = p-nmaj;
+    return nmic * suma(mp) + nmaj*suma(bp);
+}
+
+int main()
+{
+    int N, M, K;
+    f>>N>>M>>K;
+    while (N--)
+    {
+        int cladire;
+        f>>cladire;
+        ++t[cladire];
+    }
+    for (int m=1;m<=M;++m)
+        for (int k=0;k<=K;++k) {
+            dp[m][k] =rezolva_cladire(t[m],0) + dp[m-1][k];
+            for (int i=1;i<=k;++i)
+                dp[m][k] = min(dp[m][k],rezolva_cladire(t[m],i) + dp[m-1][k-i]);
+            }
+    g<<dp[M][K];
+
+return 0;
+}

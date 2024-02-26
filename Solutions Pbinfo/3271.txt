@@ -1,0 +1,30 @@
+#include <iostream>
+
+using namespace std;
+
+int main()
+{
+    int n , a , b , amax = 0 , bmax = 0, dmax = -1;
+    cin >> n;
+    for( ; n ; --n)
+    {
+        cin >> a >> b;
+        int x = a , y = b;
+        while(y)
+        {
+            int r = x % y;
+            x= y;
+            y = r;
+        }
+        
+        if(x > dmax)
+            dmax = x, amax = a , bmax = b;
+        else
+            if(x == dmax)
+                if(a + b > amax + bmax)
+                    amax= a , bmax = b;
+        
+    }
+    cout << amax << " " << bmax;
+    return 0;
+}

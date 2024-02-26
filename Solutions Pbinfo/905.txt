@@ -1,0 +1,7 @@
+void detcifre(int n ,int &p ,int &u)
+{
+    p = n;
+    u = n % 10;
+    while(p > 9)
+        p /= 10;
+}

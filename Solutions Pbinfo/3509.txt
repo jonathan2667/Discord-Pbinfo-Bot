@@ -1,0 +1,21 @@
+/// Solutie - Moca Andrei - 100p
+#include <bits/stdc++.h>
+using namespace std;
+typedef long long i64;
+unordered_map<i64, int> freq;
+string s;
+i64 res, p(1), nr, n, last;
+int main() {
+    ios::sync_with_stdio(false);
+    cin.tie(0); cout.tie(0);
+    cin >> s >> n;
+    freq[0] = 1;
+    for (int i = static_cast<int>(s.size()) - 1; i >= 0; --i) {
+        nr = (nr + p * (s[i] - '0')) % n;
+        p = (p * 10) % n;
+        res += freq[nr];
+        ++freq[nr];
+    }
+    cout << res;
+    return 0;
+}

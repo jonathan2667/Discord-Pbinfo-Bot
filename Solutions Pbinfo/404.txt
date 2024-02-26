@@ -1,0 +1,35 @@
+#include <iostream>
+using namespace std;
+
+int main(){
+    int n , x;
+    
+    cin >> n;
+    
+    //Vom numara cifrele numerelor prime. initializam contorul cu zero
+    int nrc = 0;
+    
+    //citim cele n numere
+    for(int i = 1 ; i <= n; i++){
+        cin >> x;
+        
+        //verificam daca x este prim
+        int prim = 1;
+        if(x<2)
+            prim = 0;
+        if(x % 2 == 0 && x > 2)
+            prim = 0;
+        for(int d = 3; d * d <= x && prim == 1 ; d ++)
+            if(x % d == 0)  // daca il gasim
+                prim = 0;   //i nu este prim
+        
+        //daca numarul este prim, ii numaram cifrele
+        if(prim == 1)
+            while(x)
+                nrc ++, x /= 10;
+    }
+    
+    //afisam contorul
+    cout << nrc;
+    return 0;
+}

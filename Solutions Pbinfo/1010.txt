@@ -1,0 +1,24 @@
+#include <iostream>
+
+using namespace std;
+int n,m,p,i,a[10001],b[10001],c[10001],nr,poz,x;
+int main()
+{
+    cin >> n >> p;
+    for(i=1;i<=n;i++){cin>>x;a[x]++;};
+    cin>>m;
+    for(i=1;i<=m;i++){cin>>x;b[x]++;};
+
+
+    c[0]=b[0];
+    for(i=1;i<=9999;i++)c[i]=c[i-1]+b[i];
+    nr=a[0]*m;
+    for(i=1;i<=9999;i++)
+    {
+        poz=(p-1)/i;
+        if(poz<10000)nr=nr+a[i]*c[poz];
+            else nr=nr+a[i]*m;
+    }
+    cout<<nr;
+    return 0;
+}

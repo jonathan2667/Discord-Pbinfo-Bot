@@ -1,0 +1,104 @@
+#include <fstream>
+using namespace std;
+int v[130];
+char m[6][6];
+int main()
+{
+    ifstream cin ("playfair.in");
+    ofstream cout ("playfair.out");
+    char c;
+    int cer;
+    cin>>cer;
+    for(int i=1;i<=5;i++)
+    {
+        for(int j=1;j<=5;j++)
+        {
+            cin>>c;
+            v[c]=i*10+j;
+            m[i][j]=c;
+        }
+    }
+    char lipsa;
+    for(char ch='a';ch<='z';ch++)
+    {
+        if(v[ch]==0)
+            lipsa=ch;
+    }
+    if(cer==1)
+    {
+        char a,b;
+        while(cin>>a>>b)
+        {
+            if(a==b)
+                cout<<a<<lipsa;
+            else
+            {
+                if(v[a]/10==v[b]/10)
+                {
+                    if(v[a]%10!=5)
+                        cout<<m[v[a]/10][v[a]%10+1];
+                    else
+                        cout<<m[v[a]/10][1];
+                    if(v[b]%10!=5)
+                        cout<<m[v[b]/10][v[b]%10+1];
+                    else
+                        cout<<m[v[b]/10][1];
+                }
+                else if(v[a]%10==v[b]%10)
+                {
+                    if(v[a]/10!=5)
+                        cout<<m[v[a]/10+1][v[a]%10];
+                    else
+                        cout<<m[1][v[a]%10];
+                    if(v[b]/10!=5)
+                        cout<<m[v[b]/10+1][v[b]%10];
+                    else
+                        cout<<m[1][v[b]%10];
+                }
+                else
+                {
+                    cout<<m[v[a]/10][v[b]%10]<<m[v[b]/10][v[a]%10];
+                }
+            }
+        }
+    }
+    else
+    {
+        char a,b;
+        while(cin>>a>>b)
+        {
+            if(b==lipsa)
+                cout<<a<<a;
+            else
+            {
+                if(v[a]/10==v[b]/10)
+                {
+                    if(v[a]%10!=1)
+                        cout<<m[v[a]/10][v[a]%10-1];
+                    else
+                        cout<<m[v[a]/10][5];
+                    if(v[b]%10!=1)
+                        cout<<m[v[b]/10][v[b]%10-1];
+                    else
+                        cout<<m[v[b]/10][5];
+                }
+                else if(v[a]%10==v[b]%10)
+                {
+                    if(v[a]/10!=1)
+                        cout<<m[v[a]/10-1][v[a]%10];
+                    else
+                        cout<<m[5][v[a]%10];
+                    if(v[b]/10!=1)
+                        cout<<m[v[b]/10-1][v[b]%10];
+                    else
+                        cout<<m[5][v[b]%10];
+                }
+                else
+                {
+                    cout<<m[v[a]/10][v[b]%10]<<m[v[b]/10][v[a]%10];
+                }
+            }
+        }
+    }
+    return 0;
+}

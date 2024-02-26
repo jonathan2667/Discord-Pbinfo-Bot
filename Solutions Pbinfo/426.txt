@@ -1,0 +1,18 @@
+#include <iostream>
+using namespace std;
+
+int main()
+{
+    int n , b;
+    cin >> n >> b;
+    int max = -1;
+    do
+    {
+        if(n % b > max)
+            max = n % b;
+        n /= b;
+    }
+    while(n != 0);
+    cout << max;
+    return 0;
+}

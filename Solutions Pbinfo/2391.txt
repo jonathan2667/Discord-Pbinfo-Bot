@@ -1,0 +1,43 @@
+#include <fstream>
+
+using namespace std;
+ifstream fin("concert_rock.in");
+ofstream fout("concert_rock.out");
+
+int main()
+{
+    char s[100005];
+    int n,scaune,k,min=100005,i,inceput,uscat,umed,tumed,tuscat;
+
+    fin>>scaune>>n>>k;
+    for(i=0;i<scaune;++i)
+        fin>>s[i];
+    tumed=k;
+    tuscat=n-k;
+    uscat=umed=0;
+    for(inceput=i=0;i<scaune;++i)
+    {
+        if(s[i]=='c')
+                ++uscat;
+        if(s[i]=='u')
+               ++umed;
+        if(uscat>=tuscat and (umed+(uscat-tuscat))>=k)
+        {
+            if(i-inceput+1<min)
+                min=i-inceput+1;
+            if(s[inceput]=='u')
+                    --umed;
+                else
+                    --uscat;
+            ++inceput;
+            if(s[i]=='u')
+                --umed;
+            else
+                --uscat;
+            i--;
+        }
+    }
+    fout<<min;
+    return 0;
+}
+

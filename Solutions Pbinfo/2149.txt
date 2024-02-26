@@ -1,0 +1,45 @@
+#include <iostream>
+#include <fstream>
+#include <cstring>
+
+using namespace std;
+
+ifstream f("an.in");
+ofstream g("an.out");
+
+int T,a,x,eu,c;
+
+char s[10001];
+
+int main()
+{
+    f>>T;
+    for(a=1; a<=T; a++)
+    {
+        f>>s;
+        x=strlen(s);
+        eu=1;
+        c=0;
+        while(c<x-1 and s[c]!=s[c+1])
+        {
+            c++;
+            if(eu==1)
+                eu=0;
+            else
+                eu=1;
+        }
+        if(c==x-1)
+        {
+            if(x%2==1)
+                g<<1<<endl;
+            else
+                g<<0<<endl;
+        }
+        else if(eu==1)
+            g<<1<<endl;
+        else
+            g<<0<<endl;
+    }
+return 0;
+}
+

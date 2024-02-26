@@ -1,0 +1,70 @@
+/*
+Peri O(N^3) solution
+by Radu Berinde
+*/
+
+#include <bits/stdc++.h>
+using namespace std;
+
+char A[251][251];
+int *B[251];
+int N, M;
+
+int Best = -13;
+long BestNr = 0;
+
+#define Sum(l1, l2, c) (B[l2][c] - B[l1-1][c])
+
+void bagamarfa(int l1, int l2)
+{
+    int i, max = Sum(l1, l2, 1), maxnr = 1, sum;
+    for (i = 2; i <= M; i++)
+    {
+    sum = Sum(l1, l2, i);
+    if (Best < max + sum) Best = max + sum, BestNr = maxnr;
+    else
+    if (Best == max + sum) BestNr += maxnr;
+
+    max += A[l1][i] + A[l2][i];
+
+    if (max < sum) max = sum, maxnr = 1;
+    else
+    if (max == sum) maxnr++;
+    }
+}
+
+void solve()
+{
+    int l1, l2;
+    for (l1 = 1; l1 <= N; l1++)
+     for (l2 = l1+1; l2 <= N; l2++)
+     bagamarfa(l1, l2);
+}
+
+
+void read_data()
+{
+    FILE *fi = fopen("peri.in", "rt");
+    int i, j, x;
+    fscanf(fi, "%d %d", &N, &M);
+    B[0] = (int *) calloc(M+1, sizeof(int));
+    for (i = 1; i <= N; i++)
+    {
+    B[i] = (int *) calloc(M+1, sizeof(int));
+    for (j = 1; j <= M; j++)
+    {
+        fscanf(fi, "%d", &x);
+        A[i][j] = x ? 1 : -1;
+        B[i][j] = B[i-1][j] + A[i][j];
+    }
+    }
+    fclose(fi);
+}
+
+int main()
+{
+    read_data();
+    solve();
+    fprintf(fopen("peri.out", "wt"), "%d %ld\n", Best, BestNr);
+    return 0;
+}

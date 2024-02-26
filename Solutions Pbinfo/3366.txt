@@ -1,0 +1,61 @@
+//Solutie: Eric Vilcu Colegiul National Tudor Vladimirescu, Targu-Jiu
+#include <fstream>
+#include <cstring>
+using namespace std;
+ifstream f("periodic.in");
+ofstream g("periodic.out");
+char a[200009];
+int n,k;
+void iooioo()
+{
+    //aceasta functie genereaza un numar de forma 1010..10 sau 100100..100
+    n+=k-n%k;
+    for(int i=0;i<n;++i)if(i%k==0)a[i]='1';
+                        else a[i]='0';
+}
+bool verif()
+{
+    //verificam daca prin repetarea primelor k cifre obtinem un numar mai mare
+    for(int i=k;i<n;++i)
+    {
+        if(a[i]<a[i%k])return 0;
+        if(a[i]>a[i%k])return 1;
+    }
+    return 1;
+}
+bool uin(int q)
+{
+    //adaugam 1 la numarul format din primele k cifre in cazul in care nu putem sa le repetam
+    while(1)
+    {
+        //caz particular in care primele k cifre sunt toate 9
+        if(q<0){iooioo();return 1;}
+
+        ++a[q];
+        if(a[q]<='9')return 0;
+        else a[q]='0';
+        --q;
+    }
+}
+int main()
+{
+    f>>k>>a;
+    n=strlen(a);
+    if(n%k!=0)
+        iooioo();
+    else
+    {
+        if(verif())
+            if(uin(k-1))
+            {
+                g<<a;
+                return 0;
+            }
+        //formam numarul final
+        for(int i=k;i<n;++i)a[i]=a[i%k];
+    }
+    g<<a;
+    f.close();
+    g.close();
+    return 0;
+}

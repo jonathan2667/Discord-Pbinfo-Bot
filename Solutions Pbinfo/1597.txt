@@ -1,0 +1,53 @@
+//Dragan Andrei Gabriel
+//University of Bucharest
+
+#include <cstdio>
+#include <cstring>
+#include <algorithm>
+#include <fstream>
+
+using namespace std;
+
+long long v[1001], x;
+int n;
+
+ifstream fin("vizita.in");
+ofstream fout("vizita.out");
+
+int main()
+{
+    fin >> n;
+
+    for (int i = 1; i <= n; i++)
+        for (int j = 1; j <= i; j++)
+        {
+            fin >> x;
+            if (j == 1)
+                v[j] = v[j] + x;
+                else
+                    if (j == i)
+                        v[j] = v[j - 1] + x;
+                            else
+                                v[j] = min(v[j], v[j - 1]) + x;
+        }
+
+    long long m = v[n];
+    memset(v, 0, sizeof(v));
+    v[1] = m;
+
+    for (int i = 2; i <= n; i++)
+        for (int j = 1; j <= i; j++)
+        {
+            fin >> x;
+            if (j == 1)
+                v[j] = v[j] + x;
+                else
+                    if (j == i)
+                        v[j] = v[j - 1] + x;
+                            else
+                                v[j] = min(v[j], v[j - 1]) + x;
+        }
+
+    fout << v[n] << "\n";
+
+}

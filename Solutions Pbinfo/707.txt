@@ -1,0 +1,55 @@
+// Combinatorica O(N * K)
+// Constantin Galatan
+#include <fstream>
+#include <iostream>
+#define DIM 501
+#define MOD 578537
+using namespace std;
+
+ifstream fin("sumk.in");
+ofstream fout("sumk.out");
+
+int N, K;
+int fact[DIM*DIM + DIM], imod[DIM*DIM];
+
+void Calc(int n, int k);
+int Comb(int n, int k);
+int Pow(int x, int n);
+
+int main()
+{
+    fin >> N >> K;
+    Calc(N * K + N - 1, N - 1);
+    fout << Comb(N * K + N - 1, N - 1) << '\n';
+
+    fin.close();
+    fout.close();
+    return 0;
+}
+
+int Comb(int n, int k)
+{
+    int cmb = 1;
+    cmb = (1LL * fact[n] * imod[k]) % MOD;
+    cmb = (1LL * cmb * imod[n-k]) % MOD;
+    return cmb;
+}
+
+int Pow(int x, int n)
+{
+    if ( n == 0 ) return 1;
+    int res = Pow(x, n / 2);
+    res = (1LL * res * res) % MOD;
+    if ( n % 2 == 1 )
+        res = (1LL * res * x) % MOD;
+    return res;
+}
+
+void Calc(int n, int k)
+{
+    fact[0] = 1;
+    for (int i = 1; i <= n; ++i)
+        fact[i] = ((long long) fact[i-1] * i) % MOD;
+    imod[n - k] = Pow(fact[n - k], MOD - 2);
+    imod[k] = Pow(fact[k], MOD - 2);
+}

@@ -1,0 +1,133 @@
+// implementare: Cristi Dospra
+// punctaj: 100p
+// complexitate: O(N + Q)
+
+#include <cstdio>
+#include <vector>
+#include <bitset>
+#include <algorithm>
+using namespace std;
+
+#define Nmax 200001
+
+FILE *f = fopen ( "sec.in", "r" );
+FILE *g = fopen ( "sec.out", "w" );
+
+vector < int > Arb[Nmax], S;
+int Ap[Nmax][3];
+short cnt[Nmax];
+
+int ind = 0;
+
+void DFS ( int nod, int pred ){
+
+    vector < int > :: iterator it;
+
+    S.push_back(-1);
+    S.push_back(nod);
+    Ap[nod][cnt[nod]++] = ++ind;
+
+    for ( it = Arb[nod].begin(); it != Arb[nod].end(); ++it ){
+        if ( *it != pred ){
+            DFS ( *it, nod );
+            S.push_back(-1);
+            S.push_back(nod);
+            Ap[nod][cnt[nod]++] = ++ind;
+        }
+    }
+}
+
+int P[4*Nmax];
+
+void Manacher(){
+
+    int C = 0, R = 0;
+
+    S.push_back(-1);
+
+    for ( int i = 1; i < S.size() - 1; ++i ){
+        int ip = 2 * C - i;
+
+        P[i] = ( R > i ) ? min ( R-i, P[ip] ) : 0;
+
+        while ( S[i+1+P[i]] == S[i-1-P[i]] )
+            P[i]++;
+
+        if ( i + P[i] > R ){
+            C = i;
+            R = i + P[i];
+        }
+    }
+
+    int t = 0;
+    for ( int i = 0; i < S.size(); ++i )
+        if ( S[i] != -1 )
+            P[++t] = P[i];
+
+    P[++t] = 0;
+
+}
+
+bitset < Nmax > Sol;
+
+bool Check ( int st, int mid, int dr ){
+
+    for ( int i = st, j = mid; i <= mid && j <= dr; ++i, ++j )
+        if ( P[i] != P[j] )
+            return 0;
+
+    return 1;
+
+}
+
+int main(){
+
+    int N, Q, x, y;
+
+    fscanf ( f, "%d", &N );
+
+    for ( int i = 1; i < N; ++i ){
+        fscanf ( f, "%d%d", &x, &y );
+        Arb[x].push_back(y);
+        Arb[y].push_back(x);
+    }
+
+    DFS( 1, 0 );
+    Manacher();
+
+    int st, dr, mid;
+    for ( int i = 1; i <= N; ++i ){
+
+        if ( cnt[i] == 1 ){
+            Sol[i] = 1;
+            continue;
+        }
+
+        if ( cnt[i] == 2 ){
+            Sol[i] = 0;
+            continue;
+        }
+
+        st = Ap[i][0];
+        mid = Ap[i][1];
+        dr = Ap[i][2];
+
+        if ( mid - st != dr - mid )
+            continue;
+
+        Sol[i] = Check ( st, mid, dr );
+    }
+
+
+    fscanf ( f, "%d", &Q );
+
+    while ( Q-- ){
+        fscanf ( f, "%d", &x );
+        if ( Sol[x] )
+            fprintf ( g, "DA\n" );
+        else
+            fprintf ( g, "NU\n" );
+    }
+
+    return 0;
+}

@@ -1,0 +1,159 @@
+#include <iostream>
+#include <fstream>
+#include <string.h>
+
+using namespace std;
+ifstream f("nod.in");
+ofstream g("nod.out");
+struct cuvinte{
+    int pag, rand, cuv;
+};
+char sir[600]="", numar[11]="",*p, sep[]=" ";
+int n,k,P,R,C;
+cuvinte t[26];
+
+void extrage_nr();
+int calculeaza(int x);
+void transforma(char numar[11],int k);
+void ordonare();
+void cauta_cuvinte();
+void afisare();
+
+int main()
+{
+    f>>k; f.get();
+    extrage_nr();
+    if(k==1)
+          {
+            for(int d=1;d<=3;d++)
+                for(int i=1; i<=n;i++)
+                 {
+                    switch (d)
+                   {
+                       case 1:g<<t[i].pag; break;
+                       case 2:g<<t[i].rand; break;
+                       case 3:g<<t[i].cuv; break;
+                   }
+                   if(i<n)
+                     g<<" ";
+                   else
+                     g<<'\n';
+                 }
+        }
+    else
+    {
+        ordonare();
+        cauta_cuvinte();
+    }
+    f.close();g.close();
+ return 0;
+}
+
+void extrage_nr()
+{
+    int i;
+    for(i=1;i<=3;i++)
+       {n=0;
+        f.getline(sir,600);//cout<<sir<<endl;
+        p=strtok(sir,sep);
+        while (p)
+        {
+            n++;
+            strcpy(numar, p);
+            transforma(numar,i);
+            p=strtok(NULL,sep);
+        }
+    }
+}
+
+void transforma(char numar[11],int d)
+{
+    int i,l,cif1,cif2,nr=0;
+    l=strlen(numar);
+    for(i=0;i<l-1;i++)
+    {
+        cif1=calculeaza(numar[i]);
+        cif2=calculeaza(numar[i+1]);
+        if(cif1<cif2)
+            nr=nr-cif1;
+        else
+            nr=nr+cif1;
+    }
+    if(l==1)
+        nr=calculeaza(numar[i]);
+    else
+          nr=nr+cif2;
+    switch (d)
+    {
+        case 1:t[n].pag=nr;break;
+        case 2:t[n].rand=nr;break;
+        case 3:t[n].cuv=nr;break;
+    }
+}
+
+int calculeaza(int x)
+{
+    int cif;
+    switch (x)
+        {
+            case 'M':cif=1000;break;
+            case 'D':cif=500;break;
+            case 'C':cif=100;break;
+            case 'L':cif=50;break;
+            case 'X':cif=10;break;
+            case 'V':cif=5; break;
+            case 'I':cif=1;break;
+        }
+    return cif;
+}
+
+void ordonare()
+{
+    int i,sw; cuvinte aux;
+    do
+       {
+
+        sw=1;
+        for(i=1;i<n;i++)
+            if(t[i].pag>t[i+1].pag || (t[i].pag==t[i+1].pag && t[i].rand>t[i+1].rand) || (t[i].pag==t[i+1].pag && t[i].rand==t[i+1].rand && t[i].cuv>t[i+1].cuv))
+                {
+                    aux=t[i];
+                    t[i]=t[i+1];
+                    t[i+1]=aux;
+                    sw=0;
+                }
+       }while (sw==0);
+}
+
+void cauta_cuvinte()
+{ int i=1,nrct=0, nrc=0;
+  char *p;
+  f>>P>>R>>C;f.get();
+  nrct=(t[1].pag-1)*R*C+(t[1].rand-1)*C+ t[1].cuv;
+  while(f.getline(sir,600) && i<=n)
+  {
+      p=strtok(sir,sep);
+        while (p)
+        {
+            nrc++;
+            if(nrc==nrct)
+              {
+                  if (i<n)
+                    g<<p<<" ";
+                else
+                    g<<p;
+                  i++;
+                  nrct=(t[i].pag-1)*R*C+(t[i].rand-1)*C+ t[i].cuv;
+              }
+            p=strtok(NULL,sep);
+        }
+    }
+}
+void afisare()
+{
+    int i;
+    for(i=1;i<=n;i++)
+    {
+         g<<t[i].pag<<" "<<t[i].rand<<" "<<t[i].cuv<<'\n';
+    }
+}

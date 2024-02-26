@@ -1,0 +1,59 @@
+#include <iostream>
+
+using namespace std;
+
+bool is_prime(int x){
+    if(x < 2)
+        return 0;
+    if(x != 2 && x % 2 == 0)
+        return 0;
+    for(int d = 3; d * d <= x; d += 2)
+        if(x % d == 0)
+            return 0;
+    return 1;
+}
+
+int nr_digits(int x)
+{
+    int cnt = 0;
+    do{
+        x /= 10;
+        cnt++;
+    }
+    while(x);
+    return cnt;
+}
+
+int pow10(int x)
+{
+    int r = 1;
+    for(;x;--x)
+        r *= 10;
+    return r;
+}
+
+void removeFirstDigit(int &n)
+{
+    if(n < 9)
+    {
+        n = 0;
+        return;
+    }
+    int nrdig = nr_digits(n);
+    n = n % pow10(nrdig - 1);
+}
+int main()
+{
+    int n; cin >> n;
+    bool pp = true;
+
+    while(n)
+    {
+        if(!is_prime(n))
+            pp = false;
+        removeFirstDigit(n);
+    }
+
+    cout << (pp ? "DA" : "NU");
+    return 0;
+}

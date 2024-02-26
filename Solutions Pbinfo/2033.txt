@@ -1,0 +1,20 @@
+//Todoran Alexandru Raul, clasa a V-a, Colegiul National Aurel Vlaicu Orastie
+#include <iostream>
+#include <fstream>
+using namespace std;
+int n,a,b,i;
+long long s;
+int main()
+{
+    ifstream fin ("mcub.in");
+    ofstream fout ("mcub.out");
+    fin>>n;
+    for(i=1;i<=n;i++)
+    {
+        b=a;
+        fin>>a;
+        if(a>b)s+=(a-b);
+    }
+    fout<<s<<"\n";
+    return 0;
+}

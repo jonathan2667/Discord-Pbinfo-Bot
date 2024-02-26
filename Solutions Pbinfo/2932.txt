@@ -1,0 +1,126 @@
+#include<bits/stdc++.h>
+using namespace std;
+
+ifstream in("abperm.in");
+ofstream out("abperm.out");
+
+const int DN=2e5+5,M=1e9+7;
+int t,n,a[2][DN],rez,fr[DN],pas,nr,k,poz,sol,poz2;
+int z[DN],cnt;
+int pz[DN],vf,sc;
+int fact[DN],invfact[DN];
+int dp[DN],z2[DN],l;
+
+int ve(int a,int b)
+{
+    int p=1,r=1,c=a;
+    while(p<=b)
+    {
+        if(p&b)
+            r=(1LL*r*c)%M;
+        c=(1LL*c*c)%M;
+        p*=2;
+    }
+    return r;
+}
+
+int comb(int n,int k)
+{
+    int r=(1LL*fact[n]*invfact[k])%M;
+    r=(1LL*r*invfact[n-k])%M;
+    return r;
+}
+
+int main()
+{
+    in>>t>>n;
+    for(int i=0;i<2;i++)
+        for(int j=1;j<=n;j++)
+            in>>a[i][j];
+    fact[0]=invfact[0]=1;
+    for(int i=1;i<=n;i++)
+    {
+        fact[i]=(1LL*fact[i-1]*i)%M;
+        invfact[i]=ve(fact[i],M-2);
+    }
+    if(t==1)
+    {
+        pas=n;
+        for(int i=1;i<=n;i++)
+            fr[a[1][i]]++;
+        for(int i=0;i<=n;i++)
+        {
+            fr[a[0][i]]++;
+            if(fr[a[0][i]]==2&&a[0][i])
+                nr++;
+            if(nr==0)
+                rez=(rez+comb(n,i))%M;
+            fr[a[1][pas]]--;
+            if(fr[a[1][pas]]==1&&a[1][pas])
+                nr--;
+            pas--;
+        }
+        out<<rez;
+        return 0;
+    }
+    pas=n-1;
+    for(int i=1;i<n;i++)
+        fr[a[1][i]]++;
+    rez=1;
+    for(int i=1;i<=n;i++)
+        pz[a[0][i]]=i;
+    z[1]=pz[a[1][1]];
+    for(int i=2;i<=n;i++)
+        z[i]=min(z[i-1],pz[a[1][i]]);
+    cnt=1;
+    for(int i=2;i<=n;i++)
+    {
+        if(pz[a[1][i]]>pz[a[1][i-1]])
+            cnt++;
+        else
+            break;
+    }
+    if(cnt==n)
+    {
+        out<<1;
+        return 0;
+    }
+    dp[n]=1;
+    for(int i=n-1;i>0;i--)
+    {
+        dp[i]=1;
+        if(pz[a[1][i]]>pz[a[1][i+1]])
+            continue;
+        dp[i]+=dp[i+1];
+    }
+    z2[n]=pz[a[1][n]];
+    for(int i=n-1;i>0;i--)
+        z2[i]=min(z2[i+1],pz[a[1][i]]);
+    pas=1;
+    while(pas<n)
+    {
+        poz=n-pas;
+        sol=0;
+        if(z[pas]==poz+1)
+        {
+            sc=0;
+            sol=comb(n,poz);
+            poz2=pz[a[1][pas+1]];
+            sc=comb(poz2-1+pas,pas);
+            sol=(sol+M-sc)%M;
+            rez=(rez+sol)%M;
+            l=pas;
+        }
+        if((sol==0&&l<pas)&&(dp[l+1]==pas-l&&l))
+        {
+            poz=pz[a[1][l+1]];
+            poz--;
+            sol=comb(poz+l,poz);
+            rez=(rez+sol)%M;
+        }
+        if((l==0&&sol==0)&&cnt==pas)
+            rez=(rez+1)%M;
+        pas++;
+    }
+    out<<rez;
+}

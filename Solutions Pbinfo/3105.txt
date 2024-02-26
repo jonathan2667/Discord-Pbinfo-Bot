@@ -1,0 +1,38 @@
+// O(N*MAX_VAL^2*log(N))
+#include <stdio.h>
+#include <string.h>
+#define MAX_VAL 101
+#define MAX_N   10001
+int c[MAX_VAL], dp[MAX_N * MAX_VAL];
+
+int main() {
+    FILE    *f = fopen("bete.in",  "r");
+    FILE    *g = fopen("bete.out", "w");
+    int     q;
+    
+    fscanf(f, "%d", &q);
+    while (q--) {
+        int n, x, t, s = 0;
+        
+        fscanf(f, "%d", &n);
+        memset(c, 0, sizeof(c));
+        while (n--) fscanf(f, "%d", &x), c[x]++, s += x;
+        t = s/2;
+        
+        memset(dp, 0, (t + 1)*sizeof(int)); dp[0] = 1;
+        for (int x = 1; x < MAX_VAL; x++) {
+            for (; c[x]; c[x] /= 2) {
+                int y = (c[x] + 1)/2 * x;
+                for (int i = t - y; i >= 0; i--) dp[i + y] |= dp[i];
+            }
+        }
+
+        while (!dp[t]) t--;
+        fprintf(g, "%d\n", s - 2*t);
+    }
+    
+    fclose(f);
+    fclose(g);
+    
+    return 0;
+} 

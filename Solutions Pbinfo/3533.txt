@@ -1,0 +1,45 @@
+class Stiva
+{
+private:
+    stack< pair<int, int> > st;
+public:
+    // depune valoarea x in stiva
+    void Push(int x)
+    {
+        if (st.empty()) st.push({x, x});
+        else
+        {
+            int y = st.top().second;
+            if (y < x) y = x;
+            st.push({x, y});
+        }
+    }
+    // elimina un element din stiva daca stiva nu e vida
+    void Pop()
+    {
+        if (!st.empty()) st.pop();
+    }
+    // returneaza varful stivei
+    // daca stiva este vida, returneaza -1
+    int Top()
+    {
+        if (st.empty()) return -1;
+        return st.top().first;
+    }
+
+    // returneaza valoarea maxima din stiva
+    // daca stiva este vida, returneaza -1
+    int Max()
+    {
+        if (st.empty()) return -1;
+        return st.top().second;
+    }
+
+    // returneaza 1 daca stiva este vida
+    // returneaza 0 daca stiva nu e vida
+    int Empty()
+    {
+        if (st.empty()) return 1;
+        return 0;
+    }
+};

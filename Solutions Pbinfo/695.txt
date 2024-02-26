@@ -1,0 +1,72 @@
+// Solutie - 100 puncte - Chesca Ciprian
+// aflare numar de permutari cu repetitie si simulare adunare
+
+#include <fstream>
+#define nmax 10
+#define pmax 1000
+
+
+using namespace std;
+
+ifstream f("sumall.in");
+ofstream g("sumall.out");
+
+unsigned long long n,apar[nmax],p=1,t,suma=0;
+
+int cifre[nmax],nc=0;
+int nr[pmax];
+
+
+int main()
+{
+    int i,j,k;
+    unsigned long long t;
+
+    // citesc datele de intrare
+    f>>n;
+
+    // contorizez cifrele lui n, nc = numarul de cifre
+    while (n)
+        {
+        cifre[n%10]++;
+        n=n/10;
+        nc++;
+        }
+
+    //calculez cate numere se termina cu 1,2,...,9
+    for(i=1;i<=nc-1;i++)
+        p=p*i;
+
+    for(i=1;i<=9;i++)
+        if (cifre[i])
+                {
+                t=p;
+                for(j=1;j<=9;j++)
+                    if (i==j)
+                        for(k=1;k<=cifre[j]-1;k++)
+                            t/=k;
+                         else
+                        for(k=1;k<=cifre[j];k++)
+                            t/=k;
+                apar[i]=t;
+                }
+
+    //calculez suma cifrelor de pe o coloana a adunarii
+    for(i=1;i<=9;i++)
+        suma+=i*apar[i];
+
+    // simulez calculul numarului total cu un vector
+    k=0;t=0; // t=transport
+    for(i=1;i<=nc;i++)
+        {
+         nr[++k]=(t+suma)%10;
+         t=(t+suma)/10;
+        }
+    if (t) g<<t;
+    for(i=nc;i>=1;i--)
+        g<<nr[i];
+    g<<"\n";
+    f.close();
+    g.close();
+    return 0;
+}

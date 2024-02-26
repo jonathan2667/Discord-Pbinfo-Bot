@@ -1,0 +1,41 @@
+#include <iostream>
+#include <fstream>
+#include <cassert>
+using namespace std;
+
+ifstream fin("maxim5.in");
+ofstream fout("maxim5.out");
+
+
+int main(){
+    int MaxG = 0, Max, C, cc , n , nrl = 0;
+    int gata = 0;
+    while(!gata){
+        nrl ++;
+        if(fin>>n){
+            cc = 1, Max = n;
+            fin >> n;
+            while(n!=0){
+                if(n>Max)
+                    Max = n;
+                cc ++;
+                fin >> n;
+            }
+            if(nrl == 1){
+                C = cc; MaxG = Max;
+            }
+            else
+                if(cc < C){
+                    C = cc; MaxG = Max;
+                }
+                else
+                    if(cc == C)
+                        if(Max > MaxG)
+                            MaxG = Max;
+        }
+        else
+            gata = 1;
+    }
+    fout << MaxG;
+    return 0;
+}

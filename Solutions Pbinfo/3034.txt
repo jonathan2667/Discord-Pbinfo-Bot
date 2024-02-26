@@ -1,0 +1,131 @@
+#include <fstream>
+#include <iostream>
+
+using namespace std;
+
+struct punct {
+    int x;
+    int y;
+};
+
+punct v[210];
+int C, t, n, xmin, xmax, ymin, ymax, i, d, j, k;
+int poligon, aria, jos, stanga;
+
+int punctPeSegment(int i, int j) {
+    if (v[i].x >= min(v[j].x, v[j+1].x) && v[i].x <= max(v[j].x, v[j+1].x))
+        if (v[i].y >= min(v[j].y, v[j+1].y) && v[i].y <= max(v[j].y, v[j+1].y))
+            return 1;
+    return 0;
+}
+
+int intersectieSegmente(punct a, punct b, punct c, punct d) {
+    punct aux;
+    if (a.x > b.x) {
+        aux = a;
+        a = b;
+        b = aux;
+    }
+    if (c.y > d.y) {
+        aux = c;
+        c = d;
+        d = aux;
+    }
+    if ((c.y - a.y) * 1LL * (d.y - a.y) <= 0)
+        if ((c.x - a.x) * 1LL * (c.x - b.x) <= 0)
+            return 1;
+    return 0;
+}
+
+int main () {
+    ifstream fin ("drept.in");
+    ofstream fout("drept.out");
+
+    fin>>C>>t;
+
+    for (;t--;) {
+        fin>>n;
+        xmin = xmax = ymin = ymax = 0;
+        v[0].x = 0;
+        v[0].y = 0;
+        for (i=1;i<=n;i++) {
+            fin>>d;
+            if (i%2 == 1) {
+                v[i].x = v[i-1].x + d;
+                v[i].y = v[i-1].y;
+            } else {
+                v[i].x = v[i-1].x;
+                v[i].y = v[i-1].y + d;
+            }
+            xmin = min(xmin, v[i].x);
+            xmax = max(xmax, v[i].x);
+            ymin = min(ymin, v[i].y);
+            ymax = max(ymax, v[i].y);
+        }
+
+        poligon = 1;
+        if (v[n].x != 0 || v[n].y != 0)
+            poligon = 0;
+
+        for (i=0;i<n-1;i++) {
+            for (j=i+2;j<n;j++) {
+                if (i == 0 && j == n-1)
+                    continue;
+
+                if (i%2 == j%2) {
+                    /// paralele
+                    if (punctPeSegment(i, j))
+                        poligon = 0;
+                    if (punctPeSegment(i+1, j))
+                        poligon = 0;
+                    if (punctPeSegment(j, i))
+                        poligon = 0;
+                    if (punctPeSegment(j+1, i))
+                        poligon = 0;
+                } else {
+                    if (i%2 == 0) {
+
+                        if (intersectieSegmente(v[i], v[i+1], v[j], v[j+1]))
+                            poligon = 0;
+                    } else {
+                        if (intersectieSegmente(v[j], v[j+1], v[i], v[i+1]))
+                            poligon = 0;
+                    }
+                }
+
+
+            }
+
+        }
+        if (C!=1) {
+            aria = 0;
+            for (i=xmin+1;i<=xmax;i++)
+                for (j=ymin+1;j<=ymax;j++) {
+                    jos = 0;
+                    stanga = 0;
+                    for (k=0;k<n;k++) {
+                        if (k%2 == 1) {
+
+                            if (v[k].x < i && min(v[k].y, v[k+1].y) < j && max(v[k].y, v[k+1].y) >= j)
+                                stanga++;
+
+                        } else {
+                            if (v[k].y < j && min(v[k].x, v[k+1].x) < i && max(v[k].x, v[k+1].x) >= i)
+                                jos++;
+                        }
+                    }
+                    if (stanga % 2 && jos % 2)
+                        aria++;
+                }
+        }
+        if (C == 1) {
+            fout<<poligon<<" ";
+        } else {
+
+            fout<<aria<<" ";
+        }
+
+    }
+
+    return 0;
+}

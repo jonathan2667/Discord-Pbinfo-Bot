@@ -1,0 +1,115 @@
+#include <bits/stdc++.h>
+#define nmax 505
+#define inFile  "or.in"
+#define outFile "or.out"
+using namespace std;
+
+int n, t[nmax], a[nmax][nmax], v[nmax][nmax], X;
+int fr[35], cnt, C;
+int minArea;
+
+void ReadData()
+{
+    ifstream fin(inFile);
+    fin >> X >> n;
+    for (int i = 1; i <= n; i++)
+        for (int j = 1; j <= n; j++)
+        {
+            fin >> a[i][j];
+            if ((a[i][j] | X) == X) v[i][j] = 1;
+        }
+    fin.close();
+}
+
+void NrB(int X)
+{
+    C = 0;
+    while (X > 0)
+    {
+        C++;
+        X = (X & (X - 1));
+    }
+}
+
+void AddBits(int k)
+{
+    for (int i = 0; i < 32; i++)
+        if ((k & (1 << i)) != 0)
+        {
+            fr[i]++;
+            if (fr[i] == 1) cnt++;
+        }
+}
+
+void RemoveBits(int k)
+{
+    for (int i = 0; i < 32; i++)
+        if ((k & (1 << i)) != 0)
+        {
+            fr[i]--;
+            if (fr[i] == 0) cnt--;
+        }
+}
+
+void InitFr()
+{
+    cnt = 0;
+    for (int i = 0; i < 32; i++)
+        fr[i] = 0;
+}
+
+void Solve()
+{
+    int i, j, k;
+    int q[nmax], pr, ul;
+    for (k = 1; k <= n; k++)
+    {
+        /// init t
+        for (j = 1; j <= n; j++)
+            t[j] = 0;
+
+        for (i = k; i <= n; i++)
+        {
+            InitFr();
+            pr = 0; ul = -1;
+            for (j = 1; j <= n; j++)
+            {
+                if (v[i][j] == 0) t[j] = -1;
+                if (t[j] == -1)
+                {
+                    pr = 0; ul = -1;
+                    InitFr();
+                }
+                else
+                {
+                    t[j] |= a[i][j];
+                    q[++ul] = t[j];
+                    AddBits(t[j]);
+                    while (cnt == C)
+                    {
+                        minArea = min(minArea, (i - k + 1)*(ul - pr + 1));
+                        RemoveBits(q[pr]);
+                        pr++;
+                    }
+                }
+            }
+        }
+    }
+}
+
+void PrintSol()
+{
+    ofstream fout(outFile);
+    fout << minArea << "\n";
+    fout.close();
+}
+
+int main()
+{
+    minArea = 2000000;
+    ReadData();
+    NrB(X);
+    Solve();
+    PrintSol();
+    return 0;
+}

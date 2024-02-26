@@ -1,0 +1,25 @@
+#include <iostream>
+using namespace std;
+
+int n,m,x[1005];
+
+int main()
+{
+    cin >> n;
+    for(int i = 0; i < n ; i++)
+        cin >> x[i];
+    cin >> m;
+    for( ; m ; --m)
+    {
+        int y, p = -1;
+        cin >> y;
+        for(int i = 0 ; i < n && p == -1 ; ++i)
+            if(x[i] == y)
+                p = i;
+        if(p == -1)
+            cout << "0 ";
+        else
+            cout << "1 ";
+    }
+    return 0;
+}

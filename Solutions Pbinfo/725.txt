@@ -1,0 +1,121 @@
+const modulo=666013;
+var a,b:array[0..1001,0..1001] of int64;
+    k,m,n,l,c,l1,c1,l2,c2:integer;
+    f,g:text;
+function max(x,y:int64):int64;
+begin
+  if x>y then max:=x
+         else max:=y;
+end;
+function min(x,y:int64):int64;
+begin
+  if x<y then min:=x
+         else min:=y;
+end;
+begin
+  assign(f,'rege.in');
+  reset(f);
+  assign(g,'rege.out');
+  rewrite(g);
+  readln(f,m,n);
+  readln(f,l1,c1);
+  readln(f,l2,c2);
+  close(f);
+  a[l1,c1]:=1;
+  if (l1-1>0) and (c1-1>0)  then a[l1-1,c1-1]:=1;
+  if (l1-1>0)               then a[l1-1,c1  ]:=1;
+  if (l1-1>0) and (c1+1<=n) then a[l1-1,c1+1]:=1;
+  if              (c1-1>0)  then a[l1  ,c1-1]:=1;
+  if              (c1+1<=n) then a[l1  ,c1+1]:=1;
+  if (l1+1<=m) and (c1-1>0) then a[l1+1,c1-1]:=1;
+  if (l1+1<=m)              then a[l1+1,c1  ]:=1;
+  if (l1+1<=m) and (c1+1<=n)then a[l1+1,c1+1]:=1;
+  k:=2;
+  while a[l2,c2]=0 do
+    begin
+      if (l1+k<=m) and (c1+k<=n) then
+        a[l1+k,c1+k]:=1;
+      if (l1+k<=m) and (c1-k>0) then
+        a[l1+k,c1-k]:=1;
+      if (l1-k>0) and (c1+k<=n) then
+        a[l1-k,c1+k]:=1;
+      if (l1-k>0) and (c1-k>0) then
+        a[l1-k,c1-k]:=1;
+      if (l1+k-1<=m) and (c1+k<=n) then
+        begin
+          l:=l1+k-1;
+          c:=c1+k;
+          a[l,c]:=(a[l,c-1]+a[l-1,c-1]) mod modulo;
+        end;
+      if (l1-k+1>0) and (c1+k<=n) then
+        begin
+          l:=l1-k+1;
+          c:=c1+k;
+          a[l,c]:=(a[l,c-1]+a[l+1,c-1]) mod modulo;
+        end;
+      if (l1-k>0) and (c1+k-1<=n) then
+        begin
+          l:=l1-k;
+          c:=c1+k-1;
+          a[l,c]:=(a[l+1,c]+a[l+1,c-1]) mod modulo;
+        end;
+      if (l1-k>0) and (c1-k+1>0) then
+        begin
+          l:=l1-k;
+          c:=c1-k+1;
+          a[l,c]:=(a[l+1,c]+a[l+1,c+1]) mod modulo;
+        end;
+      if (l1-k+1>0) and (c1-k>0) then
+        begin
+          l:=l1-k+1;
+          c:=c1-k;
+          a[l,c]:=(a[l,c+1]+a[l+1,c+1]) mod modulo;
+        end;
+      if (l1+k-1<=m) and (c1-k>0) then
+        begin
+          l:=l1+k-1;
+          c:=c1-k;
+          a[l,c]:=(a[l,c+1]+a[l-1,c+1]) mod modulo;
+        end;
+      if (l1+k<=m) and (c1-k+1>0) then
+        begin
+          l:=l1+k;
+          c:=c1-k+1;
+          a[l,c]:=(a[l-1,c]+a[l-1,c+1]) mod modulo;
+        end;
+      if (l1+k<=m) and (c1+k-1<=n) then
+        begin
+          l:=l1+k;
+          c:=c1+k-1;
+          a[l,c]:=(a[l-1,c]+a[l-1,c-1]) mod modulo;
+        end;
+
+      if c1+k<=n then
+        for l:=max(1,l1-k+2) to min(m,l1+k-2) do
+          begin
+            c:=c1+k;
+            a[l,c]:=(a[l-1,c-1]+a[l,c-1]+a[l+1,c-1]) mod modulo;
+          end;
+      if l1-k>0 then
+        for c:=max(1,c1-k+2) to min(n,c1+k-2) do
+          begin
+            l:=l1-k;
+            a[l,c]:=(a[l+1,c-1]+a[l+1,c]+a[l+1,c+1]) mod modulo;
+          end;
+      if c1-k>0 then
+        for l:=max(1,l1-k+2) to min(m,l1+k-2) do
+          begin
+            c:=c1-k;
+            a[l,c]:=(a[l-1,c+1]+a[l,c+1]+a[l+1,c+1]) mod modulo;
+          end;
+      if l1+k<=m then
+        for c:=max(1,c1-k+2) to min(n,c1+k-2) do
+          begin
+            l:=l1+k;
+            a[l,c]:=(a[l-1,c-1]+a[l-1,c]+a[l-1,c+1]) mod modulo;
+          end;
+      k:=k+1;
+    end;
+  writeln(g,a[l2,c2]);
+  close(g);
+end.

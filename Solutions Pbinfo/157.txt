@@ -1,0 +1,24 @@
+#include <iostream>
+#include <fstream>
+#include <cstring>
+
+using namespace std;
+
+ifstream fin("doarvocale.in");
+ofstream fout("doarvocale.out");
+
+int main(){
+    int n,x=0;
+    fin >> n;
+    char s[31];
+    for( ; n ; n--){
+        fin >> s;
+        int v = 1;
+        for(int i=0;s[i];++i)
+            if(!strchr("aeuio",s[i]))
+                v = 0;
+        x += v;
+    }
+    fout << x;
+    return 0;
+}

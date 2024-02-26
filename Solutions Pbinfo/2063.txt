@@ -1,0 +1,127 @@
+#include <fstream>
+#include <string>
+#include <vector>
+#include <algorithm>
+#include <cstring>
+#define nmax 1002
+using namespace std;
+
+string      A[nmax];
+int         B[21];
+vector<int> masks[21];
+int         markedRow[nmax], markedCol[nmax];
+int         ways[2][1 << 18], waysO[nmax], waysH[nmax], waysV[nmax];
+int         comb[nmax][nmax], aranj[nmax][nmax];
+int         MOD = 1e6 + 3;
+
+int countBits(int x)
+{
+    int n = 0;
+    for (; x; x &= (x - 1), n++);
+    return n;
+}
+
+int main()
+{
+    ifstream    f("rooks.in");
+    ofstream    g("rooks.out");
+    int         M, N, M1, N1;
+
+    f >> M >> N;
+    for (int i = 0; i < M; i++)
+        f >> A[i];
+
+    // mark the rows & cols containing restrictions
+    for (int i = 0; i < M; i++)
+        for (int j = 0; j < N; j++)
+            if (A[i][j] == '#') markedRow[i] = markedCol[j] = 1;
+
+    // swap rows
+    M1 = 0;
+    for (int i = 0; i < M; i++)
+        if (markedRow[i]) swap(A[i], A[M1++]);
+
+    // swap columns
+    N1 = 0;
+    for (int i = 0; i < N; i++)
+        if (markedCol[i])
+        {
+            for (int j = 0; j < M; j++) swap(A[j][i], A[j][N1]);
+            N1++;
+        }
+
+    // pack all the available positions in a row in a 32bit integer
+    for (int i = 0; i < M1; i++)
+        for (int j = 0; j < N1; j++)
+            if (A[i][j] == '.') B[i] |= (1 << j);
+
+    // precompute the configurations grouped by number of bits/rooks
+    for (int rooks = 0; rooks < (1 << N1); rooks++)
+        masks[countBits(rooks)].push_back(rooks);
+
+    // solve the top-left region
+    int *curr = ways[0];
+    int *next = ways[1];
+    curr[0] = 1;
+    for (int i = 0; i < M1; i++)
+    {
+        // take into account only the configurations with at most i rooks
+        for (int p = 0; p <= i; p++)
+            for (int q = 0; q < masks[p].size(); q++)
+            {
+                int rooks = masks[p][q];
+
+                // no extra rook used in the next row
+                next[rooks] = (next[rooks] + curr[rooks]) % MOD;
+
+                // try to use a rook in the next row
+                int available = B[i] & (~rooks);
+                while (available)
+                {
+                    // add the last available column/bit to the current configuration
+                    int newRooks    = rooks | (available & (-available));
+
+                    // combine configurations
+                    next[newRooks]  = (next[newRooks] + curr[rooks]) % MOD;
+
+                    // reset the last bit from the available possibilities
+                    available      &= (available - 1);
+                }
+            }
+        swap(curr, next);
+        memset(next, 0, (1 << N1) * sizeof(int));
+    }
+
+    // count number of configurations for the top-left region using a given number of rooks
+    for (int rooks = 0; rooks < (1 << N1); rooks++)
+    {
+        int r = countBits(rooks);
+        waysO[r] = (waysO[r] + curr[rooks]) % MOD;
+    }
+    // count number of configuration for an empty region using a given number of rooks
+    comb[0][0]=1; comb[1][0]=1; comb[1][1]=1;
+    aranj[0][0]=1; aranj[1][0]=1; aranj[1][1]=1;
+    for(int i=2;i<=1000;i++){
+        comb[i][0]=1;  comb[i][i]=1;
+        for(int j=1;j<=i-1;j++) comb[i][j]=(comb[i-1][j-1]+comb[i-1][j])%MOD;
+        aranj[i][0]=1;
+        for(int j=1;j<=i;j++) aranj[i][j]=((long long)aranj[i-1][j-1]*i)%MOD;
+    }
+    // extend to the right
+    for (int r1 = 0; r1 <= min(M1, N1); r1++)
+        for (int r2 = 0; r2 <= min(M1 - r1, N - N1); r2++)
+            waysH[r1 + r2] = (waysH[r1 + r2] + waysO[r1] * (long long)comb[M1 - r1][r2] % MOD * (long long)aranj[N - N1][r2]) % MOD;
+
+    // extend to the bottom
+    for (int r1 = 0; r1 <= min(M1, N); r1++)
+        for (int r2 = 0; r2 <= min(M - M1, N - r1); r2++)
+            waysV[r1 + r2] = (waysV[r1 + r2] + waysH[r1] * (long long)comb[M - M1][r2] % MOD * (long long)aranj[N - r1][r2]) % MOD;
+
+    // compute the result
+    int ans = 0;
+    for (int r = 0; r <= min(M, N); r++)
+        ans = (ans + waysV[r]) % MOD;
+    g << ans;
+
+    return 0;
+}

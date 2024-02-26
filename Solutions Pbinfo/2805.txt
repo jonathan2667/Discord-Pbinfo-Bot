@@ -1,0 +1,12 @@
+void duplicare(int & n)
+{
+    int x = n, p = 1;
+    n = 0;
+    while(x)
+    {
+        if(x % 2 == 0)
+            n += x % 10 / 2 * p, p *= 10;
+        n += x % 10 * p, p *= 10;
+        x /= 10;
+    }
+}

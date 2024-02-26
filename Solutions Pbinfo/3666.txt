@@ -1,0 +1,17 @@
+#include <iostream>
+using namespace std;
+int n, nr, i;
+int main(){
+    cin>>n;
+    for (i=1;i<=n/i;i++)
+        if (n%i == 0) {
+            nr++;
+            if (i!=n/i)
+                nr++;
+        }
+    if (nr%2 == 1)
+        cout<<"da";
+    else
+        cout<<"nu";
+    return 0;   
+}

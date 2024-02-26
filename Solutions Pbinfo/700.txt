@@ -1,0 +1,134 @@
+// 100 puncte
+// Constantin Galatan
+#include <iostream>
+#include <fstream>
+#include <vector>
+#include <algorithm>
+#include <deque>
+#include <iomanip>
+using namespace std;
+
+#define INF 0x3f3f3f3f
+#define mp make_pair
+#define pb push_back
+typedef pair<int, int> PI;
+typedef vector<int> VI;
+
+ifstream fin("labir.in");
+ofstream fout("labir.out");
+
+int k; // nr de puncte
+VI x, y, sx, sy;
+int N, M, n, m, xi, yi, xf, yf;
+bool A[5001][5001];
+//bool B[1000][1000];
+VI c[5001];
+deque<PI> Q;
+
+template <class Cont>
+void Write(Cont c)
+{
+    for ( typename Cont::iterator it = c.begin(); it != c.end(); ++it )
+        fout << *it << ' ';
+     fout << '\n';
+}
+
+
+void BF_0_1();
+
+int main()
+{
+    fin >> N >> M >> xi >> yi >> xf >> yf;
+    fin >> k;
+    int a, b;
+
+    sx.pb(xi), sx.pb(xf);
+    sy.pb(yi), sy.pb(yf);
+    n = max(n, max(xi, xf));
+    m = max(m, max(yi, yf));
+    for ( int i = 0; i < k; ++i )
+    {
+        fin >> a >> b;
+        n = max(n, a); m = max(m, b);
+        sx.pb(a), sy.pb(b);
+    }
+    bool x_la_limita = true, y_la_limita = true;
+    if ( n < N )
+        x_la_limita = false, n++;
+    if ( m < M )
+        y_la_limita = false, m++;
+
+    x.pb(0), y.pb(0);
+    for ( size_t i = 0; i < sx.size(); ++i )
+    {
+        x.pb(sx[i] - 1), x.pb(sx[i]); // sa ramana cate o linie libera sau coloana
+        y.pb(sy[i] - 1), y.pb(sy[i]);
+    }
+
+    sort(x.begin(), x.end());
+    sort(y.begin(), y.end());
+
+    x.erase(unique(x.begin(), x.end()), x.end());
+    y.erase(unique(y.begin(), y.end()), y.end());
+  //  Write(x); Write(y);
+
+    n = 0, m = 0; int X, Y;
+    for (size_t i = 0; i < sx.size(); ++i )
+    {
+        X = lower_bound(x.begin(), x.end(), sx[i]) - x.begin();
+        Y = lower_bound(y.begin(), y.end(), sy[i]) - y.begin();
+        n = max(n, X), m = max(m, Y);
+        A[X][Y] = 1;
+    }
+
+    xi = lower_bound(x.begin(), x.end(), xi) - x.begin();
+    xf = lower_bound(x.begin(), x.end(), xf) - x.begin();
+    yi = lower_bound(y.begin(), y.end(), yi) - y.begin();
+    yf = lower_bound(y.begin(), y.end(), yf) - y.begin();
+    A[xi][yi] = A[xf][yf] = 0;
+    if  (!x_la_limita)
+        n++;
+    if ( !y_la_limita )
+        m++;
+    for (int i = 1; i <= n; ++i )
+        c[i].resize(m + 1, INF);
+
+    BF_0_1();
+    fout << c[xf][yf] << '\n';
+    fin.close();
+    fout.close();
+    return 0;
+}
+
+bool Inside(int i, int j)
+{
+    return i >= 1 and i <= n and j >= 1 and j <= m;
+}
+
+const int di[] = { -1, 0, 1, 0},
+          dj[] = { 0, 1, 0, -1 };
+
+void BF_0_1()
+{
+    int iv, jv, i, j;
+    PI pi;
+    c[xi][yi] = A[xi][yi];
+    Q.pb(mp(xi, yi));
+    while ( !Q.empty() )
+    {
+        pi = Q.front(); Q.pop_front();
+        i = pi.first, j = pi.second;
+        for (int d = 0; d < 4; ++d )
+        {
+            iv = i + di[d], jv = j + dj[d];
+            if ( Inside(iv, jv) and c[iv][jv] > c[i][j] + A[iv][jv])
+            {
+                c[iv][jv] = c[i][j] + A[i][j];
+                if ( A[iv][jv] == 0 )
+                    Q.push_front(mp(iv, jv));
+                else
+                    Q.push_back(mp(iv, jv));
+            }
+        }
+    }
+}

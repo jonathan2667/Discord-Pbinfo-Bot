@@ -1,0 +1,32 @@
+#include <bits/stdc++.h>
+using namespace std;
+ifstream f("nrdiv9.in");
+ofstream g("nrdiv9.out");
+int main()
+{
+    int n, p, q, nmax, k=0;
+    f >> n;
+    nmax=sqrt(n);
+    int ciur[nmax];
+    for (int i = 1; i <= nmax; i++)
+        ciur[i] = i;
+    for (int i = 2; i * i <= nmax; i++)
+        if (ciur[i] == i)
+        {
+            for (int j = i * i; j <= nmax; j += i)
+                if (ciur[j] == j)
+                    ciur[j] = i;
+        }
+    for (int i = 2; i <= nmax; i++)
+    {
+        p = ciur[i]; q = ciur[i / ciur[i]];
+        if (p * q == i && q != 1 && p != q)
+            k++;
+        else
+        if (ciur[i] == i)
+            if (pow(i, 8) <= n)
+                k++;
+    }
+    g << k;
+    return 0;
+}

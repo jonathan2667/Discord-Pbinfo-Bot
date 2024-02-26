@@ -1,0 +1,135 @@
+#include <fstream>
+#define L 2001
+
+using namespace std;
+ifstream fin("z.in");
+ofstream fout("z.out");
+
+struct punct{short x,y;} p[L];
+struct segmentOrizontal { short st,dr;} S[L][L];
+bool P[L][L];
+
+struct segmnetOblic {short xs,ys,xj,yj;} SO[L];
+short ymin,ymax,k,n,x,y,i,xa,ya,nro;
+unsigned long long z;
+
+void adaugaSegmentOrizontal(int y, int x1, int x2)
+{ if(x1>x2) swap(x1,x2);
+  S[y][0].st++;
+  S[y][S[y][0].st].st=x1;
+  S[y][S[y][0].st].dr=x2;
+}
+
+int peAceeasiDreapta(int x1,int y1, int x2, int y2, int x3, int y3)
+{
+    return (x2-x1)*(y3-y1)==(x3-x1)*(y2-y1);
+}
+
+void reuniuneIntervale()
+{ int i,j,y,st,dr;
+    for(y=ymin;y<=ymax;y++)
+        if(S[y][0].st)
+            { int nr=S[y][0].st;
+             for(i=1;i<nr;i++)
+               for(j=i+1;j<=nr;j++)
+                 if(S[y][i].st>S[y][j].st || S[y][i].st==S[y][j].st && S[y][i].dr>S[y][j].dr ) swap(S[y][i],S[y][j]);
+             k=0;
+             st=S[y][1].st;dr=S[y][1].dr;
+             for(i=2;i<=nr;i++)
+               if(S[y][i].st<=dr) { if(S[y][i].dr>dr)dr=S[y][i].dr;
+                                  }
+                else
+                {k++;
+                 S[y][k].st=st;S[y][k].dr=dr;
+                 st=S[y][i].st;dr=S[y][i].dr;
+                }
+             k++;
+                 S[y][k].st=st;S[y][k].dr=dr;
+              S[y][0].st=k;
+            }
+}
+
+
+void adaugaSegmentOblic(short xs,short ys,short xj,short yj)
+{ short i,j=0;
+  for(short i=1;i<=nro;++i)
+    if(( xj>=SO[i].xj && xj<=SO[i].xs || xj<=SO[i].xj && SO[i].xj<=xs)
+         && peAceeasiDreapta(SO[i].xj,SO[i].yj, xj,yj, SO[i].xs,SO[i].ys)
+         && peAceeasiDreapta(SO[i].xj,SO[i].yj, xs,ys, SO[i].xs,SO[i].ys))
+    { xj=min(xj,SO[i].xj); yj=min(yj,SO[i].yj);xs=max(xs,SO[i].xs);ys=max(ys,SO[i].ys);}
+    else
+        SO[++j]=SO[i];
+   ++j;
+   SO[j].xj=xj;SO[j].yj=yj;SO[j].xs=xs;SO[j].ys=ys;
+   nro=j;
+}
+
+
+int uniteOrizontal(short x1, short x2, short y)
+{
+  if(!P[y][x1]) return 0;
+  if(!P[y][x2]) return 0;
+  int i=1;
+  while(i<=S[y][0].st &&S[y][i].dr<x1)i++;
+  if(i<=S[y][0].st && x2 <=S[y][i].dr) return 1;
+  return 0;
+}
+
+int ZZ(short i)
+{ short nrp=0,y,x,z=0,j;
+  for(y=SO[i].ys;y>=SO[i].yj;--y)
+    if(S[y][0].st && (y-SO[i].yj)*(SO[i].xs-SO[i].xj)%(SO[i].ys-SO[i].yj)==0)
+    { x=(y-SO[i].yj)*(SO[i].xs-SO[i].xj)/(SO[i].ys-SO[i].yj)+SO[i].xj;
+      if(P[y][x]) {++nrp; p[nrp].x=x;p[nrp].y=y;}
+    }
+  for(i=1;i<nrp;++i)
+        for(j=i+1;j<=nrp;++j)
+          if(uniteOrizontal(p[j].x,p[i].x,p[i].y) && uniteOrizontal(p[j].x, p[i].x, p[j].y))
+              ++z;
+  return z;
+}
+
+void numaraZ()
+{
+   short i;
+   unsigned long long nrz=0;
+   for(i=1;i<=nro;++i) nrz+=ZZ(i);
+   fout<<nrz<<'\n';
+}
+
+int main()
+{
+    fin>>k>>n>>x>>y;
+    if(k==1)
+    {   xa=x;ya=y;z=0;
+        for(i=2;i<=n;++i)
+        { fin>>x>>y;
+          if(xa*x<0 && ya*y<0 && xa*(y-ya)==ya*(x-xa) || xa*x<0 && ya==0 && y==0 || ya*y<0 && xa==0 && x==0) ++z;
+          xa=x;ya=y;
+        }
+      fout<<z<<'\n';
+    }
+    else
+    {
+    x+=1000;y+=1000;
+    ymax=ymin=y;
+    P[y][x]=true;
+    xa=x;ya=y;
+    for(i=2;i<=n;++i)
+    { fin>>x>>y;
+      x+=1000;y+=1000;
+      if(y>ymax) ymax=y;
+        else if(y<ymin) ymin=y;
+      P[y][x]=true;
+      if( y==ya && x!=xa) adaugaSegmentOrizontal(y,xa,x);
+       else if(xa>x && ya>y) adaugaSegmentOblic( xa,ya,x,y);
+              else if(x>xa && y>ya) adaugaSegmentOblic( x,y,xa,ya);
+      xa=x;ya=y;
+    }
+    reuniuneIntervale();
+    numaraZ();
+    }
+    fin.close();fout.close();
+
+    return 0;
+}

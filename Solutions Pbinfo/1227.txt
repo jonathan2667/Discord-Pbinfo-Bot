@@ -1,0 +1,205 @@
+Program Spioni;
+{prof. Marinel Serban - martie 2015}
+Const MAX = 4200;
+Type Sir = Array[1..MAX] Of Char;
+Var Fin, Fout: Text;
+    M: Sir;
+    S: Array[1..MAX] Of Sir;
+    L, Pasi, P, k, i, nrc, DeUnde, g, L2: Integer;
+    Put: Array[-1..20] Of LongInt;
+    CeFac: Char;
+
+Function Lung(X: Sir): Integer;
+Var i: Integer;
+Begin
+  i := 1;
+  While X[i]<>#0 Do Inc(i);
+  Lung := i-1
+End;
+
+Procedure AdaugaC(Var X: Sir; c: Char);
+Var i: Integer;
+Begin
+  i := 1;
+  While X[i]<>#0 Do Inc(i);
+  X[i] := c;
+End;
+
+Begin
+  Assign(Fin, 'spioni.in'); Reset(Fin);
+  Assign(Fout, 'spioni.out'); ReWrite(Fout);
+  ReadLn(Fin, CeFac);
+  If CeFac = 'C' Then {codificare}
+    Begin
+      L := 0;
+      While Not SeekEoLN(Fin) Do
+        Begin
+          Inc(L);
+          Read(Fin, M[L])
+        End;
+      If L<3 Then
+        Begin
+          For i := 1 To L-1 Do
+            Write(Fout, M[i]);
+          WriteLn(Fout, M[L]);
+          Close(Fout);
+          Halt
+        End;
+      S[1] := M;
+      Pasi := 0; P := 1;
+      Put[0] := 1;
+      While P<L Do
+        Begin
+          Inc(Pasi);
+          P := P * 2;
+          Put[Pasi] := P;
+        End;
+
+      For P := 1 To Pasi-1 Do
+        Begin
+          For k := Put[P-1] DownTo 1 Do
+            Begin
+              M := S[k];
+              i := 1;
+              While (S[2*k-1][i]<>#0) OR (S[2*k][i]<>#0) Do
+                Begin
+                  S[2*k-1][i] := #0;
+                  S[2*k][i] := #0;
+                  i := i+1
+                End;
+              For i := 1 To Lung(M) Do
+                If i MOD 2=1 Then
+                  AdaugaC(S[2*k-1], M[i])
+                Else
+                  AdaugaC(S[2*k], M[i]);
+            End;
+        End;
+      i := 1;
+      While M[i]<>#0 Do
+        Begin
+          M[i] := #0;
+          i := i+1
+        End;
+      For i := 1 To Put[P] Do
+        Begin
+          k := 1;
+          While S[i][k]<>#0 Do
+            Begin
+              AdaugaC(M, S[i][k]);
+              Inc(k)
+            End
+        End;
+      For i := 1 To L Do
+        Write(Fout, M[i]);
+      WriteLn(Fout);
+      Close(Fout);
+    End
+  Else
+    Begin
+      L := 0;
+      While Not SeekEoLN(Fin) Do
+        Begin
+          Inc(L);
+          Read(Fin, M[L])
+        End;
+      If L<3 Then
+        Begin
+          For i := 1 To L-1 Do
+            Write(Fout, M[i]);
+          WriteLn(Fout, M[L]);
+          Close(Fout);
+          Halt
+        End;
+      Pasi := 0; P := 1;
+      Put[-1] := 0;
+      Put[0] := 1;
+      While P<L Do
+        Begin
+          Inc(Pasi);
+          P := P * 2;
+          Put[Pasi] := P;
+        End;
+      For i := 1 To L Do
+        S[i][1] := M[i];
+      DeUnde := 1;
+      If L<Put[Pasi] Then
+        Begin
+          DeUnde := 2;
+          nrc := L - Put[Pasi-1];
+          g := nrc DIV 2;
+          If L MOD 2=1 Then
+            L2 := L DIV 2 + 1
+          Else
+            L2 := L DIV 2;
+          For k := 1 to g Do
+            Begin
+              {M := '';}
+              i := 1;
+              While M[i]<>#0 Do
+                Begin
+                  M[i] := #0;
+                  Inc(i)
+                End;
+              AdaugaC(M, S[2*k-1][1]);
+              AdaugaC(M, S[2*k][1]);
+              S[2*k-1] := M;
+              i := 1;
+              While (S[2*k][i]<>#0) OR (M[i]<>#0) Do
+                Begin
+                  S[2*k][i] := #0;
+                  M[i] := #0;
+                  Inc(i)
+                End;
+              AdaugaC(M, S[L2+2*k-1][1]);
+              AdaugaC(M, S[L2+2*k][1]);
+              S[L2+2*k-1] := M;
+              i := 1;
+              While S[L2+2*k][i]<>#0 Do
+                Begin
+                  S[L2+2*k][i] := #0;
+                  Inc(i)
+                End;
+            End;
+        End;
+      For P := DeUnde To Pasi Do
+        Begin
+          For k := 1 To Put[Pasi-P] Do
+            Begin
+              i := 1;
+              While M[i]<>#0 Do
+                Begin
+                  M[i] := #0;
+                  Inc(i)
+                End;
+              For i := 1 To Lung(S[2*k-1]) Do
+                Begin
+                  AdaugaC(M, S[2*k-1][i]);
+                  AdaugaC(M, S[2*k][i]);
+                End;
+              S[k] := M;
+              i := 1;
+              While S[k+1][i]<>#0 Do
+                Begin
+                  S[k+1][i] := #0;
+                  Inc(i)
+                End;
+            End;
+         End;
+      i := 1;
+      While M[i]<>#0 Do
+        Begin
+          M[i] := #0;
+          Inc(i)
+        End;
+      k := 1;
+      While S[1][k]<>#0 Do
+        Begin
+          AdaugaC(M, S[1][k]);
+          Inc(k)
+        End;
+      For i := 1 To k-1 Do
+        Write(Fout, M[i]);
+      WriteLn(Fout);
+      Close(Fout);
+    End
+End.

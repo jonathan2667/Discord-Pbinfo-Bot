@@ -1,0 +1,123 @@
+#include <bits/stdc++.h>
+
+/*
+ * Author: Vlad Stoian
+ */
+
+using namespace std;
+struct point {
+    point() { x = 0; y = 0; }
+    point(const long long _x, const long long _y) : x(_x), y(_y) {};
+    long long x, y;
+};
+
+inline long long pow2(const int k) {
+    return (1LL << k);
+}
+
+int which_quad(const int k, const point p) {
+    long long pow2k = pow2(k - 1);
+    int quad = 0;
+
+    if(p.x >= pow2k) quad += 2;
+    if(p.y >= pow2k) quad += 1;
+
+    return quad;
+}
+
+point normalize(const int k, const point p) {
+    return point(p.x % pow2(k - 1), p.y % pow2(k - 1));
+}
+
+point translate_to_quad_0(const int k, point p) {
+    int quad = which_quad(k, p);
+
+    if(quad == 1 || quad == 3) {
+        p.y = pow2(k) - 1 - p.y;
+    }
+    if(quad == 2 || quad == 3) {
+        p.x = pow2(k) - 1 - p.x;
+    }
+
+    return p;
+}
+
+long long distance_to_middle(int k, point p) {
+    long long cost_of_translation = 0;
+    long long result = pow2(k + 1) - 2;
+
+    while(p.x != 0 || p.y != 0) {
+        int quad = which_quad(k, p);
+
+        if(quad == 1 || quad == 2) {
+            p = translate_to_quad_0(k, p);
+            cost_of_translation++;
+        }
+        if (quad == 3) {
+            p = normalize(k, p);
+            cost_of_translation += pow2(k);
+        }
+
+        k--;
+    }
+
+    return (result - cost_of_translation);
+}
+
+bool opposite_quads(const int k, const point p1, const point p2) {
+    return ((which_quad(k, p1) ^ which_quad(k, p2)) == 3);
+}
+
+bool same_quad(const int k, const point p1, const point p2) {
+    return (which_quad(k, p1) == which_quad(k, p2));
+}
+
+long long compute(int k, point p1, point p2) {
+    while(k > 0 && same_quad(k, p1, p2)) {
+        p1 = normalize(k, p1);
+        p2 = normalize(k, p2);
+
+        k--;
+    }
+
+    // k == 0 means p1 == p2
+    if(k == 0) {
+        return 0;
+    }
+
+    long long result = 1;
+    // if opposite quads, then result = 2, else result = 1
+    if(opposite_quads(k, p1, p2)) {
+        result++;
+    }
+
+    p1 = translate_to_quad_0(k, p1);
+    p2 = translate_to_quad_0(k, p2);
+    k--;
+
+    result += distance_to_middle(k, p1) + distance_to_middle(k, p2);
+
+    return result;
+}
+
+
+int main() {
+    ifstream cin("tromino.in");
+    ofstream cout("tromino.out");
+    int k, q;
+    long long r1, r2, c1, c2;
+
+    cin >> k >> q;
+
+    while(q--) {
+        cin >> r1 >> c1;
+        cin >> r2 >> c2;
+
+        point p1(r1, c1);
+        point p2(r2, c2);
+
+        cout << compute(k, p1, p2) << endl;
+    }
+
+    return 0;
+}

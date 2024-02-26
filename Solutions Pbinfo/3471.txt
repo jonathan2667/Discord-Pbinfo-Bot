@@ -1,0 +1,184 @@
+#include <bits/stdc++.h>
+#define maxN 10002
+#define maxM 40002
+#define pii pair<int, int>
+
+FILE *fin = freopen("valori.in", "r", stdin);
+FILE *fout = freopen("valori.out", "w", stdout);
+using namespace std;
+
+
+pair <int, int> ArrayValue[maxM];
+int posVal[maxN][2];
+vector < int > V[2][maxM * 2];
+map < pii, int > Map;
+
+int ts[maxM * 2];
+bool vis[maxM * 2], ans[maxM * 2];
+
+
+int N;
+void NoSol()
+{
+    printf("-1");
+    exit(0);
+}
+int Not(int u)
+{
+    if (u < N) return u + N;
+    return u - N;
+}
+
+void dfs(int ty, int u)
+{
+    vis[u] = !ty;
+    if (ty && ans[u])
+        {
+            printf("Node %d is wrong\n ", u);
+            NoSol();
+        }
+    if (ty)
+    {
+        ans[u] = false;
+        ans[Not(u)] = true;
+    }
+    int sz = V[ty][u].size();
+    for (int i = 0; i < sz; ++ i)
+    {
+        int v = V[ty][u][i];
+        if (vis[v] == ty)
+            dfs(ty, v);
+    }
+    if (!ty)
+        ts[++ ts[0]] = u;
+}
+void AddEdge(int u, int v)
+{
+    V[0][u].push_back(v);
+    V[1][v].push_back(u);
+}
+
+void readInput(int &n, int &m)
+{
+    scanf("%d%d", &n, &m);
+
+
+    N = 2 * n;
+    int idx = 0;
+    for (int i = 0; i < n; ++ i)
+    {
+        int ty, val1, val2, x;
+        scanf("%d %d %d %d", &ty, &x, &val1, &val2);
+        posVal[x][0] = val1;
+        posVal[x][1] = val2;
+        ArrayValue[++ idx] = pii{x, val1};
+        Map[pii{x, val1}] = idx;
+        ArrayValue[++ idx] = pii{x, val2};
+        Map[pii{x, val2}] = idx;
+        AddEdge(idx - 1, Not(idx - 2));
+        AddEdge(Not(idx - 1), idx - 2);
+        AddEdge(idx - 2, Not(idx - 1));
+        AddEdge(Not(idx - 2), idx - 1);
+    }
+}
+void addRestr(int x, int y, int ty)
+{
+    if (ty)
+    {
+        AddEdge(x, y);
+        AddEdge(Not(x), Not(y));
+        AddEdge(y, x);
+        AddEdge(Not(y), Not(x));
+    }else
+    {
+        AddEdge(x, Not(y));
+        AddEdge(y, Not(x));
+    }
+}
+void addRestrictions(const int &n, const int &m)
+{
+    for (int i = n; i < m; ++ i)
+    {
+        int ty, x, y, val;
+        scanf("%d%d%d", &ty, &x, &y);
+
+        if (ty == 1)
+        {
+            scanf("%d", &val);
+
+            map < pii, int >::iterator it1 = Map.find(pii{x, val}),
+                                       it2 = Map.find(pii{y, val});
+            if (it1 == Map.end() && it2 == Map.end())
+            NoSol();
+            if (it1 == Map.end())
+            AddEdge(Not(it2->second - 1), it2->second - 1);
+            else{
+             if (it2 == Map.end())
+            AddEdge(Not(it1->second - 1), it1->second - 1);
+            else
+            {
+                AddEdge(it1->second - 1, Not(it2->second - 1));
+                AddEdge(it2->second - 1, Not(it1->second - 1));
+                AddEdge(Not(it1->second - 1), it2->second - 1);
+                AddEdge(Not(it2->second - 1), it1->second - 1);
+            }
+            }
+        }else
+        {
+            for (int t = 0; t < 2; ++ t)
+            {
+                map < pii, int >::iterator it = Map.find(pii{y, posVal[x][t]});
+                if (it == Map.end())
+                    {
+                        int pos = Map[pii{x, posVal[x][t]}] - 1;
+                        if (ty == 3)
+                            AddEdge(pos, Not(pos));
+
+                        continue;
+                    }
+
+                addRestr(Map[pii{x, posVal[x][t]}] - 1, it->second - 1, ty - 2);
+
+            }
+            if (ty == 3)
+            for (int t = 0; t < 2; ++ t)
+            {
+                map < pii, int >::iterator it = Map.find(pii{x, posVal[y][t]});
+                if (it == Map.end())
+                {
+                    int pos = Map[pii{y, posVal[y][t]}] - 1;
+                    AddEdge(pos, Not(pos));
+                }
+            }
+
+        }
+    }
+}
+
+void solve()
+{
+    for (int i = 0; i < 2 * N; ++ i)
+        if (!vis[i])
+           dfs(0, i);
+
+    for (int i = ts[0]; i > 0; -- i)
+       if (vis[ts[i]] && vis[Not(ts[i])])
+            dfs(1, ts[i]);
+}
+void printAns()
+{
+    for (int i = 0; i < N; ++ i)
+    if (ans[i] == true)
+    {
+        printf("%d ", ArrayValue[i + 1].second);
+    }
+}
+int main()
+{
+    int n, m;
+    readInput(n, m);
+    addRestrictions(n, m);
+    solve();
+    printAns();
+    return 0;
+}

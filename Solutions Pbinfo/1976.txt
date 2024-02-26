@@ -1,0 +1,53 @@
+///autor: Andrei Margeloiu
+# include <bits/stdc++.h>
+# define MOD 1000000007
+# define NR 100005
+# define prim 97
+using namespace std;
+
+ifstream f("srh.in");
+ofstream g("srh.out");
+vector <int> v[NR];
+long long key[NR], sol;
+int x, y, n;
+
+void DFS (int k, int tata) {
+    key[k] = 1;
+    for (auto &x: v[k]) {
+        if (x != tata) {
+            DFS (x, k);
+            key[k] += key[x] * prim;
+            key[k] %= MOD;
+        }
+    }
+}
+
+int main ()
+{
+    f>>n;
+    for (int i=1; i<n; ++i) {
+        f>>x>>y;
+        v[x].push_back(y);
+        v[y].push_back(x);
+    }
+
+    DFS(1, 0);
+    sort (key+1, key+n+1);
+    key[n+1] = -1;
+    int i = 1, nr = 1;
+
+    while (i<=n) {
+        if (key[i] == key[i+1] && i<=n) {
+            while (key[i] == key[i+1]) {
+                ++nr;
+                ++i;
+            }
+            sol = sol + 1LL * nr * (nr - 1) / 2;
+            nr = 1;
+        } else ++i;
+    }
+
+    g<<sol<<"\n";
+
+    return 0;
+}

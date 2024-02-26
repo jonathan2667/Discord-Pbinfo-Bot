@@ -1,0 +1,22 @@
+#include <iostream>
+#include <cstring>
+using namespace std;
+
+int main(){
+    char s[201], t[201];
+    cin.getline(s,201);
+    int modificat = 0;
+    for(int i = strlen(s) - 1 ; i >= 0 ; --i)
+        if( strchr( "aeiou" , s[i] ))
+        {
+            strcpy(t , s + i);
+            strcpy(s + i + 1 , t);
+            s[i+1] = '*';
+            modificat = 1;
+        }
+    if(modificat)
+        cout << s << endl;
+    else
+        cout << "FARA VOCALE";
+    return 0;
+}

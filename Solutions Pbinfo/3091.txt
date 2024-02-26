@@ -1,0 +1,76 @@
+#include <fstream>
+#include <iostream>
+#define NMAX 305
+
+using namespace std;
+
+ifstream fin("pavele.in");
+ofstream fout("pavele.out");
+
+int n, ma[NMAX][NMAX], m, r, o = 1, v = -1;
+
+void solve(){
+    /// margini
+    for(int j = 1; j <= (r * 2) - 1; j += 2){
+        for(int i = 0; i < j; i++){
+            ma[i][j] = ma[i][j + 1] = o;
+            o++;
+            ma[j][i] = ma[j + 1][i] = v;
+            v--;
+        }
+    }
+    /// interior
+    int k = -1;
+    if(n % 4 == 1){
+    for(int j = 1; j <= n - 2; j += 2){
+        k++;
+        if(k % 2 == 1){
+            ma[j][j] = ma[j][j + 1] = o;
+            o++;
+            ma[j + 1][j] = ma[j + 1][j + 1] = o;
+            o++;
+        }
+        else{
+            ma[j][j] = ma[j + 1][j] = v;
+            v--;
+            ma[j][j + 1] = ma[j + 1][j + 1] = v;
+            v--;
+        }
+    }
+    }
+    else{
+       for(int j = 1; j <= n - 4; j += 2){
+        k++;
+        if(k % 2 == 1){
+            ma[j][j] = ma[j][j + 1] = o;
+            o++;
+            ma[j + 1][j] = ma[j + 1][j + 1] = o;
+            o++;
+        }
+        else{
+            ma[j][j] = ma[j + 1][j] = v;
+            v--;
+            ma[j][j + 1] = ma[j + 1][j + 1] = v;
+            v--;
+        }
+    }
+    }
+}
+int main(){
+
+    fin >> n;
+    if(n % 4 == 1)
+        m = (n * n - 1) / 4;
+    else m = (n * n - 1) / 4 - 1;
+    fout << m << '\n';
+    r = n / 2;
+    solve();
+    for(int i = 0; i < n; ++i){
+        for(int j = 0; j < n; ++j)
+            fout << ma[i][j] << " ";
+        fout << '\n';
+    }
+    fin.close();
+    fout.close();
+    return 0;
+} 

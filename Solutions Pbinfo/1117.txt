@@ -1,0 +1,78 @@
+//Vlad Gavrila - O(N*M*log(N))
+
+#include <cstdio>
+#include <algorithm>
+#include <set>
+#include <vector>
+
+using namespace std;
+
+#define maxn 755
+
+int n, m;
+int v[maxn][maxn];
+char f[maxn][maxn];
+long long sol;
+vector<pair<int, pair<int, int> > > hp;
+const int d1[]={0, 0, -1, 1};
+const int d2[]={1, -1, 0, 0};
+
+void addElement(int x, int y, int h)
+{
+    if(x<=0 || y<=0 || x>n || y>m)
+        return;
+    if(f[x][y]==1)
+        return;
+
+    //calcul solutie
+    if(h<v[x][y])
+        h=v[x][y];
+    sol=sol+h-v[x][y];
+
+    //add la heap
+    hp.push_back(make_pair(-h, make_pair(x, y)));
+    push_heap(hp.begin(), hp.end());
+    f[x][y]=1;
+}
+
+int main()
+{
+    freopen("volum.in", "r", stdin);
+    freopen("volum.out", "w", stdout);
+
+    scanf("%d%d", &n, &m);
+    for(int i=1; i<=n; ++i)
+        for(int j=1; j<=m; ++j)
+            scanf("%d", &v[i][j]);
+
+    for(int i=1; i<=n; ++i)
+    {
+        addElement(i, 1, v[i][1]);
+        addElement(i, m, v[i][m]);
+    }
+    for(int j=1; j<=m; ++j)
+    {
+        addElement(1, j, v[1][j]);
+        addElement(n, j, v[n][j]);
+    }
+
+    int xc, yc, hc;
+
+    while(hp.size()>0)
+    {
+        hc=-hp[0].first;
+        xc=hp[0].second.first;
+        yc=hp[0].second.second;
+
+        pop_heap(hp.begin(), hp.end());
+        hp.pop_back();
+
+        for(int i=0; i<4; ++i)
+            addElement(xc+d1[i], yc+d2[i], hc);
+    }
+
+    printf("%lld\n", sol);
+
+    return 0;
+}
+

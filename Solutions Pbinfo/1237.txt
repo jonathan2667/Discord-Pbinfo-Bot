@@ -1,0 +1,40 @@
+#include <fstream>
+#include <queue>
+using namespace std;
+
+ifstream fin ("numereiajb.in");
+ofstream fout ("numereiajb.out");
+
+long long a, b, n, i, j, crt[2], last, nr;
+
+queue <pair <long long, long long> > Q[2];
+
+int main() {
+    fin >> a >> b >> n;
+    Q[0].push(make_pair (1, 0));
+    Q[1].push(make_pair (0, 1));
+    for (int t = 1; t <= n; ++t) {
+        for (int j = 0; j < 2; ++j)
+            crt[j] = Q[j].front().first * a + Q[j].front().second * b;
+        if (crt[0] < crt[1]) {
+            i = Q[0].front().first;
+            j = Q[0].front().second;
+            Q[0].pop();
+            nr = crt[0];
+        }
+        else {
+            i = Q[1].front().first;
+            j = Q[1].front().second;
+            Q[1].pop();
+            nr = crt[1];
+        }
+        if (nr == last) {
+            --t;
+            continue;
+        }
+        last = nr;
+        fout << i << " " << j << "\n";
+        Q[0].push(make_pair (i + 1, j));
+        Q[1].push(make_pair (i, j + 1));
+    }
+}

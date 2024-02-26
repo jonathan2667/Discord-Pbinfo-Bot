@@ -1,0 +1,157 @@
+//100 de puncte O(N log N)
+#include <cstdio>
+#include <vector>
+
+using namespace std;
+
+#define maxn 100010
+#define inf (1000000000)
+
+int n, m, k, poz;
+vector<int> v[maxn], w[maxn];
+int f[maxn];
+int euler[4*maxn], hasPrep[4*maxn], whenPrep[4*maxn], prevPos[4*maxn], lastOc[maxn];
+int sol[maxn];
+int aint[4*4*maxn];
+
+void addNode(int nod, int prep)
+{
+    euler[poz]=nod;
+    if(prep!=-1)
+    {
+        hasPrep[poz]=1;
+        whenPrep[poz]=prep;
+    }
+    ++poz;
+}
+
+void df(int nod)
+{
+    f[nod]=1;
+
+    addNode(nod, w[nod][0]);
+
+    int fiu;
+
+    for(int i=1; i<v[nod].size(); ++i)
+    {
+        fiu=v[nod][i];
+        df(fiu);
+        addNode(nod, w[nod][i]);
+    }
+}
+
+void build(int nod, int left, int right)
+{
+    if(left==right)
+    {
+        if(hasPrep[left]==0)
+            aint[nod]=-inf;
+        else
+            aint[nod]=whenPrep[left]-left;
+        return;
+    }
+
+    int med=(left+right)/2;
+
+    build(nod*2, left, med);
+    build(nod*2+1, med+1, right);
+
+    aint[nod]=max(aint[nod*2], aint[nod*2+1]);
+}
+
+int query(int nod, int left, int right, int qleft, int qright)
+{
+    if(qleft<=left && right<=qright)
+        return aint[nod];
+
+    int med=(left+right)/2, sol=-inf;
+
+    if(qleft<=med)
+        sol=max(sol, query(nod*2, left, med, qleft, qright));
+    if(med<qright)
+        sol=max(sol, query(nod*2+1, med+1, right, qleft, qright));
+
+    return sol;
+}
+
+int main()
+{
+    freopen("sushi.in", "r", stdin);
+    freopen("sushi.out", "w", stdout);
+
+    scanf("%d%d", &n, &m);
+
+    v[1].push_back(0);
+    w[1].push_back(-1);
+
+    for(int i=1; i<=n; ++i)
+    {
+        scanf("%d", &k);
+        for(int j=1; j<=k; ++j)
+        {
+            int x;
+            scanf("%d", &x);
+            v[i].push_back(x);
+            w[i].push_back(-1);
+        }
+    }
+
+    for(int i=1; i<=m; ++i)
+    {
+        int x, y, t;
+        scanf("%d%d%d", &x, &y, &t);
+        --y;                //Daca un preparat merge spre masa y atunci el vine dinspre masa y-1
+        if(y==0)
+        {
+            if(x==1)
+                y=v[x].size()-1;
+            else
+                y=v[x].size();
+        }
+
+        if(x!=1)
+            w[x][y-1]=max(w[x][y-1], t);
+        else
+            w[x][y]=max(w[x][y], t);
+    }
+
+    df(1);
+
+    --poz;
+
+    for(int i=1; i<=poz; ++i)
+    {
+        euler[i+poz]=euler[i];
+        hasPrep[i+poz]=hasPrep[i];
+        whenPrep[i+poz]=whenPrep[i];
+    }
+
+    poz *= 2;
+
+    for(int i=1; i<=poz; ++i)
+    {
+        int nod = euler[i];
+        prevPos[i]=lastOc[nod];
+        lastOc[nod]=i;
+    }
+
+    build(1, 1, poz);
+
+    for(int i=poz/2+1; i<=poz; ++i)
+    {
+        int nod = euler[i];
+        int prevOc = prevPos[i];
+        int prep = query(1, 1, poz, prevOc+1, i);
+
+        sol[nod]=max(sol[nod], i+prep);
+    }
+
+    for(int i=1; i<=n; ++i)
+        printf("%d ", sol[i]);
+    printf("\n");
+
+    return 0;
+}
+
+

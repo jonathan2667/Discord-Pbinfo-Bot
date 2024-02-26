@@ -1,0 +1,25 @@
+#include <fstream>
+using namespace std;
+ifstream fin("cod24.in");
+ofstream fout("cod24.out");
+int x,aux;
+int main()
+{
+    fin>>x;
+    while(x>0)
+    {
+        if(x%10<9)
+            aux=aux*10+x%10+1;
+        else
+            aux=aux*10+x%10;
+        x/=10;
+    }
+    while(aux>0)
+    {
+        x=x*10+aux%10;
+        aux/=10;
+    }
+    x=(x/100)*100+(x%10)*10+(x/10)%10;
+    fout<<x;
+    return 0;
+}

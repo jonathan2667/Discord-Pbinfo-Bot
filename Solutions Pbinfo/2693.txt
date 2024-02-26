@@ -1,0 +1,39 @@
+#include<bits/stdc++.h>
+using namespace std;
+
+int main()
+{
+    string s,ss,voc="aeiou";
+    int n1=0,n2=0;
+    getline(cin,s);
+    vector<string> v;
+    istringstream buffer(s);
+    for(string word;buffer>>word;)
+        v.push_back(word);
+    for(int i=0;i<v.size()-1;i++)
+        for(int j=i+1;j<v.size();j++)
+        {
+            n1=0,n2=0;
+            s=v[i],ss=v[j];
+            for(int l=0;l<s.size();l++)
+                if(voc.find(tolower(s[l]))!=-1)
+                    n1++;
+            for(int l=0;l<ss.size();l++)
+                if(voc.find(tolower(ss[l]))!=-1)
+                    n2++;
+            if(n1<n2)
+                swap(v[i],v[j]);
+            else
+            if(n1==n2)
+            {
+                if(s.size()<ss.size())
+                    swap(v[i],v[j]);
+                else
+                if(s.size()==ss.size())
+                    if(s>ss)
+                    swap(v[i],v[j]);
+            }
+        }
+    for(int i=0;i<v.size();i++)
+        cout<<v[i]<<'\n';
+}

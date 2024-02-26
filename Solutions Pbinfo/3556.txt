@@ -1,0 +1,43 @@
+/// Solutie - Moca Andrei - 100p
+#include <bits/stdc++.h>
+using namespace std;
+typedef long long i64;
+inline i64 Multiply(i64 a, i64 b, i64 MOD) {
+    i64 res(0);
+    while (b) {
+        if (b & 1) {
+            res += a;
+            if (res >= MOD)
+                res -= MOD;
+        }
+        a += a;
+        if (a >= MOD)
+            a -= MOD;
+        b >>= 1;
+    }
+    return res;
+}
+const int LOG(62);
+int freq[LOG][2], n;
+i64 res, x, y, z, t, a, p2[LOG];
+int main() {
+    p2[0] = 1;
+    for (int i = 1; i < LOG; ++i)
+        p2[i] = p2[i - 1] << 1;
+    cin >> n >> x >> y >> z >> t;
+    x %= z, y %= z;
+    for (int i = 1; i <= n; ++i) {
+        a = Multiply(a, x, z) + y;
+        if (a >= z)
+            a -= z;
+        for (int bit = 0; bit < LOG; ++bit)
+            ++freq[bit][!!(a & p2[bit])];
+    }
+    for (int bit = 0; bit < LOG; ++bit) {
+        res += Multiply(Multiply(freq[bit][0], freq[bit][1], t), p2[bit] % t, t);
+        if (res >= t)
+            res -= t;
+    }
+    cout << res;
+    return 0;
+}

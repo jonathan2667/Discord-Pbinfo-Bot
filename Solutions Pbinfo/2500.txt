@@ -1,0 +1,101 @@
+#include <fstream>
+#include <cstring>
+#define DIM 22
+#define MOD 666013
+using namespace std;
+int n, m, h, L[DIM], v[100010];
+int D[DIM][DIM][DIM][DIM], E[DIM][DIM][DIM][DIM];
+int suma, sol, i, j, si, sj, imaxim, jmaxim, simaxim, sjmaxim, x;
+int I, J, SI, SJ, s, k, F[DIM], S[DIM], A[DIM];
+
+int main () {
+    ifstream fin ("parcare1.in");
+    ofstream fout("parcare1.out");
+    fin>>n>>h>>m;
+    F[0] = 1;
+    for (i=1;i<=h;i++)
+        F[i] = F[i-1] * 1LL * i % MOD;
+
+    for (i=1;i<=n;i++)
+        fin>>L[i];
+    for (i=1;i<=m;i++) {
+        fin>>v[i];
+    }
+
+    D[0][0][0][0] = E[0][0][0][0] = 1;
+    imaxim = 0;
+    jmaxim = 0;
+    simaxim = 0;
+    sjmaxim = 0;
+    for (s = 1; s<=n; s++) {
+        I = imaxim;
+        J = jmaxim;
+        SI = simaxim;
+        SJ = sjmaxim;
+        for (i=0;i<=imaxim;i++)
+            for (j=0;j<=jmaxim;j++)
+                for (si = 0; si <= simaxim; si++)
+                    for (sj = 0; sj <= sjmaxim && si + sj < h; sj++)
+                        if (D[sj][si][j][i] != 0) {
+                            if (si + L[s] <= h) {
+                                E[sj][si + L[s]][j][i+1] += D[sj][si][j][i];
+                                if (E[sj][si + L[s]][j][i+1] >= MOD)
+                                    E[sj][si + L[s]][j][i+1] -= MOD;
+                                if (i+1 > I)
+                                    I = i+1;
+                                if (si + L[s] > SI)
+                                    SI = si + L[s];
+                            }
+                            if (sj + L[s] <= h) {
+                                E[sj + L[s]][si][j+1][i] += D[sj][si][j][i];
+                                if (E[sj + L[s]][si][j+1][i] >= MOD)
+                                    E[sj + L[s]][si][j+1][i] -= MOD;
+                                if (J < j+1)
+                                    J = j+1;
+                                if (sj + L[s] > SJ)
+                                    SJ = sj + L[s];
+                            }
+                        }
+
+        imaxim = I;
+        jmaxim = J;
+        simaxim = SI;
+        sjmaxim = SJ;
+        ///memcpy(D, E, sizeof(D));
+
+        for (i=0;i<=imaxim;i++)
+            for (j=0;j<=jmaxim;j++)
+                for (si = 0; si <= simaxim; si++)
+                    for (sj = 0; sj <= sjmaxim; sj++)
+                        D[sj][si][j][i] = E[sj][si][j][i];
+
+    }
+
+    sol = 1;
+    for (k=1;k<=m;k++) {
+        if (A[v[k]]) {
+            sol = sol * 1LL * A[ v[k] ] % MOD;
+            continue;
+        }
+        suma = 0;
+        if (v[k] == 1 || v[k] == h) {
+            for (i=1;i<=n;i++) {
+                suma += D[0][h-1][0][i] * 1LL * F[i] % MOD;
+                suma %= MOD;
+            }
+            A[ v[k] ] = suma;
+            sol = sol * 1LL * suma % MOD;
+            continue;
+        }
+        for (i=1;i<=n;i++)
+            for (j=1;j<=n;j++) {
+                suma += (D[h-v[k]][v[k]-1][j][i] * 1LL * F[i] % MOD * 1LL * F[j] % MOD);
+            }
+        A[v[k]] = suma;
+        suma %= MOD;
+        sol = sol * 1LL * suma % MOD;
+    }
+
+    fout<<sol;
+    return 0;
+}

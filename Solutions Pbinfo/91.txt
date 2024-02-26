@@ -1,0 +1,54 @@
+#include <fstream>
+using namespace std;
+
+ifstream fin("masini.in");
+ofstream fout("masini.out");
+
+int n, T;
+int t[1000];
+
+void Citeste();
+int NrMasini();  // Greedy
+void Sort();
+
+int main()
+{
+    Citeste();
+    Sort();
+    fout << NrMasini();
+    return 0;
+}
+
+void Citeste()
+{
+    fin >> n >> T;
+    for ( int i = 0; i < n; ++i )
+        fin >> t[i];
+}
+
+int NrMasini()
+{
+    int k = 0; // nr de masini care vor fi reparate
+    int timp = 0;
+
+    for ( int i = 0; i < n && timp + t[i] <= T; ++i )
+        if ( timp + t[i] <= T )
+        {
+            timp += t[i];
+            k++;
+        }
+    return k;
+}
+
+void Sort()
+{
+    int aux;
+    for ( int i = 0; i < n - 1; ++i )
+        for ( int j = i + 1; j < n; ++j )
+            if ( t[i] > t[j] )
+            {
+                aux = t[i];
+                t[i] = t[j];
+                t[j] = aux;
+            }
+}

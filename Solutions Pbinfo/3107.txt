@@ -1,0 +1,83 @@
+#include <cstdio>
+#include <cstdlib>
+using namespace std;
+
+char a[1025][1025];
+int  n, ansX = -1, ansY = -1, ansS = -1;
+
+int less(int n, int x1, int y1, int x2, int y2) {
+    for (int i = 2*(n-1); i >= 0; i -= 2) {
+        int r1, r2;
+        r1 = (x1 >> i) & 3;
+        r2 = (x2 >> i) & 3;
+        if (r1 != r2) return (r1 < r2);
+        r1 = (y1 >> i) & 3;
+        r2 = (y2 >> i) & 3;
+        if (r1 != r2) return (r1 < r2);
+    }
+    return 0;
+}
+
+void update(int x, int y, int s) {
+    if (x > y) x ^= y, y ^= x, x ^= y;
+    if (s > ansS || (s == ansS && less(n, x, y, ansX, ansY))) {
+        ansS = s; ansX = x; ansY = y;
+    }
+}
+
+void dfs(int i, int j, int k, int x, int s, int *bestX, int *bestS) {
+    for (int p = i; p < i + k; p++)
+        for (int q = j; q < j + k; q++)
+            s += (a[p][q] == '1');
+
+    k /= 2;
+    if (!k) {
+        *bestX = x; *bestS = s; update(x, x, s); return;
+    }
+
+    int bx[4], bs[4];
+    dfs(i + 0, j + 0, k, 4*x + 0, s, &bx[0], &bs[0]);
+    dfs(i + 0, j + k, k, 4*x + 1, s, &bx[1], &bs[1]);
+    dfs(i + k, j + 0, k, 4*x + 2, s, &bx[2], &bs[2]);
+    dfs(i + k, j + k, k, 4*x + 3, s, &bx[3], &bs[3]);
+
+    int c[] = {0, 1, 2, 3};
+    for (int p = 0; p < 3; p++)
+        for (int q = p + 1; q < 4; q++)
+            if (bs[c[p]] < bs[c[q]] || (bs[c[p]] == bs[c[q]] && c[p] > c[q]))
+                c[p] ^= c[q], c[q] ^= c[p], c[p] ^= c[q];
+
+    update(bx[c[0]], bx[c[1]], bs[c[0]] + bs[c[1]] - s);
+    *bestX = bx[c[0]];
+    *bestS = bs[c[0]];
+}
+
+void printPath(FILE *f, int n, int x) {
+    if (--n) printPath(f, n, x/4);
+    fprintf(f, "%d ", 1 + x%4);
+}
+
+int main() {
+    FILE *f = fopen("margi.in",  "r");
+    FILE *g = fopen("margi.out", "w");
+    int  C, s = 0, bx, bs;
+
+    fscanf(f, "%d%d", &C, &n);
+    for (int i = 0; i < (1 << n); i++) fscanf(f, "%s", a[i]);
+
+    for (int i = 0; i < (1 << n); i++)
+        for (int j = 0; j < (1 << n); j++)
+            s -= (a[i][j] == '1');
+
+    dfs(0, 0, 1 << n, 0, s, &bx, &bs);
+
+    fprintf(g, "%d\n", ansS);
+    if (C == 2) {
+        printPath(g, n, ansX); fprintf(g, "\n");
+        printPath(g, n, ansY); fprintf(g, "\n");
+    }
+    fclose(f);
+    fclose(g);
+
+    return 0;
+} 

@@ -1,0 +1,52 @@
+#include <bits/stdc++.h>
+#define P 999023
+#define pb push_back
+using namespace std;
+
+vector<int> h[P];
+
+inline void Adauga(int x)
+{
+    int r = x % P;
+    for (auto w : h[r])
+        if (w == x) return;
+    h[r].pb(x);
+}
+
+inline int Cauta(int x)
+{
+    int r = x % P;
+    unsigned i, L;
+    L = h[r].size();
+    for (i = 0; i < L; i++)
+        if (h[r][i] == x)
+        {
+            h[r][i] = h[r][L-1];
+            h[r].pop_back();
+            return 1;
+        }
+    return 0;
+}
+
+int main()
+{
+    int A, B, C, D;
+    int i, n, m, x, y, cnt;
+    cin >> A >> B >> C >> D;
+    cin >> n >> x >> m >> y;
+    B = B - A + 1;
+    Adauga(x);
+    for (i = 2; i <= n; i++)
+    {
+        x = A + (1LL * x * C + D) % B;
+        Adauga(x);
+    }
+    cnt = Cauta(y);
+    for (i = 2; i <= m; i++)
+    {
+        y = A + (1LL * y * C + D) % B;
+        cnt += Cauta(y);
+    }
+    cout << cnt << "\n";
+    return 0;
+}

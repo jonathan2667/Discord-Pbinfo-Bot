@@ -1,0 +1,242 @@
+#include <algorithm>
+#include <bitset>
+#include <list>
+#include <cassert>
+#include <cmath>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
+#include <iostream>
+#include <map>
+#include <set>
+#include <stack>
+#include <string>
+#include <utility>
+#include <vector>
+#include <queue>
+
+using namespace std;
+
+int GetSpaces(char *str) {
+    int lg, i, ans = 0;
+    lg = strlen(str);
+    for (i = 0; i < lg; ++i) {
+        ans += (str[i] == ' ');
+    }
+    return ans;
+}
+
+bool HasEnter(char *str) {
+    int lg = strlen(str);
+    return (str[lg - 1] == '\n');
+}
+
+bool OnlyNumeric(char *str) {
+    int lg = strlen(str), i;
+    for (i = 0; i < lg; ++i) {
+        if (str[i] != ' ' && str[i] != '\n') {
+            if (!isdigit(str[i])) {
+                return false;
+            }
+        }
+    }
+    return true;
+}
+
+struct Event {
+    int x, y, code;
+
+    Event() {
+        x = y = code = 0;
+    }
+
+    Event(int xx, int yy, int cc) {
+        x = xx;
+        y = yy;
+        code = cc;
+    }
+};
+
+#define BUFFERSIZE 500
+#define MAX_TIME 500000
+
+int N, M, K, E;
+char buffer[BUFFERSIZE];
+
+vector <Event> events;
+vector <vector <int> > mymat, workmat;
+vector <pair <int, int> > starttimes, endtimes;
+vector <pair <int, int> > directions = {{0, 0}, {-1, 0}, {0, 1}, {1, 0}, {0, -1}};
+
+pair <int, int> operator+(pair <int, int> a, pair <int, int> b) {
+    pair <int, int> ans;
+    ans.first = a.first + b.first;
+    ans.second = a.second + b.second;
+    return ans;
+}
+
+void Normalize(pair <int, int> &a) {
+    if (a.first == 0) a.first = N;
+    if (a.first == N + 1) a.first = 1;
+    if (a.second == 0) a.second = M;
+    if (a.second == M + 1) a.second = 1;
+}
+
+void WriteMat() {
+    cout << string(5, '\n');
+    int i, j;
+    for (i = 1; i <= 2; ++i) {
+        for (j = 1; j <= M; ++j) {
+            if (mymat[i][j] == 0) {
+                if (workmat[i][j] != 0) {
+                    putchar('0' + workmat[i][j]);
+                }
+                else {
+                    putchar('.');
+                }
+            }
+            else {
+                putchar('O');
+            }
+        }
+        putchar('\n');
+    }
+}
+
+int main() {
+    freopen("culegere.in", "r", stdin);
+    freopen("culegere.out", "w", stdout);
+
+    int i;
+
+    scanf("%d %d %d %d", &N, &M, &K, &E);
+
+    assert(K < M);
+
+    events.resize(E);
+    starttimes.resize(E);
+    endtimes.resize(E);
+    mymat.resize(1 + N, vector <int> (1 + M));
+    workmat.resize(1 + N, vector <int> (1 + M));
+
+    for (i = 0; i < E; ++i) {
+
+        char t;
+        cin >> t;
+        assert(t == '1' || t == '2');
+        if (t == '1') {
+            int x, y, st, en;
+            scanf("%d %d %d %d", &x, &y, &st, &en);
+            events[i] = Event(x, y, 5);
+            starttimes[i] = make_pair(st, i);
+            endtimes[i] = make_pair(en, i);
+            assert(en <= MAX_TIME);
+        }
+        else {
+            int x, y, st, en, code;
+            scanf("%d %d %d %d %d", &x, &y, &st, &en, &code);
+            events[i] = Event(x, y, code);
+            starttimes[i] = make_pair(st, i);
+            endtimes[i] = make_pair(en, i);
+            assert(en <= MAX_TIME);
+        }
+    }
+
+    sort(starttimes.begin(), starttimes.end());
+    sort(endtimes.begin(), endtimes.end());
+
+    for (i = 1; i <= K; ++i) {
+        mymat[1][i] = 2;
+    }
+
+    pair <int, int> tail, head;
+    int steptail, stephead, timenow = 0, cnt = 0;
+    bool apple, blocked = false;
+    tail = make_pair(1, 1);
+    head = make_pair(1, K);
+    steptail = 2;
+    stephead = 2;
+
+    int sti, eni;
+    sti = eni = 0;
+    while ((sti < E || eni < E) && cnt < E) {
+        ++timenow;
+
+        apple = false;
+        while(eni < E && endtimes[eni].first == timenow) {
+            int pos = endtimes[eni].second;
+            cnt += workmat[events[pos].x][events[pos].y] != 0;
+            workmat[events[pos].x][events[pos].y] = 0;
+            ++eni;
+        }
+
+        while(sti < E && starttimes[sti].first == timenow) {
+            int pos = starttimes[sti].second;
+            assert(workmat[events[pos].x][events[pos].y] == 0);
+            assert(mymat[events[pos].x][events[pos].y] == 0);
+            workmat[events[pos].x][events[pos].y] = events[pos].code;
+            ++sti;
+        }
+
+        head = head + directions[stephead];
+        Normalize(head);
+        if (mymat[head.first][head.second] != 0 && head != tail) {
+            blocked = true;
+            break;
+        }
+        if (workmat[head.first][head.second] != 0) {
+            int code;
+            code = workmat[head.first][head.second];
+            if (code == 5) {
+                apple = true;
+                workmat[head.first][head.second] = 0;
+                ++cnt;
+            }
+            else {
+                assert(abs(stephead - code) != 2);
+                stephead = code;
+            }
+        }
+        mymat[head.first][head.second] = stephead;
+
+        if (!apple) {
+            if (tail != head) {
+                mymat[tail.first][tail.second] = 0;
+            }
+            tail = tail + directions[steptail];
+            Normalize(tail);
+        }
+        steptail = mymat[tail.first][tail.second];
+    }
+
+
+    if (blocked) {
+        printf("BLOCAT\n");
+    }
+    else {
+        printf("LIBER\n");
+    }
+
+    pair <int, int> lastpos = tail;
+    while (mymat[tail.first][tail.second] < 5 && mymat[tail.first][tail.second] > 0) {
+        steptail = mymat[tail.first][tail.second];
+        mymat[tail.first][tail.second] = 'O';
+        lastpos = tail;
+        tail = tail + directions[steptail];
+        Normalize(tail);
+    }
+    mymat[lastpos.first][lastpos.second] = '#';
+
+    int j;
+    for (i = 1; i <= N; ++i) {
+        for (j = 1; j <= M; ++j) {
+            if (mymat[i][j] == 0) {
+                mymat[i][j] = '.';
+            }
+            putchar(mymat[i][j]);
+        }
+        putchar('\n');
+    }
+
+    return 0;
+}

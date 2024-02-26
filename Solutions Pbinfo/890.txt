@@ -1,0 +1,25 @@
+#include <iostream>
+#include <cstring>
+#include <cctype>
+using namespace std;
+
+char s[256] , v[]="AEIOU";
+
+int f[5];
+
+int main()
+{
+    cin.getline(s, 256);
+    for(int i = 0 ; s[i] ; i ++)
+    {
+        char * p = strchr(v , toupper(s[i]));
+        if(p)
+            f[p - v] ++;
+    }
+    int pmax = 0;
+    for(int i = 1 ; i < 5 ; i ++)
+        if(f[i] > f[pmax])
+            pmax = i;
+    cout << v[pmax];
+    return 0;
+}

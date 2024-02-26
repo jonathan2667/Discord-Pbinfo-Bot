@@ -1,0 +1,63 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+string S;
+int A,D,O,B,E,V,C,J,n,L,R,sol;
+inline void proces(char);
+inline void unproces(char);
+inline int analiza(int,int,int,int,int,int,int,int);
+int main()
+{
+    cin>>S;
+    n=S.size();
+    if(n<5)
+    {
+        cout<<"0\n";
+        return 0;
+    }
+    for(R=0;R<5;R++)
+        proces(S[R]);
+    for(R=4;;)
+    {
+        sol+=analiza(A,D,O,B,E,V,C,J);
+        R++;
+        if(R==n)break;
+        proces(S[R]);
+        unproces(S[L]);
+        L++;
+
+    }
+    cout<<sol;
+    return 0;
+}
+inline void proces(char c)
+{
+    if(c=='a'||c=='A'){A++;return;}
+    if(c=='d'||c=='D'){D++;return;}
+    if(c=='o'||c=='O'){O++;return;}
+    if(c=='b'||c=='B'){B++;return;}
+    if(c=='e'||c=='E'){E++;return;}
+    if(c=='-'){V++;return;}
+    if(c=='+'){C++;return;}
+    if(c=='*'){J++;return;}
+}
+inline void unproces(char c)
+{
+    if(c=='a'||c=='A'){A--;return;}
+    if(c=='d'||c=='D'){D--;return;}
+    if(c=='o'||c=='O'){O--;return;}
+    if(c=='b'||c=='B'){B--;return;}
+    if(c=='e'||c=='E'){E--;return;}
+    if(c=='-'){V--;return;}
+    if(c=='+'){C--;return;}
+    if(c=='*'){J--;return;}
+}
+inline int analiza(int a,int d,int o,int b,int e,int v,int c,int j)
+{
+    if(a+v+j==0)return 0;if(a)a--;else if(v)v--;else j--;
+    if(o+v+j==0)return 0;if(o)o--;else if(v)v--;else j--;
+    if(e+v+j==0)return 0;if(e)e--;else if(v)v--;else j--;
+    if(b+c+j==0)return 0;if(b)b--;else if(c)c--;else j--;
+    if(d+c+j==0)return 0;if(d)d--;else if(c)c--;else j--;
+    return 1;
+}

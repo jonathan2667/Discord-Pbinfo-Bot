@@ -1,0 +1,76 @@
+#include<fstream>
+#include<cstring>
+using namespace std;
+const int NMax=1000002;
+char s[NMax],t[2*NMax+3];
+int P[2*NMax+3];
+int n,ind,rez;
+ifstream fin("subsecventa.in");
+ofstream fout("subsecventa.out");
+
+void citire()
+{
+    fin>>s;
+    n=strlen(s);
+}
+
+void init()
+{
+    int i=0,j=0;
+    t[j]='^';
+    j++;
+    for(i=0;i<n;i++)
+    {
+        t[j]='#';
+        j++;
+        t[j]=s[i];
+        j++;
+    }
+    t[j]='#';
+    j++;
+    t[j]=NULL;
+}
+
+void manacher()
+{
+    int i,j,C,R,maxpal,nr=0;
+    C=0;
+    R=0;
+    maxpal=1;
+    for(i=1; t[i]!=NULL; i++)
+    {
+        j=2*C-i;
+        P[i]=0;
+        //initializare P[i]
+        if(R-i>0)
+            P[i]=min(R-i,P[j]);
+        nr++;
+        //extindem palindromul
+        while(t[i+1+P[i]]==t[i-1-P[i]])
+            {P[i]++;
+             nr++;
+            }
+        //actualizam centrul palindromului maxim
+        if(P[i]>P[maxpal])
+            maxpal=i;
+
+        if(i+P[i]>R)
+        {
+            C=i;
+            R=i+P[i];
+        }
+    }
+
+    rez=P[maxpal];
+    ind=(maxpal-1-rez)/2;
+    fout<<rez<<'\n';
+    for(i=0; i<rez; i++)
+        fout<<s[i+ind];
+}
+
+int main()
+{
+    citire();
+    init();
+    manacher();
+}

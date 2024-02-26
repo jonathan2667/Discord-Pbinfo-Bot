@@ -1,0 +1,77 @@
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
+#include <vector>
+#include <algorithm>
+using namespace std;
+
+#define FOR(i, a, b) for (i = (a); i <= (b); i ++)
+#define REP(i, n)    for (i =   0; i <  (n); i ++)
+#define PB           push_back
+#define MP           make_pair
+#define PII          pair<int, int>
+
+#define INF  1999999999
+#define NMAX 1000005
+
+int w[NMAX], m[NMAX];
+vector<PII> E, F;
+int N, K, R, i, j, k, q, Ans = INF;
+
+int v[NMAX], t[NMAX], vb, ve;
+
+inline void push(int key, int time)
+{
+    for (; vb <= ve && key < v[ve]; ve--);
+    ++ve, v[ve] = key, t[ve] = time;
+}
+
+inline void pop(int time)
+{
+    for (; vb <= ve && t[vb] < time; vb++);
+}
+
+int cmp(PII a, PII b)
+{
+    if (a == b) return a.first > b.first ? 1 : 0;
+    else return a.second < b.second ? 1 : 0;
+}
+
+int main(void)
+{
+    freopen("cover.in", "r", stdin);
+    freopen("cover.out", "w", stdout);
+
+    scanf("%d %d", &R, &N);
+    FOR(i, 1, N) scanf("%d", &w[i]);
+
+    REP(k, R) scanf("%d %d", &i, &j), F.PB(MP(i, j));
+    sort(F.begin(), F.end(), cmp);
+    int lst = 0;
+    FOR(i, 0, R-1)
+        if (F[i].first > lst)
+            E.PB(F[i]), lst = F[i].first;
+//  fprintf(stderr, "|E| = %d\n", E.size());
+
+    m[0] = 0;
+    vb = ve = 0, v[0] = t[0] = 0;
+
+    q = -1;
+    FOR(i, 1, N)
+    {
+        // bag intervale inchise
+        for (; q + 1 < E.size() && E[q+1].second < i; q++);
+        if (q >= 0) pop(E[q].first);
+        m[i] = w[i]+v[vb];
+        push(m[i], i);
+    }
+
+    FOR(i, E[E.size()-1].first, E[E.size()-1].second)
+        if (m[i] < Ans)
+            Ans = m[i];
+    
+    printf("%d\n", Ans);
+//  fprintf(stderr, "Ans = %d\n", Ans);
+
+    return 0;
+}

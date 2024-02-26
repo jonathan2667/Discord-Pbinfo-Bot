@@ -1,0 +1,45 @@
+/* Mihail Cosmin Pit-Rada
+    O(n * k)
+*/
+#include<fstream>
+using namespace std;
+
+ifstream  fin("kds.in");
+ofstream fout("kds.out");
+
+int N,K,a[10002], infinit=1000000000;
+int best[10002];
+
+int solve(int start, int stop, int ka){
+    int k, i, x, y, z, j, t, v;
+
+    ///best[start-1]=infinit;
+    t=infinit;
+    for(i=start;i<=stop;i++){
+        if(a[i]<t)t=a[i];
+        best[i]=t;
+    }
+
+    for(k=2;k<=ka;k++){
+        j=start+2*k-4; x=best[j]; y=best[j+1]; t=infinit;
+        for(i=j+2;i<=stop;i++){
+            z=best[i]; v=a[i]+x; if(v<t)t=v;
+            best[i]=t; x=y; y=z;
+        }
+    }
+    return best[stop];
+}
+int main(){
+    int i, S, v1, v2;
+    fin>>N>>K;
+    S=0;
+    for(i=1;i<=N;i++){
+        fin>>a[i];
+        S=S+a[i];
+    }
+    v1=a[1]+solve(3,N-1,K-1);//prima secventa il contine pe a[1]
+    v2=solve(2,N,K);//a[1] nu face parte din nici o secventa
+    fout<<S-min(v1,v2)<<"\n";
+    fout.close();
+    return 0;
+}

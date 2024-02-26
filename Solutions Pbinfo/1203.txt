@@ -1,0 +1,103 @@
+#include <cstdio>
+#include <algorithm>
+
+using namespace std;
+
+#define maxn 1000010
+#define inf (1LL*1000000000*1000000000)
+#define bucketSize (32)
+
+int n, k, m;
+long long a[maxn], b[maxn], v[maxn];
+long long bucketMn[maxn], bucketMx[maxn];
+
+int incearca(long long med)
+{
+    int kk=1;
+
+    long long mn=inf;
+    long long mx=-inf;
+
+    for(int i=0; i<n; ++i)
+    {
+        if(i%bucketSize==0 && i+bucketSize<n)
+        {
+            long long mnt = min(bucketMn[i/bucketSize], mn);
+            long long mxt = max(bucketMx[i/bucketSize], mx);
+
+            if((mxt-mnt+1)/2 <= med)
+            {
+                mn=mnt;
+                mx=mxt;
+                i+=bucketSize-1;
+            }
+        }
+
+        mn = min(v[i], mn);
+        mx = max(v[i], mx);
+
+        if((mx-mn+1)/2 > med)
+        {
+            ++kk;
+            mx=mn=v[i];
+            if(kk>k)
+                return 0;
+        }
+    }
+
+    return 1;
+}
+
+int main()
+{
+    freopen("ksecv.in", "r", stdin);
+    freopen("ksecv.out", "w", stdout);
+
+    scanf("%d%d%d", &n, &k, &m);
+
+    for(int i=0; i<m; ++i)
+        scanf("%lld", &a[i]);
+
+    for(int i=0; i<m; ++i)
+        scanf("%lld", &b[i]);
+
+    for(int i=0; i<n; ++i)
+        v[i] = (a[i%m] ^ b[i/m]);
+
+    for(int i=0; i<n; i+=bucketSize)
+    {
+        long long mn=inf;
+        long long mx=-inf;
+
+        for(int j=i; j<n && j<i+bucketSize; ++j)
+        {
+            mn=min(mn, v[j]);
+            mx=max(mx, v[j]);
+        }
+
+        bucketMn[i/bucketSize]=mn;
+        bucketMx[i/bucketSize]=mx;
+    }
+
+    long long left=0, right=inf, sol=inf;
+
+    while(left<=right)
+    {
+        long long med=(left+right)/2;
+
+        if(incearca(med))
+        {
+            sol=med;
+            right=med-1;
+        }
+        else
+            left=med+1;
+
+    }
+
+    printf("%lld\n", sol);
+
+    return 0;
+}
+
+

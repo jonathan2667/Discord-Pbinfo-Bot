@@ -1,0 +1,60 @@
+#include <fstream>
+
+using namespace std;
+ifstream fin("suma7.in");
+ofstream fout("suma7.out");
+int a[301][301],s[301][301] ,b[301],c[301],x[301],y[301],u[301],v[301],n;
+int main()
+{
+    int sm,i,j,im,jm;
+    fin>>n;
+    for(i=1;i<=n;i++)
+        for(j=1;j<=n;j++)
+        {
+            fin>>a[i][j];
+
+            b[i]+=a[i][j];
+            c[j]+=a[i][j];
+
+            if(i>=j)
+                x[i-j+1]+=a[i][j];
+            else
+                y[j-i+1]+=a[i][j];
+
+            if(i+j<=n+1)
+                u[i+j-1]+=a[i][j];
+            else
+                v[i+j-n]+=a[i][j];
+
+        }
+    for(i=1;i<=n;i++)
+        for(j=1;j<=n;j++)
+        {
+
+            s[i][j]=b[i]+c[j]-a[i][j];
+
+            if(i>=j)
+                s[i][j]+=x[i-j+1];
+            else
+                s[i][j]+=y[j-i+1];
+
+            s[i][j]-=a[i][j];
+
+            if(i+j<=n+1)
+                s[i][j]+=u[i+j-1];
+            else
+                s[i][j]+=v[i+j-n];
+
+            s[i][j]-=a[i][j];
+        }
+    sm=s[1][1];im=jm=1;
+    for(i=1;i<=n;i++)
+        for(j=1;j<=n;j++)
+            if(s[i][j]>sm)
+            {
+                sm=s[i][j];im=i;jm=j;
+            }
+    fout<<sm<<endl;
+    fout<<im<<' '<<jm<<endl;
+    return 0;
+}

@@ -1,0 +1,37 @@
+#include <fstream>
+#include <cstring>
+#define InFile "stiva2.in"
+#define OutFile "stiva2.out"
+
+#define NMax 1001
+
+using namespace std;
+
+int n;
+char s[NMax+1];
+int NrMin[NMax][NMax];
+
+int main()
+{ofstream fout(OutFile);
+ ifstream fin(InFile);
+ int i, d, t, j;
+ fin>>s;
+ n=strlen(s);
+ fin.close();
+
+ for (i=0; i<n; i++) NrMin[i][i]=1;
+ for (d=2; d<=n; d++)
+     for (i=0; i+d-1<n; i++)
+         {j=i+d-1;
+          NrMin[i][j]=1+NrMin[i][j-1];
+          for (t=i; t<j; t++)
+              if (s[t]==s[j])
+                  if (NrMin[i][t]+NrMin[t+1][j-1]<NrMin[i][j])
+                     NrMin[i][j]=NrMin[i][t]+NrMin[t+1][j-1];
+
+
+         }
+ fout<<2*NrMin[0][n-1]+n<<'\n';
+ fout.close();
+ return 0;
+}

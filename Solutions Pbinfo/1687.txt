@@ -1,0 +1,74 @@
+#include<fstream>
+#include<algorithm>
+using namespace std;
+ifstream f("omogene.in");
+ofstream g("omogene.out");
+struct nod
+    {
+        int d01,d12,d20;
+    };
+inline bool test(const nod &t1,const nod &t2){
+
+return t1.d01<t2.d01 || (t1.d01==t2.d01 &&
+                         t1.d12<t2.d12) ||
+                         (t1.d01==t2.d01 &&
+                         t1.d12==t2.d12  && t1.d20<t2.d20);
+}
+
+nod v[10001];
+int a[318][10001];
+int z[318][10001],u[318][10001];
+int t0,t1,t2,st0,st1,st2;
+long long sol;
+int n,m;
+void citire()
+{
+    f>>n>>m;
+    for(int i=1;i<=n;++i)
+        for(int j=1;j<=m;++j)
+            f>>a[i][j];
+    f.close();
+}
+void prelucrare()
+{
+    for(int i=1;i<=n;++i)
+       for(int j=1;j<=m;++j)
+        {
+            z[i][j]=z[i-1][j]+(a[i][j]==0);
+            u[i][j]=u[i-1][j]+(a[i][j]==1);
+        }
+    for(int k=1;k<=n;++k)
+       for(int p=k;p<=n;++p)
+       {
+           int d=p-k+1;
+           st0=st1=st2=0;
+           v[0].d01=v[0].d12=v[0].d20=0;
+           for(int j=1;j<=m;++j)
+           {
+               t0=z[p][j]-z[k-1][j];st0+=t0;
+               t1=u[p][j]-u[k-1][j];st1+=t1;
+               t2=d-t0-t1;st2+=t2;
+               v[j].d01=st0-st1;
+               v[j].d12=st1-st2;
+               v[j].d20=st2-st0;
+           }
+           sort(v,v+m+1,test);
+           int x=1;
+           for(int i=1;i<=m;++i)
+            if(v[i-1].d01==v[i].d01 && v[i-1].d12==v[i].d12 &&
+               v[i-1].d20==v[i].d20) x++;
+            else
+            {
+                sol=sol+1ll*x*(x-1)/2;
+                x=1;
+            }
+            sol=sol+1ll*x*(x-1)/2;
+       }
+}
+int main()
+{
+    citire();
+    prelucrare();
+    g<<sol<<'\n';
+    return 0;
+}

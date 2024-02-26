@@ -1,0 +1,38 @@
+program sortari;
+const nr=19573;
+var n:longint;
+a:array[0..200] of longint;
+i,j,k:longint;f:text;
+l,s:longint;
+procedure initializari;
+begin
+a[0]:=1;
+a[1]:=1;
+a[2]:=2;
+a[3]:=6;
+end;
+begin
+     initializari;
+     assign(f, 'sortari.in');
+     reset(f);
+     read(f,n);
+     for i:=4 to n do
+         begin
+              s:=0;
+              l:=1;
+              for j:=1 to i-1 do
+                  for k:=j+1 to i do
+                      begin
+                           l:=(a[j-1]*a[k-1-j]) mod nr*a[i-k];
+                           l:=l mod nr;
+                           s:=s+l;
+                           s:=s mod nr;
+                      end;
+              a[i]:=(2*s) mod nr;
+        end;
+     close(f);
+     assign(f, 'sortari.out');
+     rewrite(f);
+     writeln(f,a[n]);
+     close(f);
+end.

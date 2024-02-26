@@ -1,0 +1,86 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+ifstream f("palindrom3.in");
+ofstream g("palindrom3.out");
+
+int Cifre[10], n;
+
+void Citire()
+{
+  f >> n;
+  f.close();
+}
+
+void Descompune()
+{         ///contorizez numarul de aparitii a cifrelor in vectorul Cifre[]
+    do                          ///fac cu REPEAT
+    {
+        Cifre[n % 10]++;         ///ca sa prind si cazul n=0
+        n /= 10;
+    }
+    while(n);
+}
+
+int Se_Poate()
+{
+    int Cate_Impare, i, x;
+                ///verific numarul de aparitii a cifrelor
+    x = 1;        ///maxim una poate sa apara de un numar impar de ori
+    Cate_Impare = 0;
+    for (i = 0; i < 10; i++)
+        if (Cifre[i] % 2) Cate_Impare++;
+    if (Cate_Impare > 1) x = 0;
+    return x;
+}
+
+int Exista_Alte_Pare()
+{
+    int i, x;
+    x =0;
+    for (i = 1; i < 10; i++)
+        if (Cifre[i] && (Cifre[i] % 2 == 0))
+            x = 1;
+    return x;
+}
+
+void Afiseaza()
+{
+    int i, j, Care_Este_Impar;
+
+    Care_Este_Impar = -1;          ///nu are impare
+    for (i = 0; i<10; i++)
+        if (Cifre[i] % 2)
+            Care_Este_Impar = i;        ///acesta este in numar impar
+    if ((Care_Este_Impar >= 0) &&   ///daca am impar si
+     (Cifre[0] % 2 == 0) &&     ///acesta nu este 0 si
+     (Cifre[Care_Este_Impar] == 1) &&  ///apare o data si
+     (Exista_Alte_Pare() == 0))           ///nu exista alte cifre decat cifra 0
+        g << "-1\n";              ///nu se poate - este de tipul ... 400
+    else
+    {
+        for (i = 9; i >= 0; i--)     ///afisez descrescator jumatate din ele
+            for (j = 1; j <= Cifre[i] / 2; j++)
+                g<<i;
+        if (Care_Este_Impar >= 0)  ///afisez cel care apare de impar ori
+            g << Care_Este_Impar;
+        for (i = 0; i < 10; i++)       ///afisez crescator cealalta jumatate
+            for (j = 1; j <= Cifre[i] / 2; j++)
+                g << i;
+        g << "\n";
+    }
+}
+
+int main()
+{
+    Citire();
+    if (n < 10) g<<n<<endl;   ///caz particular, orice numar dintr-o cifra este palindrom
+    else
+    {
+        Descompune();
+        if (Se_Poate()) Afiseaza();
+        else g << "-1\n";
+    }
+    g.close();
+    return 0;
+}

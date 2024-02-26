@@ -1,0 +1,20 @@
+int kpn(int a , int b , int k)
+{
+    int cnt = 0;
+    for(int i = a ; i <= b ; i ++)
+    {
+        int s = 0;
+        for(int d = 1 ; d * d <= i ; d ++ )
+            if(i % d == 0)
+            {
+                s += d;
+                if(d * d < i)
+                    s += i / d;
+            }
+        if(i % 2 == s % 2)
+            cnt ++;
+        if(cnt == k)
+            return i;
+    }
+    return -1;
+}

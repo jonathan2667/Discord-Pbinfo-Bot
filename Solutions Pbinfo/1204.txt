@@ -1,0 +1,135 @@
+#include<stdio.h>
+#include<set>
+#include<algorithm>
+using namespace std;
+
+#define pi pair<int,int>
+#define pii pair< pi, pi >
+#define x first
+#define y second
+#define dist x.x
+#define extra x.y
+#define type y.x
+#define index y.y
+#define mp make_pair
+#define NMAX 100005
+
+pi v[NMAX];
+pii event[3 * NMAX];
+int n,m,capacitate,mysize,nr;
+int sol, tren[NMAX];
+
+class cmpset
+{
+public:
+    bool operator()(const int& a,const int& b)
+    {
+        if(v[a].x == v[b].x)
+            return a < b;
+        return v[a].x < v[b].x;
+    }
+};
+
+set<int,cmpset> myset;
+multiset<int> trainset;
+
+inline int cmp(const pii& a, const pii& b)
+{
+    if(a.dist == b.dist)
+    {
+        if(a.type == b.type)
+            return a.extra > b.extra;
+        return a.type < b.type;
+    }
+    return a.dist > b.dist;
+}
+
+int main ()
+{
+    int i,a,b,aux,val;
+
+    freopen("trenuri.in","r",stdin);
+    freopen("trenuri.out","w",stdout);
+
+    scanf("%d%d",&n,&m);
+    for(i = 1; i <= n; i++)
+    {
+        scanf("%d%d",&a,&b);
+        event[++nr] = mp(mp(a,b),mp(0,i));
+    }
+    for(i = 1; i <= m; i++)
+    {
+        scanf("%d%d",&a,&b);
+        event[++nr] = mp(mp(b,0),mp(1,i));
+        event[++nr] = mp(mp(a,1),mp(1,i));
+        v[i] = mp(a,b);
+    }
+
+    sort(event + 1, event + nr + 1, cmp);
+
+    mysize = 0;
+
+    for(i = 1; i <= nr; i++)
+    {
+        if(event[i].type == 0)
+        {
+            if(capacitate + event[i].extra < m)
+            {
+                capacitate += event[i].extra;
+                aux = event[i].extra;
+            }
+            else
+            {
+                aux = m - capacitate;
+                capacitate = m;
+            }
+            while(aux)
+            {
+                trainset.insert(event[i].index);
+                aux--;
+            }
+            continue;
+        }
+        if(event[i].extra == 0)
+        {
+            if(mysize < capacitate)
+            {
+                mysize++;
+                tren[event[i].index] = *trainset.begin();
+                trainset.erase(trainset.begin());
+                myset.insert(event[i].index);
+            }
+            else
+            {
+                val = *myset.begin();
+                if(v[event[i].index].x > v[val].x)
+                {
+                    tren[event[i].index] = tren[val];
+                    tren[val] = 0;
+                    myset.erase(val);
+                    myset.insert(event[i].index);
+                }
+            }
+        }
+        else
+        {
+              if(!tren[event[i].index])
+                continue;
+            sol++;
+            mysize--;
+            myset.erase(event[i].index);
+            trainset.insert(tren[event[i].index]);
+        }
+    }
+
+    printf("%d\n",sol);
+    for(i = 1; i <= m; i++)
+        printf("%d\n", tren[i]);
+    printf("\n");
+
+    return 0;
+}
+
+
+
+

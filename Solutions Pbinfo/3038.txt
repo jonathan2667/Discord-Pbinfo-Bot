@@ -1,0 +1,68 @@
+//sursa C Dana Lica 100
+#include <stdio.h>
+#include <stdlib.h>
+#include <assert.h>
+#define MOD 1000000000000000031LL
+
+int Test;
+long long  N, S1,a,b,c,d,ans, S, y, X;
+int ok, i;
+
+long long Q (long long X) {
+    long long s = 0LL;
+    while (X > 0LL){
+        s += X;
+        X /= 10LL;
+    }
+
+    return s;
+}
+
+int main()
+{
+    freopen ("tombola.in","r",stdin);
+    freopen ("tombola.out","w",stdout);
+    scanf ("%d %lld %lld %lld %lld %lld %lld", &Test, &N, &S, &a, &b, &c, &d);
+    for (i = 1; i <= N; ++i) {
+        if (i > 1) S = (S % a * b + c) % d;
+        y = (Test==1? S - 1LL: S);
+        assert (S>1);
+        long long X, cS, nr;
+        while (-1<0)
+        {
+            cS = y;
+            nr = 0LL;
+            int ok, cifra;
+            while (cS > 0LL){
+                    nr = nr * 10LL + 1LL;
+                    cS /= 10LL;
+            }
+
+            cS = y;
+            X = 0;  ok = 1;
+            while (nr >= 1LL) {
+                cifra = cS / nr;
+                if (cifra >= 10) {
+                    ok = 0;
+                    cifra = 9;
+                }
+                cS = cS - cifra * nr;
+                X = X * 10 + cifra;
+                nr/=10;
+            }
+            if (!ok) X=-X;
+            if (X >= 0) break;
+
+            y--;
+        }
+
+        if(Test ==1) ans += y;
+        else ans += S - X;
+
+        ans %= MOD;
+    }
+    printf ("%lld\n", ans);
+
+
+    return 0;
+}

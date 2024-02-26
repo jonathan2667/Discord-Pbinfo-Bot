@@ -1,0 +1,73 @@
+const fi='text.in';fo='text.out';
+var cuv:array[0..20000]of string[20];
+    l,p:array[0..20000]of integer;
+    lmax,pmax:array['a'..'z']of integer;
+    ncuv,lsol,psol:integer;
+    lit:char;
+procedure citire;
+var f:text;
+    s:string;
+    i:byte;
+begin
+    assign(f,fi);reset(f);
+    ncuv:=0;
+    while not seekeof(f) do begin
+        readln(f,s);
+        if s='' then continue;
+        while s[1]=' ' do delete(s,1,1);
+        while s[length(s)]=' ' do delete(s,length(s),1);
+        i:=pos(' ',s);
+        while i<>0 do begin
+              inc(ncuv);
+              cuv[ncuv]:=copy(s,1,i-1);
+              delete(s,1,i);
+              i:=pos(' ',s)
+        end;
+        inc(ncuv);cuv[ncuv]:=s
+    end;
+    close(f)
+end;
+procedure dinamica;
+var i:integer;
+begin
+  for i:=1 to ncuv do begin
+      lit:=cuv[i][1];
+      l[i]:=lmax[lit]+1;
+      p[i]:=pmax[lit];
+      lit:=cuv[i][length(cuv[i])];
+      if l[i]>lmax[lit] then begin
+        lmax[lit]:=l[i];
+        pmax[lit]:=i
+      end
+  end;
+  lsol:=0;
+  for lit:='a' to 'z' do
+      if lmax[lit]>lsol then begin
+        lsol:=lmax[lit];
+        psol:=pmax[lit]
+      end
+end;
+procedure scriere;
+var f:text;
+    i:integer;
+begin
+   assign(f,fo);rewrite(f);
+   writeln(f,ncuv,' ',ncuv-lsol);
+   i:=psol;
+   while p[i]<> 0 do begin
+     l[p[i]]:=i;
+     i:=p[i];
+   end;
+   while i<>psol do begin
+        write(f,cuv[i],' ');
+        i:=l[i]
+   end;
+   writeln(f,cuv[psol]);
+   close(f)
+end;
+begin
+  citire;
+  dinamica;
+  scriere
+end.
+

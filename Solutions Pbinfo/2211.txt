@@ -1,0 +1,72 @@
+#include <bits/stdc++.h>
+#define MAX 101
+using namespace std;
+
+int n;
+int A[MAX][MAX];
+int sl[MAX], sc[MAX];
+
+int main()
+{
+  int i, j, r, c, r1, c1, r2, c2;
+  int tmp, rez, max1, max2;
+  freopen("ture.in", "r", stdin);
+  freopen("ture.out", "w", stdout);
+
+  scanf("%d", &n);
+  for (i=1; i<=n; i++)
+    for (j=1; j<=n; j++)
+      {
+        scanf("%d", &A[i][j]);
+        sl[i]+=A[i][j];
+        sc[j]+=A[i][j];
+      }
+  rez=0;
+  //cazul 1
+  for (r=1; r<=n; r++)
+    for (c1=1; c1<=n; c1++)
+      for (c2=1; c2<=n; c2++)
+        {
+          if (c1==c2) continue;
+          tmp = sl[r] + sc[c1] + sc[c2] - 2*A[r][c1] - 2*A[r][c2];
+          if (tmp > rez) rez = tmp;
+        }
+   //cazul 2
+   for (c=1; c<=n; c++)
+     for (r1=1; r1<=n; r1++)
+       for (r2=1; r2<=n; r2++)
+         {
+           if (r1==r2) continue;
+           tmp = sc[c] + sl[r1] + sl[r2] - 2*A[r1][c] - 2*A[r2][c];
+           if (tmp > rez) rez = tmp;
+         }
+   //cazul 3
+   for (r1=1; r1<=n; r1++)
+     for (r2=1; r2<=n; r2++)
+       {
+         if (r1==r2) continue;
+         max1 = -1000;
+         for (c=1; c<=n; c++)
+           {
+             tmp = sc[c] - A[r2][c] - 2*A[r1][c];
+             if (tmp > max1)
+               {c1 = c; max1 = tmp; }
+           }
+         max2 = -1000;
+         for (c=1; c<=n; c++)
+           {
+             tmp = sc[c] - A[r1][c] - 2*A[r2][c];
+             if ((c!=c1) && (tmp > max2))
+               {c2 = c; max2 = tmp; }
+           }
+         tmp = sl[r1] + sl[r2]
+               + sc[c1] - A[r2][c1] - 2*A[r1][c1]
+               + sc[c2] - A[r1][c2] - 2*A[r2][c2];
+         if (tmp > rez) rez = tmp;
+       }
+  printf("%d", rez);
+
+  fclose(stdout);
+  return 0;
+}
+

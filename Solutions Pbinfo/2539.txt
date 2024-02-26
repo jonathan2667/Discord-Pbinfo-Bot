@@ -1,0 +1,104 @@
+#include <bits/stdc++.h>
+#define DIM 200010
+
+using namespace std;
+
+vector < pair<long long, long long> > L[DIM];
+char t[DIM], C;
+long long v[DIM], D[DIM][2], Sol[DIM], S[DIM], J[DIM];
+bitset <DIM> f;
+long long n, i, x, y, c, sol;
+long long Total[130];
+
+void dfs(long long nod) {
+    f[nod] = 1;
+
+    D[nod][1] = 0;  /// numarul minim de noduri eliminate sa rezolv subarborele lui nod
+                    /// si nod sa ramana
+    D[nod][0] = 1;
+    for (long long i=0;i<L[nod].size(); i++) {
+        long long vecin = L[nod][i].first;
+        long long cost = L[nod][i].second;
+        if (f[vecin] == 0) {
+            dfs(vecin);
+            D[nod][1] += D[vecin][0];
+            D[nod][0] += min(D[vecin][0], D[vecin][1]);
+        }
+    }
+}
+
+void dfs1(long long nod) {
+    f[nod] = 1;
+
+    if (t[nod] == C)
+        S[nod] = v[nod];
+    else
+        S[nod] = 0;
+    J[nod] = 0;
+    for (long long i=0;i<L[nod].size(); i++) {
+        long long vecin = L[nod][i].first;
+        long long cost = L[nod][i].second;
+        if (f[vecin] == 0) {
+            dfs1(vecin);
+            S[nod] += S[vecin];
+            J[nod] += J[vecin] + S[vecin] * cost;
+        }
+    }
+}
+
+void dfs2(long long nod, long long tata, long long cst) {
+    f[nod] = 1;
+    if (nod != 1)
+        J[nod] = J[tata] - S[nod] * cst + (Total[C] - S[nod]) * cst;
+
+    sol = min(sol, J[nod]);
+
+    for (long long i=0;i<L[nod].size(); i++) {
+        long long vecin = L[nod][i].first;
+        long long cost = L[nod][i].second;
+        if (f[vecin] == 0) {
+            dfs2(vecin, nod, cost);
+
+        }
+    }
+}
+
+int main () {
+
+    cin>>n;
+    for (i=1;i<=n;i++) {
+        cin>>t[i];
+
+    }
+
+    for (i=1;i<=n;i++) {
+        cin>>v[i];
+        Total[t[i]] += v[i];
+    }
+
+    for (i=1;i<n;i++) {
+        cin>>x>>y>>c;
+        L[x].push_back(make_pair(y, c));
+        L[y].push_back(make_pair(x, c));
+    }
+    f.reset();
+
+    for (C='a'; C <= 'z'; C++) {
+        if (Total[C] == 0) {
+            Sol[C] = 0;
+            continue;
+        }
+        f.reset();
+        dfs1(1);
+        f.reset();
+        sol = 10000000000000000LL;
+        dfs2(1, 0, 0);
+        Sol[C] = sol;
+
+    }
+
+    for (i='a'; i<='z'; i++)
+        cout<<Sol[i]<<" ";
+    cout<<"\n";
+    return 0;
+}

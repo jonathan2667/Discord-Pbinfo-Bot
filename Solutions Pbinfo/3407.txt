@@ -1,0 +1,26 @@
+#include <fstream>
+using namespace std;
+ifstream fin("aoc2020.in");
+ofstream fout("aoc2020.out");
+
+int main()
+{
+    int n;
+    long long x,y,a,b,r;
+    fin>>n>>x;
+    for(int i=2;i<=n;i++)
+    {
+        fin>>y;
+        a=x;
+        b=y;
+        while(b!=0)
+        {
+            r=a%b;
+            a=b;
+            b=r;
+        }
+        x=x/a*y;
+    }
+    fout<<x;
+    return 0;
+}

@@ -1,0 +1,56 @@
+#include <bits/stdc++.h>
+
+using namespace std;
+const int64_t MOD = 1000000007LL;
+inline int64_t prod(int64_t u,int64_t v){return u*v%MOD;}
+inline int64_t suma(int64_t u,int64_t v){return (u+v)%MOD;}
+struct matr
+{
+    int dim;
+    vector<vector<int64_t>> a;
+    matr(){dim=1;a=vector<vector<int64_t>>(1,vector<int64_t>(1,0));}
+    matr(int dim_){dim=dim_;a=vector<vector<int64_t>>(dim,vector<int64_t>(dim,0));}
+};
+matr operator*(matr A,matr B)
+{
+    int nr=A.dim;
+    matr C(nr);
+
+    for(int i=0;i<nr;i++)
+        for(int j=0;j<nr;j++)
+            for(int k=0;k<nr;k++)
+                C.a[i][j]=suma(C.a[i][j],prod(A.a[i][k],B.a[k][j]));
+    return C;
+
+}
+matr operator<<(matr A,int e)
+{
+    matr R;
+    if(e==0)
+    {
+        R=matr(A.dim);
+        for(int i=0;i<A.dim;i++)
+            R.a[i][i]=1;
+        return R;
+    }
+    R=A<<(e/2);
+    R=R*R;
+    if(e%2)R=A*R;
+    return R;
+}
+int64_t n,k,x[30];
+int main()
+{
+    cin>>k>>n;
+    x[0]=x[1]=1;x[2]=2;
+    for(int i=3;i<=k;i++)x[i]=suma(x[i-1],suma(x[i-2],x[i-3]));
+
+    int64_t sz=max(3,(int)k);
+    matr P=matr(sz);
+    P.a[0][0]=1;P.a[0][1]=1;P.a[0][2]=1;P.a[0][k-1]=x[k];
+    for(int i=1;i<sz;i++)
+        P.a[i][i-1]=1;
+    matr Q=P<<n;
+    cout<<Q.a[0][0];
+    return 0;
+}

@@ -1,0 +1,32 @@
+#include <fstream>
+#include <iostream>
+using namespace std;
+ifstream f("saci.in");
+ofstream g("saci.out");
+
+int main()
+{
+    int N,nr,ok,c1,nr_saci = 0,i;
+    f>>N;
+    for(i = 1; i <= N; i++)
+    {
+        f>>nr;
+        ok = 1;
+        c1 = nr % 10;
+        while(nr)
+        {
+            nr = nr / 10;
+            if(nr % 10 >= c1)
+            {
+                ok = 0;
+                nr = 0;
+            }
+            else
+                c1 = nr % 10;
+        }
+        if (ok == 1)
+            nr_saci++;
+    }
+    g<<nr_saci<<'\n';
+    return 0;
+}

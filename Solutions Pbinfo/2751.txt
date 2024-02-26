@@ -1,0 +1,23 @@
+/// 100 P
+#include "iostream"
+#include "cmath"
+#include "iomanip"
+
+using namespace std;
+
+int main(){
+    double l, c, h, n;
+    cin >> n;
+    for(; n-- ;){
+        cin >> l >> c >> h;
+        if(h == l) /// caz in care cablul este intins la maximum.
+            cout << (int)c << ".00\n";
+        else if(c / 2 + h == l) /// caz in care cablul atinge pamantul intr-un singur punct.
+            cout << "0.00\n";
+        else{ /// restul cazurilor, cu ecuatia catenarei intr-un sistem de coordonate
+            double a = ((c*c/4)-(l-h)*(l-h)) /(2*(l-h));
+            double t1 = 2 * a * log(sqrt(((c*c/4))/(a*a)+1) + ((c/2)/a));
+            cout << fixed << setprecision(2) << t1 << '\n';
+        }
+    }
+}

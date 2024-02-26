@@ -1,0 +1,80 @@
+#include "iostream"
+
+using namespace std;
+
+typedef unsigned long long NRM;
+
+int Termen (NRM N)
+{
+    if(N == 1 || N == 4)
+        return 1;
+
+    if(N == 2 || N == 3)
+        return 0;
+
+    NRM P = 4;
+    while (P <= N)
+        P = P * 4;
+
+    NRM stanga = P / 4;
+    NRM dreapta = P;
+
+    if (stanga == N || dreapta == N)
+        return 1;
+    else
+    {
+        NRM interm1 = stanga * 2;
+        NRM interm2 = stanga * 3;
+        if(N == interm1 || N == interm2)
+            return 0;
+
+        if(N < interm1)
+        {
+            NRM distanta1 = N - stanga;
+            return !Termen(stanga - distanta1 + 1);
+        }
+
+        if(N<interm2)
+        {
+            NRM distanta2 = N-interm1;
+            return Termen(interm1-distanta2+1);
+        }
+
+        if(N > interm2)
+            return Termen(N - interm2);
+    }
+    return 0;
+}
+
+int Doar1(NRM N)
+{
+    NRM y = N+1;
+    return ((y&N) == 0);
+}
+
+int main()
+{
+    NRM NR_TERM_CITITI, x ,lungime = 0, maxlng = 0;
+    cin>> NR_TERM_CITITI;
+
+    for (NRM i = 1; i<= NR_TERM_CITITI; i++)
+    {
+        cin >> x;
+        if(!Termen(x))
+            lungime++;
+        else
+        {
+            if(Doar1(lungime) and lungime > maxlng)
+                maxlng = lungime;
+            lungime = 0;
+        }
+        if(i == NR_TERM_CITITI)
+         if(Doar1(lungime) and lungime > maxlng)
+                maxlng = lungime;
+    }
+    if(!maxlng)
+        cout<<"NU EXISTA";
+    else
+        cout<<maxlng;
+    return 0;
+}

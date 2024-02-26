@@ -1,0 +1,28 @@
+#include <iostream>
+
+using namespace std;
+
+int mat[100][100],n,nr;
+
+int main()
+{
+    cin>>n;
+    n*=3;
+    for(int i=1;i<=n;i+=3){
+        for(int j=1;j<=n;j+=3){
+            nr++;
+            mat[i][j]=nr;
+            mat[i][j+2]=nr;
+            mat[i+1][j+1]=nr;
+            mat[i+2][j]=nr;
+            mat[i+2][j+2]=nr;
+        }
+    }
+    for(int i=1;i<=n;i++){
+        for(int j=1;j<=n;j++){
+            cout<<mat[i][j]<<" ";
+        }
+        cout<<'\n';
+    }
+    return 0;
+}

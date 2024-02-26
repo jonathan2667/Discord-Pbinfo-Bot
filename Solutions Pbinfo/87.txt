@@ -1,0 +1,21 @@
+#include <fstream>
+#include <cstring>
+using namespace std;
+
+ifstream fin("lgmax.in");
+ofstream fout("lgmax.out");
+
+int main(){
+    int n;
+    char s[251], m[251];
+    fin >> n;
+    fin.get();
+    fin.getline(m,251);
+    for( ; n ; --n){
+        fin.getline(s,251);
+        if(strlen(s)>strlen(m))
+            strcpy(m,s);
+    }
+    fout << m << endl;
+    return 0;
+}

@@ -1,0 +1,91 @@
+# include <fstream>
+# include <cstring>
+# include <algorithm>
+using namespace std;
+
+ifstream f("fibosir.in");
+ofstream g("fibosir.out");
+
+int N, M, K, la, lb, lc;
+char s[420001], a[500], b[500], c[500];
+
+void add(char *a, char *b, char *c)
+{
+    int i = 0 , j = 0;
+    int x, k, t;
+
+    x = k = t = 0;
+    while (i < la && j < lb)
+    {
+        x = (a[i] - 48) + (b[j] - 48) + t;
+        c[k] = (x % 10) + 48;
+        t = x/10;
+        ++i; ++j; ++k;
+    }
+    while (i < la)
+    {
+        x = (a[i] - 48) + t;
+        c[k] = (x % 10) + 48;
+        t = x/10;
+        ++i; ++k;
+    }
+    while (j < lb)
+    {
+        x = (b[j] - 48) + t;
+        c[k] = (x % 10) + 48;
+        t = x/10;
+        ++j; ++k;
+    }
+    if (t)
+    {
+        c[k] = t + 48;
+        ++k;
+    }
+    c[k] = '\0';
+    lc = k;
+}
+int main()
+{
+    char max;
+    int i, j, poz, nr;
+
+    f >> N >> M >> K;
+
+    //construim fibosir(n)
+    a[0] = b[0] = s[0] = s[1] = '1';
+    a[1] = b[1] = s[2] = '\0';
+    la = lb = lc = 1;
+    for (i=2; i<N; ++i)
+    {
+        add(a, b, c);
+        memcpy(a, b, lb);
+        memcpy(b, c, lc);
+        reverse(c, c + lc);
+        la = lb; lb = lc;
+        strcat(s, c);
+    }
+    N = strlen(s);
+    i = 0;
+    while (i < N)
+    {
+        for (j=1, max = '0';  j<=M; ++j)
+        {
+            if (s[i + j*K] > max)
+            {
+                max = s[i + j*K];
+                poz = j;
+                if (max == '9') break;
+            }
+        }
+        if (s[i] < max) // jump
+        {
+            i += (poz * K);
+            M -= poz;
+        }
+        else
+        {
+            g << s[i++];
+        }
+    }
+    return 0;
+}

@@ -1,0 +1,57 @@
+# include <bits/stdc++.h>
+using namespace std;
+
+struct locatie
+{
+    short l, c, lf, cf;
+}juc[10001];
+
+bool ap[10001];
+int n, m;
+
+int next(short j)
+{
+    short i;
+    for (i=1;i<=m;++i)
+        if (!ap[i])
+            if (juc[j].lf==juc[i].l && juc[j].cf==juc[i].c) return i;
+    return -1;
+}
+
+int main()
+{
+    int i, j, k, l, c, lf, cf, n1;
+    freopen("bona.in",  "r", stdin);
+    freopen("bona.out", "w", stdout);
+
+    scanf("%d %d", &n,&m);
+    k = m;
+    for (i=1; i<=m; ++i){
+
+        scanf("%d %d %d %d", &l, &c, &lf, &cf);
+        if (l == lf && c == cf) {
+            --k;
+            ap[i] = 1;
+        }
+        else {
+            juc[i].l  = l; juc[i].c  = c;
+            juc[i].lf = lf;juc[i].cf = cf;
+        }
+    }
+    n1 = 0;
+    for (i=1; i<=m; ++i)
+        if (!ap[i]) {
+                j = next(i);
+                while (j != -1 && j != i) {
+                    ap[j] = 1;
+                    j = next(j);
+                }
+                if (i == j) ++n1;
+            }
+
+    printf("%d\n", k - n1);
+    printf("%d\n", k + n1);
+
+    return 0;
+}
+

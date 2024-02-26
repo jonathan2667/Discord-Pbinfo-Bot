@@ -1,0 +1,23 @@
+#include <iostream>
+using namespace std;
+
+int main()
+{
+    int a,b,n;
+    long long s=0;
+    cin>>a>>b;
+    for(int i=a;i<=b;i++)
+    {
+        n=i;
+        int ci=0,cp=0;
+        while(n>0)
+        {
+            if(n%2==0) cp++;
+            else ci++;
+            n=n/10;
+        }
+        if(ci==cp) s=s+i;
+    }
+    cout<<s;
+    return 0;
+}

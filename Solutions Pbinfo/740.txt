@@ -1,0 +1,131 @@
+program horses;
+const fin='horse.in';
+      fout='horse.out';
+var l,c,rest,n,p,i,j:longint;
+    f,g:text;
+procedure horse(n,p:longint;var l,c:longint);
+var q:longint;
+begin
+  if p=sqr(n) then
+    begin
+      l:=(n+1) div 2;
+      c:=l;
+      exit;
+    end;
+  rest:=0;
+  while (p>8*n-16) do
+    begin
+      rest:=rest+2;
+      p:=p-8*n+16;
+      n:=n-4;
+    end;
+  if (p<=n div 2) then
+    begin
+      q:=p;
+      c:=2*q-1+rest;
+      l:=2-q mod 2+rest;
+    end;
+  if (p>n div 2) and (p<n) then
+    begin
+      q:=p-n div 2;
+      c:=n-1+q mod 2 + rest;
+      l:=2*q-1+rest;
+    end;
+  if (p>=n) and (p<n + n div 2) then
+    begin
+      q:=p-n;
+      c:=n-2*q+rest;
+      l:=n-q mod 2+rest;
+    end;
+  if (p>=n+n div 2) and (p<2*n-1) then
+    begin
+      q:=p-n-n div 2;
+      l:=n-2*q+rest;
+      c:=1+q mod 2+rest;
+    end;
+  if (p>=2*n-1) and (p<2*n-2+ n div 2) then
+    begin
+      q:=p-2*n+1;
+      c:=2*q+3+rest;
+      l:=1+q mod 2+rest;
+    end;
+  if (p>=2*n-2+ n div 2) and (p<3*n-3) then
+    begin
+      q:=p-2*n+2-n div 2;
+      c:=n-q mod 2 + rest;
+      l:=2*q+2+rest;
+    end;
+  if (p>=3*n-3) and (p<3*n-4+n div 2) then
+    begin
+      q:=p-3*n+3;
+      c:=n-2*q-3+rest;
+      l:=n-q mod 2+rest;
+    end;
+  if (p>=3*n-4+n div 2) and (p<4*n-6) then
+    begin
+      q:=p-3*n+4-n div 2;
+      l:=n-2*q-2+rest;
+      c:=1+q mod 2+rest;
+    end;
+  if (p>=4*n-6) and (p<4*n-6+ n div 2) then
+    begin
+      q:=p-4*n+6;
+      c:=2*q+2+rest;
+      l:=1+q mod 2+rest;
+    end;
+  if (p>=4*n-6+ n div 2) and (p<5*n-8) then
+    begin
+      q:=p-4*n+6-n div 2;
+      c:=n-q mod 2 + rest;
+      l:=2*q+4+rest;
+    end;
+  if (p>=5*n-8) and (p<5*n-9+n div 2) then
+    begin
+      q:=p-5*n+8;
+      c:=n-2*q-2+rest;
+      l:=n-q mod 2+rest;
+    end;
+  if (p>=5*n-9+n div 2) and (p<6*n-11) then
+    begin
+      q:=p-5*n+9-n div 2;
+      l:=n-2*q-1+rest;
+      c:=1+q mod 2+rest;
+    end;
+  if (p>=6*n-11) and (p<6*n-11+ n div 2) then
+    begin
+      q:=p-6*n+11;
+      c:=2*q+2+rest;
+      l:=2-q mod 2+rest;
+    end;
+  if (p>=6*n-11+ n div 2) and (p<7*n-13) then
+    begin
+      q:=p-6*n+11-n div 2;
+      c:=n-q mod 2 + rest;
+      l:=2*q+3+rest;
+    end;
+  if (p>=7*n-13) and (p<7*n-13+n div 2) then
+    begin
+      q:=p-7*n+13;
+      c:=n-2*q-1+rest;
+      l:=n-q mod 2+rest;
+    end;
+  if (p>=7*n-13+n div 2) and (p<8*n-15) then
+    begin
+      q:=p-7*n+13-n div 2;
+      l:=n-2*q-3+rest;
+      c:=1+q mod 2+rest;
+    end;
+end;
+begin
+  assign(f,fin);
+  reset(f);
+  readln(f,n);
+  readln(f,p);
+  close(f);
+  assign(g,fout);
+  rewrite(g);
+  l:=0;c:=0;
+  horse(n,p,l,c);
+  writeln(g,l,' ',c);
+  close(g);
+end.

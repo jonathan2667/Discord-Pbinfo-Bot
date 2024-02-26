@@ -1,0 +1,24 @@
+//autor prof.Carmen Minca, Bucuresti
+#include <iostream>
+using namespace std;
+
+int main()
+{
+    char cif;
+    int r , s = 0 , k , c;
+    cin >> k;
+    for(int i = 1 ; i <= k ; i++)
+    {
+        cin >> cif; 
+        s = s + cif - '0';
+    }
+    r = s % k; c = s / k;
+    for(int i = 1 ; i <= k - r ; i++)
+        cout << c;
+    c ++;
+    for(int i = 1 ; i <= r ; i ++)
+        cout << c;
+    
+    return 0;
+}
+

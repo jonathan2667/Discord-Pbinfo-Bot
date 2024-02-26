@@ -1,0 +1,14 @@
+#include <iostream>
+
+using namespace std;
+long long l, r, k;
+
+int main()
+{
+    cin >> l >> r;
+    if(l % 2 == 1) l++;
+    if(r % 2 == 1) r--;
+    k = (r - l) / 2 + 1;
+    cout << k * k;
+    return 0;
+}

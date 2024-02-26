@@ -1,0 +1,75 @@
+// profesor Szabo Zoltan - Liceul Tehnologic "Petru Maior" Reghin
+#include <iostream>
+#include <fstream>
+
+using namespace std;
+
+int main()
+{
+    int n,a[50003],i,j,st[50003],k,max,min,p,b[50003],maxst,maxdr,start;
+    bool ok1;
+    ifstream fin("stiva1.in");
+    ofstream fout("stiva1.out");
+    fin>>n;
+    for (i=1;i<=5;++i)
+    {
+        for (j=1;j<=50000;++j)
+            b[j]=0;                 // b va fi vectorul de frecventa pentru elemente
+        max=0;min=2000000000;
+        for(j=1;j<=n;++j)
+        {
+            fin>>a[j];             // citesc elementele din fisier
+            if (a[j]>max)
+                max=a[j];          // calculez maximul elementelor
+            if (a[j]<min)
+                min=a[j];          // calculez minimul elementelor
+        }
+        maxst=0;
+        maxdr=0;
+        ok1=false;
+        for (j=1;j<=n;++j)
+        {
+            a[j]=a[j]-min+1;       // micsorez elementele sa le transform in 1, 2, 3, ...
+            b[a[j]]=1;
+            if (a[j]==1)
+                ok1=true;
+            if (not ok1)
+                if (a[j]>maxst)   // in stanga lui 1 orice numar existent in stiva va trebui scos
+                    maxst=a[j];   // sa il putem scoata si pe 1. de aceea calculam maxst
+        }
+        max=max-min+1;
+        start=1;
+        for (j=maxst;j>1;j--)
+            if (b[j]==0)
+            {
+                start=(start+49999)%50000;   // numerele mai mici decat maxst le pun in stanga sirului
+                a[start]=j;
+            }
+
+
+
+        p=n;             // astfel intervalul efectiv este [1,max] din care mai lipsesc cateva numere
+        for (j=max;j>=maxst;--j)
+            if (b[j]==0)
+            {                           // completez cu elementele lipsa din permutare
+                a[++p]=j;                  // astfel va pastra proprietatea de stiva
+            }
+        k=0;p=start;
+        for(j=1;j<=max;++j)
+        {
+            st[++k]=j;
+//            cout<<a[j]<<" ";
+            while(k>0 and st[k]==a[p])
+            {
+                p=(p+1)%50000;
+                --k;
+            }
+        }
+//        cout<<"\n";
+        if (k==0) fout<<1<<"\n";
+        else fout<<0<<"\n";
+    }
+    fout.close();
+    fin.close();
+    return 0;
+}

@@ -1,0 +1,38 @@
+#include <iostream>
+#include <fstream>
+using namespace std;
+
+ifstream fin ("matrice7.in");
+ofstream fout("matrice7.out");
+
+int n , m , a[101][101], v[101];
+
+int main()
+{
+    fin >> n >> m;
+    for(int i = 1 ; i <= n ; ++i)
+        for(int j = 1 ; j <= m ; ++j)
+            fin >> a[i][j];
+    int Max = a[1][1];
+    for(int j = 1 ; j <= m ; ++j)
+        v[j] = a[1][j];
+    for(int i = 1 ; i <= n ; ++i)
+        for(int j = 1 ; j <= m ; ++j)
+        {
+            if(a[i][j] > Max)
+                Max = a[i][j];
+            if(a[i][j] < v[j])
+                v[j] = a[i][j];
+        }
+    for(int i = 1 ; i <= n ; i ++)
+        for(int j = 1 ; j <= m ; j ++)
+            if(a[i][j] == Max)
+                a[i][j] = v[j];
+    for(int i = 1 ; i <= n ; i ++)
+    {
+        for(int j = 1 ; j <= m ; j ++)
+            fout << a[i][j] << " ";
+        fout << endl;
+    }
+    return 0;
+}

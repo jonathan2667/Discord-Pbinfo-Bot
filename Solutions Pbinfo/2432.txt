@@ -1,0 +1,48 @@
+var n,k,i,j,sl,sc,l,c,s,smaxim:longint;
+a,sum:array[0..500,0..500]of longint;  lin,col:array[1..500] of longint;
+f,g:text;
+
+begin
+   assign(f,'cruce.in');reset(f);
+   readln(f,n,k);
+   for i:=1 to n do
+      for j:=1 to n do
+         begin
+         read(f,a[i,j]);
+         a[i,0]:=a[i,0]+a[i,j]; a[0,j]:=a[0,j]+a[i,j];
+         sum[i,j]:= a[i,j] + sum[i,j-1] + sum[i-1,j] - sum[i-1,j-1];
+         if j=n then
+            begin
+            sl:=sl+a[i,0];
+            if i=k then lin[1]:=sl;
+            if i>k then
+               begin
+                  sl:=sl-a[i-k,0];
+                  lin[i-k+1]:=sl;
+               end;
+            end;
+         end;
+   close(f);
+   for j:=1 to k do sc:=sc+a[0,j];
+   col[1]:=sc;
+   for j:=k+1 to n do
+      begin
+         sc:=sc+a[0,j]-a[0,j-k];
+         col[j-k+1]:=sc;
+      end;
+   smaxim:=-maxlongint;
+   for i:=1 to n-k+1 do
+      for j:=1 to n-k+1 do
+         begin
+            s:=lin[i]+col[j]-(sum[i+k-1,j+k-1]-sum[i-1,j+k-1]-sum[i+k-1,j-1]+sum[i-1,j-1]);
+            if s>smaxim then
+               begin
+                  smaxim:=s;l:=i;c:=j;
+               end;
+
+         end;
+assign(g,'cruce.out');rewrite(g);
+writeln(g,smaxim,' ',l,' ',c);
+close(g);
+
+end.

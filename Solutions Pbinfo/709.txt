@@ -1,0 +1,71 @@
+#include<stdio.h>
+#include<string.h>
+
+char a[3000002];
+int n,b[3000002],M[26],start[26],stop[26],m,i,j,c,smi,mj;
+
+int main()
+{
+
+    freopen("cmmstr.in","rt",stdin);
+    freopen("cmmstr.out","wt",stdout);
+    gets(a);
+    n=strlen(a);
+    for (i=0;i<26;i++)
+    {
+        start[i]=-1;
+    }
+    for (i=n-1;i>=0;i--)
+    {
+        c=a[i]-'a';
+        if (start[c]==-1)
+        {
+            stop[c]=i;
+            b[i]=-1;
+        }
+        else b[i]=start[c];
+        start[c]=i;
+    }
+    m=0;
+    for (i=0;i<26;i++)
+    {
+        if (start[i]>=0)
+        {
+            M[m]=i;
+            m++;
+        }
+    }
+    while(m>0)
+    {
+        for (i=0;i<m;i++)
+        {
+            smi=start[M[i]];
+            c=0;
+            for (j=0;j<m;j++)
+            {
+                mj=M[j];
+                if (j!=i)
+                    if (smi<stop[mj])
+                        c++;
+                    else break;
+            }
+            if (c==m-1)
+                break;
+        }
+        for (j=0;j<m;j++)
+            if (j!=i)
+            {
+                mj=start[M[j]];
+                while (mj<smi)
+                    mj=b[mj];
+                start[M[j]]=mj;
+            }
+        printf("%c",M[i]+'a');
+        m--;
+        for (j=i;j<m;j++)
+            M[j]=M[j+1];
+    }
+    fclose(stdout);
+    fclose(stdin);
+    return 0;
+}

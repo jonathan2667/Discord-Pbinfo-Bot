@@ -1,0 +1,51 @@
+#include <fstream>
+#include <vector>
+
+#define N 1001
+#define Ant(x) (x + 2) % 3
+using namespace std;
+
+ifstream fin("skipass.in");
+ofstream fout("skipass.out");
+
+vector<int> q1, q2;
+int dp[3][N];
+
+void Read(vector<int> &q){
+
+    int n; fin >> n; q.resize(n + 1);
+    for(int i = 1; i <= n; i ++) 
+        fin >> q[i];
+}
+
+int main(){
+
+    int g; fin >> g;
+    Read(q1);
+    Read(q2);
+
+    for(int pos = 0; pos < q1.size(); pos ++)
+        for(int j = 0; j < q2.size(); j ++){
+
+            int i = pos % 3;
+            dp[i][j] = pos + j;
+
+            if(j >= 1)
+                dp[i][j] = dp[i][j - 1] + 1;
+
+            if(pos >= 1)
+                dp[i][j] = min(dp[i][j], dp[Ant(i)][j] + 1);
+
+            if(pos >= 2 && q1[pos] == q1[pos - 1])
+                dp[i][j] = min(dp[i][j], dp[Ant(Ant(i))][j] + 1);
+
+            if(j >= 2 && q2[j] == q2[j - 1])
+                dp[i][j] = min(dp[i][j], dp[i][j - 2] + 1);
+
+            if(pos >= 1 && j >= 1 && q1[pos] == q2[j])
+                dp[i][j] = min(dp[i][j], dp[Ant(i)][j - 1] + 1);
+        }
+
+    fout << dp[Ant(q1.size())][q2.size() - 1];
+    return 0;
+}

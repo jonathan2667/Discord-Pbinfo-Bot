@@ -1,0 +1,33 @@
+#include <fstream>
+#include <bitset>
+using namespace std;
+
+ifstream cin("eratostene.in");
+ofstream cout("eratostene.out");
+
+int n , cnt = 0 , x;
+bitset<1000001> E;//de 8 ori mai putina memorie
+int main()
+{
+
+    cin >> n;
+
+    int max = 1000000; // nrmax
+
+    E[0] = E[1] = 1;
+    for(int i = 2 ; i * i <= max ; i++)
+        if(E[i] == 0) // daca E[i] e prim
+            for(int j = i * i ; j <= max ; j = j + i)
+                E[j] = 1;
+
+                if(E[x] == 0)
+                    cnt++;
+    for(int i = 1 ; i <= n ; i++)
+    {
+        cin >> x;
+
+        if(E[x] == 0)
+            cnt++;
+    }
+    cout << cnt;
+}

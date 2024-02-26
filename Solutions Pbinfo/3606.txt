@@ -1,0 +1,82 @@
+#include <bits/stdc++.h>
+
+using namespace std;
+
+ifstream fin("limbaj.in");
+ofstream fout("limbaj.out");
+
+int main () {
+    vector < short > v(26);
+    for(short &x : v)
+        fin >> x;
+    stack < bool > S;
+    string s;
+    bool flag;
+    while(fin >> s) {
+        flag = true;
+        if(s.size() == 3 && s[1] == '=') {
+            v[s[0] - 97] = v[s[2] - 97];
+            continue;
+        }
+        if(s == "if") {
+            fin >> s;
+            bool vf = false;
+            if(s[0] == '=') {
+                if(v[s[1] - 97] == v[s[2] - 97])
+                    vf = true;
+            }
+            if(s[0] == '>') {
+                if(v[s[1] - 97] > v[s[2] - 97])
+                    vf = true;
+            }
+            if(s[0] == '<') {
+                if(v[s[1] - 97] < v[s[2] - 97])
+                    vf = true;
+            }
+            S.emplace(vf);
+            continue;
+        }
+        if(s == "da" && !S.top()) {
+            flag = false;
+            string s1;
+            short cnt = 0;
+            while(!flag) {
+                fin >> s1;
+                if(s1 == "if")
+                    ++cnt;
+                if(s1 == "fi" && cnt > 0) {
+                    --cnt;
+                    continue;
+                } 
+                if(s1 == "fi" && cnt == 0) {
+                    S.pop();
+                    flag = true;
+                }
+                if(s1 == "nu" && cnt == 0)
+                    flag = true;
+            }
+            continue;
+        }
+        if(s == "nu" && S.top()) {
+            flag = false;
+            string s1;
+            short cnt = 0;
+            while(!flag) {
+                fin >> s1;
+                if(s1 == "if")
+                    ++cnt;
+                if(s1 == "fi" && cnt > 0) {
+                    --cnt;
+                    continue;
+                }
+                if(s1 == "fi" && cnt == 0) {
+                    S.pop();
+                    flag = true;
+                }
+            }
+            continue;
+        }
+    }
+    for(short x : v)
+        fout << x << ' ';
+}

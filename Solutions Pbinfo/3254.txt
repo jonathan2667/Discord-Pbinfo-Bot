@@ -1,0 +1,16 @@
+#include <iostream>
+using namespace std;
+
+int main()
+{
+    int n,min=10,max=-1;
+    cin>>n;
+    while(n)
+    {
+        if(n%2==0 && n%10>max) max=n%10;
+        if(n%2==1 && n%10<min) min=n%10;
+        n=n/10;
+    }
+    cout<<min*max;
+    return 0;
+}

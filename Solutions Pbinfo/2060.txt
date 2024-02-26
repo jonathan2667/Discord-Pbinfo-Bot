@@ -1,0 +1,83 @@
+//Popa Bogdan Ioan, clasa a X-a, Colegiul National Aurel Vlaicu Orastie
+#include <bits/stdc++.h>
+
+#define Mmax 200005
+#define ll long long
+
+using namespace std;
+
+ifstream fin("episodul2.in");
+ofstream fout("episodul2.out");
+
+struct point
+{
+    int x, y;
+};
+
+vector <point> S;
+
+ll getArea(point A, point B, point C, point D)
+{
+    vector <point> P;
+    P.push_back(A);
+    P.push_back(B);
+    P.push_back(C);
+    P.push_back(D);
+    P.push_back(A);
+    ll ret = 0;
+    for(int i = 0; i < 4; i++)
+        ret += (1ll * P[i].x * P[i + 1].y - 1ll * P[i + 1].x * P[i].y);
+    if(ret < 0)
+        ret = -ret;
+    return ret;
+}
+
+bool cp(point A, point B, point C)
+{
+    ll v = 1ll * (B.y - A.y) * (C.x - A.x) - 1ll * (B.x - A.x) * (C.y - A.y);
+    return v < 0;
+}
+
+ll area;
+
+void update(point P)
+{
+    while(S.size() > 1 && cp(S[S.size() - 2], S[S.size() - 1], P))
+    {
+        point A = {S[S.size() - 2].x, 0};
+        point B = {S[S.size() - 1].x, 0};
+        area -= getArea(A, B, S[S.size() - 1], S[S.size() - 2]);
+        S.pop_back();
+    }
+    S.push_back(P);
+    if(S.size() > 1)
+    {
+        point A = {S[S.size() - 2].x, 0};
+        point B = {S[S.size() - 1].x, 0};
+        area += getArea(A, B, S[S.size() - 1], S[S.size() - 2]);
+    }
+}
+
+int M;
+int t, x, y;
+
+int main()
+{
+    for(fin >> M; M; M--)
+    {
+        fin >> t;
+        if(t == 2)
+        {
+            fout << area / 2;
+            if(area & 1)
+                fout << ".5";
+            fout << "\n";
+        }
+        else
+        {
+            fin >> x >> y;
+            update({x, y});
+        }
+    }
+    return 0;
+}

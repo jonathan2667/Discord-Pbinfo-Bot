@@ -1,0 +1,137 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <assert.h>
+
+#include <utility>
+#include <vector>
+#include <iterator>
+#include <algorithm>
+
+#define t_s2pit vector<pair<int, pair<int, int> > >::iterator
+#define MAX_N_P 1001 // numarul maxim de numere piramidale
+#define MAX_T 1000000001
+
+using namespace::std;
+
+vector<int> s1p;
+vector<pair<int, pair<int, int> > > s2p;
+int n_s1p, n_s2p;
+
+void print_secrets(vector<int> secrets, FILE* fout) {
+  fprintf(fout, "%d", (int) secrets.size());
+    vector<int>:: iterator it;
+  for(it = secrets.begin(); it != secrets.end(); it++) {
+    // + 2 pentru ca for loopul pentru numere piramidale
+    // e 0-indexat dar incepe cu s = 2
+    fprintf(fout, " %d %d", (*it + 2) % 3, *it + 2);
+  }
+  fprintf(fout, "\n");
+}
+
+bool sum_of_two(t_s2pit *s2p_start,
+                int nr, vector<int> *secrets) {
+    t_s2pit pos = lower_bound(*s2p_start, s2p.end(),
+                            make_pair(nr, make_pair(0, 0)));
+    *s2p_start = pos;
+  if(pos != s2p.end() && pos->first == nr) {
+    secrets->push_back(pos->second.first);
+    secrets->push_back(pos->second.second);
+    return true;
+  }
+
+  return false;
+}
+
+bool pred(const std::pair<int, std::pair<int, int > > &a,
+          const std::pair<int, std::pair<int, int > > &b) {
+  return a.first == b.first;
+}
+
+int main() {
+  FILE* in = fopen("blitzcatan.in", "r");
+  FILE* out = fopen("blitzcatan.out", "w");
+
+  int n;
+  fscanf(in, "%d", &n);
+
+  s1p.reserve(MAX_N_P);
+  s2p.reserve(MAX_N_P * MAX_N_P);
+
+  // precalculam toate numerele piramidale <= MAX_T
+  for(int i = 2; i <= MAX_N_P; i++) {
+    s1p.push_back((i-1) * i * (i+1));
+  }
+  n_s1p = s1p.size();
+
+  // precalculam toate sumele de 2 numere piramidale
+  for(int i = 0; i < n_s1p; i++) {
+    for(int j = i; j < n_s1p && s1p[i] + s1p[j] < MAX_T; j++) {
+      s2p.push_back(std::make_pair(s1p[i] + s1p[j],
+                                   std::make_pair(i, j)));
+    }
+  }
+
+  // sortam s2p si eliminam dublurile
+  std::sort(s2p.begin(), s2p.end());
+  s2p.erase(unique(s2p.begin(), s2p.end(), pred), s2p.end());
+  n_s2p = s2p.size();
+
+    t_s2pit it_2;
+  int nr;
+  std::vector<int> secrets;
+  for(int i = 0; i < n; i++) {
+    secrets.clear();
+    fscanf(in, "%d", &nr);
+
+    while(1) {
+      // un numar piramidal
+      vector<int>::iterator pos = std::lower_bound(s1p.begin(), s1p.end(), nr);
+      if(pos != s1p.end() && *pos == nr) {
+        secrets.push_back(pos - s1p.begin());
+        break;
+      }
+
+      // doua numere piramidale
+            it_2 = s2p.begin();
+      if(sum_of_two(&it_2, nr, &secrets)) {
+        break;
+      }
+
+      // trei numere piramidale
+      bool done = false;
+            it_2 = s2p.begin();
+      for(int j = n_s1p - 1; j >= 0;  j--) {
+                if (s1p[j] >= nr) continue;
+        if(sum_of_two(&it_2, nr - s1p[j], &secrets)) {
+          secrets.push_back(j);
+          done = true;
+          break;
+        }
+      }
+      if(done) break;
+
+      // patru numere piramidale
+      done = false;
+            it_2 = s2p.begin();
+      for(int j = n_s2p - 1; j >= 0; j--) {
+              if (s2p[j].first >= nr) continue;
+        if(sum_of_two(&it_2, nr - s2p[j].first, &secrets)) {
+          pair<int, int> idx = s2p[j].second;
+          secrets.push_back(idx.first);
+          secrets.push_back(idx.second);
+          done = true;
+          break;
+        }
+      }
+      if(done) break;
+
+      // nicio solutie
+      assert(false);
+      break;
+    }
+
+    print_secrets(secrets, out);
+  }
+    //printf("%d %d\n", s1p.size(), s2p.size());
+  return 0;
+}

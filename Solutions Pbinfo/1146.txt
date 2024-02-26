@@ -1,0 +1,30 @@
+#include <fstream>
+using namespace std;
+
+ifstream fin("greieri.in");
+ofstream fout("greieri.out");
+
+int main()
+{
+    long long n, m, i, r, c, k, p, s=1;
+    fin>>n>>m;
+    fout<<n*(n-1)<<"\n";
+    m=m%(n*(n-1));
+    c=m/(n-1);
+    r=m%(n-1);
+    k=n-r;
+    p=n-c;
+    for(i=n-c+1;i<=n;i++)
+    {
+        if(s==k) fout<<p<<" ";
+        fout<<i<<" ";
+        s++;
+    }
+    for(i=1;i<n-c;i++)
+    {
+        if(s==k) fout<<p<<" ";
+        fout<<i<<" ";
+        s++;
+    }
+    if(!r) fout<<p;
+}

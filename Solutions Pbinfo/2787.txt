@@ -1,0 +1,130 @@
+#include "fstream"
+#include "cmath"
+#include "cstring"
+
+using namespace std;
+
+ifstream cin("conducta.in");
+ofstream cout("conducta.out");
+
+void afisare(int* A){
+    for(int i=A[0] ; i> 0 ; --i)
+        cout << A[i];
+    cout <<endl;
+}
+void citire(int* A){
+    char x[150];
+    cin.get(x, 150), cin.get();
+    for(int i=strlen(x)-1 ; i>=0 ; --i)
+        A[++A[0]] = x[i] - '0';
+}
+void atribuie(int* D, int* C){
+    D[0] = C[0];
+    for(int i=1 ; i<=C[0] ; ++i)
+        D[i] = C[i];
+}
+int comp(int* H, int* P){
+    int k = H[0];
+    for(;H[k] == P[k] && k > 0; --k);
+    if(k == 0)
+        return 0;
+    if(H[k] < P[k])
+        return -1;
+    return 1;
+}
+void aduna(int* A, int* B){
+    int tr = 0;
+    A[0] = max(A[0], B[0]);
+    for(int i=1 ; i<=A[0] ; ++i)
+        A[i] = (tr += A[i] + B[i]) % 10, tr /= 10;
+    if(tr > 0) A[++A[0]] = tr;
+}
+void inmulteste(int* A, int* B, int* T){
+    int tr = 0;
+    T[0] = A[0] + B[0] - 1;
+    for(int i=1 ; i<=A[0] ; ++i)
+     for(int j=1 ; j<=B[0] ; ++j)
+        T[i+j-1] = T[i+j-1] + A[i] * B[j];
+
+    for(int i=1 ; i<=T[0] ; ++i){
+        tr = tr + T[i];
+        T[i] = tr % 10;
+        tr /= 10;
+    }
+    if(tr > 0)  T[++T[0]] = tr;
+}
+int A[150], B[150], C[150], D[150], T[150], R[150];
+int main(){
+
+    citire(A), citire(B), citire(C);
+    atribuie(D, C);
+    aduna(A, B);
+    atribuie(B, A);
+    inmulteste(A, B, T);
+    inmulteste(C, D, R);
+    aduna(T, R);
+        if(T[0] < 20){
+        unsigned long long rez = 0;
+        for(int i=T[0] ; i> 0 ; --i)
+            rez = rez * 10 + T[i];
+        unsigned long long srez = sqrt(rez);
+        cout << srez;
+    }
+    else{
+        int P[150] = {};
+        atribuie(P, T);
+        int k = T[0];
+        int p = (k & 1? 17 : 18);
+        unsigned long long rez = 0;
+        for(int i=0 ; i< p ; ++i)
+            rez = rez * 10 + T[T[0]-i];
+        T[0] = p;
+        unsigned long long diferenta = (p & 1? k / 2 - T[0] + 1 : k / 2 - T[0]);
+        unsigned long long radical = sqrt(rez);
+        T[0] += diferenta;
+        int zerouri = diferenta + ((T[0] - diferenta)) / 2;
+        for(int i=1 ; i<=T[0] ; ++i)
+            if(i <= zerouri)
+                T[i] = 0;
+            else
+                T[i] = radical % 10, radical /= 10;
+        int Z[150], COMP[3]{1, 1, 0};
+        Z[0] = zerouri + 1, Z[Z[0]] = 1;
+
+
+        bool gasit = false;
+        while(! gasit){
+            gasit = true;
+            int M[150]{}, N[150]{}, H[150]{};
+
+            atribuie(M, T);
+            atribuie(N, T);
+
+            inmulteste(M, N, H);
+            if(comp(P, H) != 0){
+                gasit = false;
+                if(comp(P, H) == 1)
+                    aduna(T, Z);
+                else{
+                    if(comp(Z, COMP) == 0){
+                        if(T[1] == 0){
+                            int i = 1;
+                            while(T[i] == 0)
+                                ++ i;
+
+                            T[i] --;
+                            for(int j=1-1 ; j> 0 ; --j)
+                                T[j] = 9;
+                        }
+
+                        afisare(T);
+                        return 0;
+                    }
+                        T[Z[0]+1] --;
+                        Z[Z[0]]=0, Z[--Z[0]] = 1;
+                }
+            }///comp
+         }///gasit
+        afisare(T);
+    }///else
+}///int main()

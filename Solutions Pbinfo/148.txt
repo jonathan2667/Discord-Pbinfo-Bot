@@ -1,0 +1,68 @@
+#include <fstream>
+#define DIM 1010
+using namespace std;
+
+int a[DIM][DIM];
+int n, Q, i, j, maxim, lin, col, c, sum;
+int N[DIM], E[DIM], V[DIM];
+
+int main() {
+    ifstream fin("matrice1.in");
+    ofstream fout("matrice1.out");
+    fin>>n;
+    for (i=1;i<=n;i++)
+        for (j=1;j<=n;j++)
+            fin>>a[i][j];
+
+    for (j=1;j<=n;j++) {
+        maxim = 0;
+        for (i=n;i>=1;i--)
+            if (a[i][j] > maxim) {
+                N[j]++;
+                maxim = a[i][j];
+            }
+    }
+    //vest
+    for (c=1;c<=n;c++) {
+        i = n;
+        j = c;
+        maxim = 0;
+        while (i>=1 && j>=1) {
+            if (a[i][j] > maxim) {
+                maxim = a[i][j];
+                V[c]++;
+            }
+            i--;j--;
+        }
+    }
+
+    for (c=1;c<=n;c++) {
+        i = n;
+        j = c;
+        maxim = 0;
+        while (i>=1 && j<=n) {
+            if (a[i][j] > maxim) {
+                maxim = a[i][j];
+                E[c]++;
+            }
+            i--;j++;
+        }
+    }
+
+    fin>>Q;
+    while (Q) {
+        fin>>i>>j;
+        sum = N[j];
+        lin = n;
+        col = j - (i-lin);
+        if (col >= 1)
+            sum += V[col];
+        col = j+(i-lin);
+        if (col <=n)
+            sum += E[col];
+        fout<<sum<<"\n";
+        Q--;
+    }
+
+    return 0;
+}

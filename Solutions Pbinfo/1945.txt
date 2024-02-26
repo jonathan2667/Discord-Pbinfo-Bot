@@ -1,0 +1,47 @@
+#include <fstream>
+using namespace std;
+ifstream fin("benzinarii.in");
+ofstream fout("benzinarii.out");
+int d, t, g, n, nr1,nr2,d1,d2;
+int oglindit(int n)
+{
+    int o=0;
+    while(n)
+    {
+        o=o*10+n%10;
+        n=n/10;
+    }
+    return o;
+}
+
+int main()
+{
+    fin>>n;
+    g=0;
+    nr1=n+1;
+    nr2=n-1;
+    while(g==0)
+    {
+        if(oglindit(nr1)==nr1)
+        {
+            d1=nr1-n;
+            g=1;
+        }
+        else nr1++;
+    }
+    g=0;
+    while(g==0)
+    {
+        if(oglindit(nr2)==nr2)
+        {
+            d2=n-nr2;
+            g=1;
+        }
+        else nr2--;
+    }
+    //fout<<nr1<<' '<<nr2<<'-'<<d1<<' '<<d2<<endl;
+    if(d1>d2)
+        fout<<d2<<' '<<d2+n;        //inapoi
+    else fout<<d1<<' '<<d1+n;       //inainte
+    return 0;
+}

@@ -1,0 +1,33 @@
+#include <iostream>
+#include <cassert>
+using namespace std;
+
+int m, n, a[25][25];
+
+int main(){
+    cin >> m >> n;
+    for(int i=1;i<=m;++i)
+        for(int j=1;j<=n;++j)
+            cin >> a[i][j];
+
+    int Min = a[1][1];
+    for(int i=1;i<=m;++i)
+        for(int j=1;j<=n;++j)
+            if(a[i][j]<Min)
+                Min = a[i][j];
+    for(int j=1;j<=n; ++j){
+        int ok = 0;
+        for(int i=1;i<=m;++i)
+            if(a[i][j] == Min)
+                ok = 1;
+        if(ok)
+            for(int i=1;i<=m;++i)
+                a[i][j] = Min;
+    }
+    for(int i=1;i<=m;++i){
+        for(int j=1;j<=n;++j)
+            cout << a[i][j] << " ";
+        cout << endl;
+    }
+    return 0;
+}

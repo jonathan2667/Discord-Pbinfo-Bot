@@ -1,0 +1,42 @@
+#include <cstdio>
+#include <algorithm>
+
+const int maxN = 10000;
+const int mod = 666013;
+
+int N;
+class Point {
+public:
+  int x, y;
+  Point(int _x = 0, int _y = 0):
+    x(_x), y(_y) { }
+  inline bool operator < (const Point& other) const {
+    return (x == other.x) ? (y > other.y) : (x < other.x);
+  }
+} p[maxN + 1];
+
+int d[maxN + 1];
+
+int main() {
+  freopen("points.in", "r", stdin);
+  freopen("points.out", "w", stdout);
+  scanf("%d", &N);
+
+  for(int i = 1; i <= N; ++ i)
+    scanf("%d %d", &p[i].x, &p[i].y);
+
+  std :: sort(p + 1, p + N + 1);
+  d[1] = 1;
+  for(int i = 2; i <= N; ++ i) {
+    d[i] = 1;
+    for(int j = i - 1; j > 0; -- j)
+      if(p[j].y >= p[i].y)
+        d[i] = (d[i] + d[j]) % mod;
+  }
+
+  int Ans = 0;
+  for(int i = 1; i <= N; ++ i)
+    Ans = (Ans + d[i]) % mod;
+  printf("%d\n", Ans);
+  return 0;
+}

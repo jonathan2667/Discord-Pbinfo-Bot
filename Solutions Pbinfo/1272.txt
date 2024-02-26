@@ -1,0 +1,67 @@
+#include <bits/stdc++.h>
+
+using namespace std;
+
+const int MAX_DIG = 19;
+const int MAX_S = 162;
+
+typedef unsigned long long u64;
+
+u64 answer[MAX_DIG + 1][MAX_S + 1];
+bitset <MAX_S + 1> seen[MAX_DIG + 1];
+
+inline bool isPrime(const int &x)
+{
+    if (x <= 1)
+        return 0;
+    if (x == 2 || x == 3)
+        return 1;
+    if (!(x & 1))
+        return 0;
+    int i = 3;
+    while ((i * i <= x) && (x % i))
+        i += 2;
+    return (x % i);
+}
+
+u64 F(int numDigs, int s)
+{
+    if (!numDigs)
+        return isPrime(s);
+    if (seen[numDigs][s])
+        return answer[numDigs][s];
+    u64 ans = 0ULL;
+    for (int i = 0; i < 10; i++)
+        ans += F(numDigs - 1, s + i);
+    seen[numDigs][s] = 1;
+    return answer[numDigs][s] = ans;
+}
+
+inline u64 solve(const u64 &x)
+{
+    char buff[MAX_DIG + 1];
+    u64 ans;
+    int len, s;
+
+    sprintf(buff, "%llu", x);
+    len = strlen(buff);
+    ans = 0ULL;
+    s = 0;
+    for (int i = 0; i < len; i++)
+    {
+        int currDig = buff[i] - '0';
+        for (int newDig = 0; newDig < currDig; newDig++)
+            ans += F(len - i - 1, s + newDig);
+        s += currDig;
+    }
+    return ans;
+}
+
+int main()
+{
+    u64 a, b;
+
+    cin >> a >> b;
+    cout << solve(b + 1) - solve(a) << '\n';
+    return 0;
+}

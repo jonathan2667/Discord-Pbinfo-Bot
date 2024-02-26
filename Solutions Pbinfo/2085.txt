@@ -1,0 +1,56 @@
+#include <bits/stdc++.h>
+
+#define Nmax 505
+#define inf 1000000000
+
+using namespace std;
+
+ifstream fin("himalaya.in");
+ofstream fout("himalaya.out");
+
+int N, K, C1, C2;
+int H[Nmax];
+int dp[Nmax][Nmax], T[Nmax][Nmax];
+int sol[Nmax];
+
+int getCost(int k, int j, int i)
+{
+    if(j == 0)
+        return 0;
+    if(H[j] <= H[i])
+        return dp[k][j] + (H[i] - H[j]) * C1;
+    else
+        return dp[k][j] + (H[j] - H[i]) * C2;
+}
+
+int main()
+{
+    fin >> N >> K >> C1 >> C2;
+    for(int i = 1; i <= N; i++)
+        fin >> H[i];
+    for(int i = 1; i <= K; i++)
+        for(int j = 1; j <= N; j++)
+            dp[i][j] = -inf;
+    dp[1][1] = 0;
+    for(int k = 2; k <= K; k++)
+        for(int i = k; i <= N; i++)
+        {
+            int idx = k - 1;
+            for(int j = k - 1; j < i; j++)
+                if(getCost(k - 1, j, i) > getCost(k - 1, idx, i))
+                    idx = j;
+            dp[k][i] = getCost(k - 1, idx, i);
+            T[k][i] = idx;
+        }
+    int L = 0;
+    int curr = N;
+    for(; K; K--)
+    {
+        sol[++L] = curr;
+        curr = T[K][curr];
+    }
+    for(int i = L; i >= 1; i--)
+        fout << sol[i] << " ";
+    fout << "\n";
+    return 0;
+}

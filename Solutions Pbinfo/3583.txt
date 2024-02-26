@@ -1,0 +1,44 @@
+#include <bits/stdc++.h>
+
+using namespace std;
+
+ifstream fin ("jetoane.in");
+ofstream fout ("jetoane.out");
+
+int N, M, minn, maxx, v1[50005], v2[50005], cnt1, cnt2, a1[50005], a2[50005];
+bool ok = true;
+
+int main () {
+    fin >> N >> M;
+    for (int i = 0; i < N; i ++) {
+    fin >> a1[i];
+    v1[a1[i]] ++;
+    }
+    for (int i = 0; i < M; i ++) {
+    fin >> a2[i];
+    v2[a2[i]] ++;
+    }
+    for (int i = 0; i <= 50001; i ++)
+    if (v1[i] && v2[i]) {
+      if (ok) {
+        ok = false;
+        minn = i;
+      }
+      maxx = i;
+    }
+  fout << minn << ' ' << maxx << ' ';
+  for (int i = 0; i < N; i ++)
+    if (a1[i] < minn || a1[i] > maxx)
+      cnt1 ++;
+  for (int i = 0; i < M; i ++)
+    if (a2[i] < minn || a2[i] > maxx)
+      cnt2 ++;
+  if (cnt1 > cnt2)
+    fout << "1\n";
+  else
+    if (cnt2 > cnt1)
+      fout << "2\n";
+  else
+    fout << "0\n";
+    return 0;
+}

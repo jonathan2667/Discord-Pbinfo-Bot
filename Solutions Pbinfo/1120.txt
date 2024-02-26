@@ -1,0 +1,96 @@
+#include <stdio.h>
+#include <algorithm>
+
+using namespace std;
+
+#define MAXN 1024
+#define MAXLOG 11
+
+int RMQ[MAXLOG][MAXN][MAXN];
+int Mars[MAXN], Log[MAXN];
+int N, M, K, Q;
+int minim, maxim, st, dr, mij, aux, sh, lg;
+int i, j;
+
+inline int gcd(int a, int b)
+{
+    int r;
+    while (b){
+        r = a % b;
+        a = b;
+        b = r;
+    }
+    return a;
+}
+
+int main()
+{
+    freopen("xcmmdc.in","r",stdin);
+    freopen("xcmmdc.out","w",stdout);
+    
+    scanf("%d %d %d %d", &N, &M, &K, &Q);
+    for (i = 1; i <= N; ++i)
+        for (j = 1; j <= M; ++j)
+            scanf("%d", &RMQ[0][i][j]);
+        
+    for (lg = 1; (1 << lg) <= N; ++lg)
+        for (i = 1; i <= N - (1 << lg) + 1; ++i)
+            for (j = 1; j <= M - (1 << lg) + 1; ++j){
+                sh = 1 << (lg - 1);
+                aux = gcd(RMQ[lg-1][i][j], RMQ[lg-1][i + sh][j]);
+                aux = gcd(aux, RMQ[lg-1][i][j + sh]);
+                aux = gcd(aux, RMQ[lg-1][i + sh][j + sh]);
+                RMQ[lg][i][j] = aux;
+            }
+    
+    Log[1] = 0;
+    for (int i = 2; i <= N || i <= M; ++i)
+        Log[i] = Log[i >> 1] + 1;
+    
+    for (i = 1; i <= N; ++i)
+        for (j = 1; j <= M; ++j){
+            minim = 0; st = 1; dr = min(N - i + 1, M - j + 1);
+            while (st <= dr){
+                mij = (st + dr) >> 1;
+                lg = Log[mij];
+                sh = 1 << lg;
+                aux = gcd(RMQ[lg][i][j], RMQ[lg][i + mij - sh][j]);
+                aux = gcd(aux, RMQ[lg][i][j + mij - sh]);
+                aux = gcd(aux, RMQ[lg][i + mij - sh][j + mij - sh]);
+                if (aux > K){
+                    minim = mij;
+                    st = mij + 1;
+                }
+                else dr = mij - 1;
+            }
+            ++minim;
+            maxim = 0; st = 1; dr = min(N - i + 1, M - j + 1);
+            while (st <= dr){
+                mij = (st + dr) >> 1;
+                lg = Log[mij];
+                sh = 1 << lg;
+                aux = gcd(RMQ[lg][i][j], RMQ[lg][i + mij - sh][j]);
+                aux = gcd(aux, RMQ[lg][i][j + mij - sh]);
+                aux = gcd(aux, RMQ[lg][i + mij - sh][j + mij - sh]);
+                if (aux >= K){
+                    maxim = mij;
+                    st = mij + 1;
+                }
+                else dr = mij - 1;
+            }
+            if (minim <= maxim){
+                Mars[minim]++;
+                Mars[maxim+1]--;
+            }
+        }
+        
+    for (i = 1; i <= N || i <= M; ++i)
+        Mars[i] += Mars[i-1];
+    
+    for (i = 1; i <= Q; ++i){
+        scanf("%d", &aux);
+        printf("%d\n", Mars[aux]);
+    }
+    
+    return 0;
+}

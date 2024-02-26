@@ -1,0 +1,102 @@
+#include <fstream>
+#include <iomanip>
+#include <iostream>
+#include <cmath>
+
+#define DIM 10010
+#define x first
+#define y second
+#define eps 0.000001
+
+using namespace std;
+
+int n, i;
+
+double det(double X1, double Y1, double X2, double Y2, double X3, double Y3) {
+    return (X2-X1)*(Y3-Y1) - (X3-X1)*(Y2-Y1);
+}
+
+double modul(double x) {
+    if (x < 0)
+        return -x;
+    else
+        return x;
+}
+
+double dist(double x1, double y1, double x2, double y2) {
+    return sqrt((x1-x2) * (x1-x2) + (y1-y2) * (y1-y2));
+}
+
+pair<double, double> simetric(double x1, double y1, double x2, double y2, double x3, double y3) {
+    int tip;
+    pair<double, double> r;
+    if (x1 == x2) {
+        r.y = y3;
+        r.x = 2 * x1 - x3;
+        return r;
+    }
+
+    if (y1 == y2) {
+        r.x = x3;
+        r.y = 2 * y1 - y3;
+        return r;
+    }
+
+    if (x1 > x2) {
+        swap(x1, x2);
+        swap(y1, y2);
+    }
+
+    if (y2 > y1)
+        tip = 1;
+    else
+        tip = 0;
+
+    double a = y2 - y1;
+    double b = x1 - x2;
+    double c = y1 * (x2 - x1) - x1 * (y2 - y1);
+    double D = modul(a*x3 + b*y3 + c) / sqrt(a*a + b*b);
+    double y4 = (-a*x3 - c) / b;
+    double h = D * sqrt( (y3-y4) * (y3-y4) - D*D ) / (y3 - y4);
+    double x;
+    if (tip)
+        x = x3 + h;
+    else
+        x = x3 - h;
+
+    double y = (-a*x - c) / b;
+    if (tip)
+        r.x = x + h;
+    else
+        r.x = x - h;
+
+    ///if (tip)
+    r.y = y - (y3-y);
+    ///else
+    ///    r.y = y + (y3-y);
+    return r;
+}
+
+int main () {
+    ifstream fin ("cherhanale.in");
+    ofstream fout("cherhanale.out");
+
+    fin>>n;
+    double xc = 0, yc = 0, x1, y1, x2, y2, x, y, sol = 0;
+    pair<double, double> r;
+    for (i=1;i<=n;i++) {
+        fin>>x1>>y1>>x2>>y2>>x>>y;
+
+        if (det (x1, y1, x2, y2, xc, yc) * det(x1, y1, x2, y2, x, y) > 0) {
+            r = simetric(x1, y1, x2, y2, x, y);
+            sol += dist(xc, yc, r.x, r.y);
+        } else {
+            sol += dist(xc, yc, x, y);
+        }
+
+        xc = x;
+        yc = y;
+    }
+    fout<<setprecision(5)<<fixed<<(long long)(sol*100000)/100000.0;
+    return 0;
+}

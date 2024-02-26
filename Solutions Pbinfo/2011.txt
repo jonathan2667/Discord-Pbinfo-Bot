@@ -1,0 +1,39 @@
+//Popa Bogdan Ioan, clasa a 10-a, Colegiul National Aurel Vlaicu Orastie
+#include <bits/stdc++.h>
+
+#define md 666013
+#define Nmax 1002
+
+using namespace std;
+
+ifstream fin("mygo.in");
+ofstream fout("mygo.out");
+
+int A[10];
+int N;
+int i, j;
+int comb[Nmax][Nmax];
+int sol;
+
+int main()
+{
+    for(i = 0; i < 10; i++)
+        fin >> A[i], N += A[i];
+    comb[0][0] = 1;
+    for(i = 1; i < N; i++)
+        for(j = 0; j <= i; j++)
+            comb[i][j] = (comb[i - 1][j] + comb[i - 1][j - 1]) % md;
+    for(i = 1; i < 10; i++)
+        if(A[i])
+        {
+            int cnt = 1, nr = 1;
+            for(j = 0; j < 10; j++)
+            {
+                cnt = (1ll * cnt * comb[N - nr][A[j] - (i == j)]) % md;
+                nr += A[j] - (i == j);
+            }
+            sol = (sol + cnt) % md;
+        }
+    fout << sol << "\n";
+    return 0;
+}

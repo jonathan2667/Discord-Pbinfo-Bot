@@ -1,0 +1,176 @@
+// Dinamica O(n*n*N)
+// Constantin Galatan
+#include <fstream>
+#include <vector>
+#include <iomanip>
+#include <iostream>
+#include <cstring>
+#include <cassert>
+#include <limits>
+#include <iomanip>
+using namespace std;
+
+typedef int US;
+#define DIM1 100
+#define INF  0x3f3f3f3f
+
+ifstream fin("cmin.in");
+ofstream fout("cmin.out");
+
+US a[DIM1][DIM1];
+US b[DIM1][DIM1];
+US cc[DIM1][DIM1*DIM1];      // cc[j][k] == costul minim ca sa am k jetoane pe col j, puse pe liniile 1, 2, ..., n / 2)
+US c[DIM1][DIM1*DIM1];       // c[j][p] - costul minim sa am p jetoane pe col 1..j (inclusiv j)  puse pe liniile 1, 2, ..., n / 2)
+US col[DIM1];
+US up[DIM1];   // up[j] - cate deasupra pe col j
+US n; // dim matricei (n trebuie sa fie par)
+US N; // nr total de jetoane
+
+void Read();
+void PreCompute();
+void Debug(US a[DIM1][DIM1*DIM1], int i, int k);
+void Debug2(US a[DIM1][DIM1], int m, int n);
+US Dyn();
+
+int main()
+{
+    Read();
+    PreCompute();
+//  Debug2(cc, n / 2, n / 2 + 1);
+//  fout << '\n' ;
+    fout << Dyn() << '\n';
+    fout.close();
+    return 0;
+}
+
+US Dyn()
+{
+    for ( int j = 0; j < n; ++j )
+        for ( int p = 0; p <= N / 2 + 1; ++p)
+            if ( j == 0 )
+                c[j][p] = cc[j][p];
+            else
+                c[j][p] = INF;
+    for ( int j = 1; j < n; ++j )
+        for (int p = 0; p <= N / 2 + 1; ++p )   // nr jetoane deasupra, pana la col j - 1
+        {
+            for ( int k = 0; k <= n / 2; ++k )
+            {
+                if (p + k > N / 2 + 1) continue;
+                c[j][p+k] = min(c[j][p+k], c[j-1][p] + cc[j][k]);
+            }
+        }
+
+//  Debug(c, n - 1, N / 2);
+    if ( N & 1 )
+        return min(c[n-1][N/2], c[n-1][N/2 + 1]);
+    return c[n-1][N/2];
+}
+
+void PreCompute()
+{
+    // initializare
+    int K = max(n / 2, N / 2 + 1);
+    for ( int j = 0; j < n; ++j )       // coloana
+        for ( int k = 0; k <= K; ++k ) // jetoane
+        {
+            if ( k == up[j] )
+                cc[j][k] = 0;
+            else
+                cc[j][k] = INF;
+        }
+
+    // urc jetoane sus pornind de la starea initiala
+    int p1, p2, k; bool ok;
+    for ( int j = 0; j < n; ++j ) // coloana
+    {
+        ok = true; k = 0;
+        while ( ok )
+        {
+            for ( p1 = n / 2; p1 < n; ++p1 )
+                if ( a[p1][j] )  // jeton de jos
+                    break;
+            for ( p2 = n / 2 - 1; p2 >= 0; --p2 )
+                if ( a[p2][j] == 0 ) // celula libera de sus
+                    break;
+            if ( p1 < n && p2 >= 0 ) // pot muta jetonul
+            {
+                ++k;
+                cc[j][up[j] + k] = cc[j][up[j] + k - 1] + p1 - p2;   // costul mutarii
+                a[p1][j] = 0, a[p2][j] = 1;  // modific matricea caracteristica
+                ok = true;
+            }
+            if ( p1 >= n || p2 < 0 ) // n-am gasit loc sau n-am gasit jeton dedesupt
+                ok = false;
+        }
+    }
+
+    // cobor jetoane  pornind de la starea initiala
+    for ( int j = 0; j < n; ++j ) // coloana
+    {
+        ok = true; k = 0;
+        while ( ok )
+        {
+            for ( p1 = n / 2 - 1; p1 >= 0;  --p1 )
+                if ( b[p1][j] )  // jeton de sus
+                    break;
+            for ( p2 = n / 2; p2 < n; ++p2 )
+                if ( b[p2][j] == 0 ) // celula libera de jos
+                    break;
+            if ( p1 >= 0 && p2 < n ) // pot muta jetonul
+            {
+                ++k;
+            //  assert(up[j] - k >= 0);
+
+                cc[j][up[j] - k] = cc[j][up[j] - k + 1] + p2 - p1;   // costul mutarii
+                b[p1][j] = 0, b[p2][j] = 1;  // modific matricea caracteristica
+                ok = true;
+            }
+            if ( p1 < 0 || p2 >= n ) // n-am gasit loc jos sau n-am gasit jeton sus
+                ok = false;
+        }
+    }
+}
+
+void Read()
+{
+    int x;
+    fin >> n;
+    for ( int i = 0; i < n; ++i )
+        for ( int j = 0; j < n; ++j )
+        {
+            fin >> x;
+            b[i][j] = a[i][j] = x;
+            col[j] += x;
+            if ( x && i < n / 2)
+                up[j]++;
+            N += x;
+        }
+    fin.close();
+}
+
+void Debug(US a[DIM1][DIM1*DIM1], int m, int n)
+{
+    for ( int i = 0; i <= m; ++i )
+    {
+        for ( int k = 0; k <= n; ++k )
+            if ( a[i][k] == INF )
+                fout << setw(4) << "INF";
+            else
+                fout << setw(4) << a[i][k];
+        fout << '\n';
+    }
+}
+
+void Debug2(US a[DIM1][DIM1], int m, int n)
+{
+    for ( int i = 0; i <= m; ++i )
+    {
+        for ( int k = 0; k <= n; ++k )
+            if ( a[i][k] == INF )
+                fout << setw(4) << "INF";
+            else
+                fout << setw(4) << a[i][k];
+        fout << '\n';
+    }
+}

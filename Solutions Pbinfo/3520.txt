@@ -1,0 +1,103 @@
+#include <bits/stdc++.h>
+using namespace std;
+class AIB {
+public :
+    AIB() {}
+    AIB(int _n) : n(_n) {
+        aib = vector<int>(n + 1);
+    }
+    inline void Update(int pos) {
+        for (int i = pos; i <= n; i += i & -i)
+            ++aib[i];
+    }
+    inline int Query(int pos) {
+        int sum(0);
+        for (int i = pos; i > 0; i -= i & -i)
+            sum += aib[i];
+        return sum;
+    }
+private :
+    int n;
+    vector<int> aib;
+};
+typedef unsigned long long i64;
+inline i64 Multiply(i64 a, i64 b, i64 MOD) {
+    i64 res(0);
+    while (b) {
+        if (b & 1) {
+            res += a;
+            if (res >= MOD)
+                res -= MOD;
+        }
+        a += a;
+        if (a >= MOD)
+            a -= MOD;
+        b >>= 1;
+    }
+    return res;
+}
+inline i64 Powlog(i64 a, i64 b, i64 MOD) {
+    i64 res(1);
+    while (b) {
+        if (b & 1)
+            res = Multiply(res, a, MOD);
+        a = Multiply(a, a, MOD);
+        b >>= 1;
+    }
+    return res;
+}
+inline bool Prim(i64 n) {
+    if (n < 2) return false;
+    if (n == 2 || n == 3 || n == 5) return true;
+    if (n % 2 == 0 || n % 3 == 0 || n % 5 == 0) return false;
+    i64 d(n - 1);
+    while (d % 2 == 0)
+        d >>= 1;
+    for (int i = 1; i <= 2; ++i) {
+        bool ch(true);
+        i64 a = 2 + rand() % (n - 4), temp(d);
+        i64 x = Powlog(a, temp, n);
+        if (x == 1 || x == n - 1)
+            continue;
+        while (temp != n - 1) {
+            x = Multiply(x, x, n);
+            temp <<= 1;
+            if (x == 1)
+                return false;
+            if (x == n - 1) {
+                ch = false;
+                break;
+            }
+        }
+        if (ch) return false;
+    }
+    return true;
+}
+int n, ind, x;
+vector<i64> v, numbers;
+unordered_map<i64, int> pos;
+int main() {
+    ios_base::sync_with_stdio(false);
+    ifstream fin("primequery.in");
+    fin >> n;
+    v = numbers = vector<i64>(n);
+    for (int i = 0; i < n; ++i) {
+        fin >> v[i];
+        numbers[i] = v[i];
+    }
+    fin.close();
+    sort(numbers.begin(), numbers.end());
+    numbers.erase(unique(numbers.begin(), numbers.end()), numbers.end());
+    for (const i64& x : numbers)
+        pos[x] = ++ind;
+    AIB arb(ind);
+    ofstream fout("primequery.out");
+    for (int i = 0; i < n; ++i) {
+        x = pos[v[i]];
+        fout << arb.Query(x - 1) << ' ';
+        if (Prim(v[i]))
+            arb.Update(x);
+    }
+    fout.close();
+    return 0;
+}

@@ -1,0 +1,11 @@
+int multiplu(int n)
+{
+    int r = 0 , t;
+    do
+    {
+        r += n;
+        t = sqrt(r);
+    }
+    while(t * t != r);
+    return r;
+}

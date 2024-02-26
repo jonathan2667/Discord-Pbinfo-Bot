@@ -1,0 +1,53 @@
+//Ispir Alexandru - 100p
+#include <fstream>
+using namespace std;
+int A[1005][1005],B[1005][1005],N,K,b,t,Max,x,y,g[1005],p[1005];
+ifstream fin("gta.in");
+ofstream fout("gta.out");
+void interschimb(){
+    for(int i=1;i<=b;i++)
+        for(int j=1;j<=t;j++){
+            swap(A[i][j],B[i][j]);
+            B[i][j]=0;
+        }
+    return;
+}
+int main(){
+    fin>>N>>b>>t;
+    for(int i=1;i<=N;i++){
+        fin>>x>>y;
+        if(x-y>=0){
+            g[++K]=x;
+            p[K]=y;
+        }
+    }
+    t=min(t,K);
+    for(int i=1;i<=K;i++){
+        for(int j=1;j<=b;j++)
+            for(int k=1;k<=t;k++)
+                if(j>=p[i])
+                    B[j][k]=max(A[j-p[i]][k-1]+g[i]-p[i],A[j][k]);
+                else
+                    B[j][k]=A[j][k];
+        interschimb();
+    }
+    if(A[b][t])
+        fout<<b+A[b][t];
+    else{
+        fin.close();
+        fin.open("gta.in");
+        Max=-1073741823;
+        fin>>N>>b>>t;
+        for(int i=1;i<=N;i++){
+            fin>>x>>y;
+            if(b-y>=0)
+                if(Max<x-y)
+                    Max=x-y;
+        }
+        if(Max==-1073741823)
+            fout<<"GIGEL NU ARE BANI";
+        else
+            fout<<b+Max;
+    }
+    return 0;
+}

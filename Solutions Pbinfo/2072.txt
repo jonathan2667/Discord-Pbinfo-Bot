@@ -1,0 +1,26 @@
+//Popa Bogdan Ioan, Clasa a X-a, Colegiul National Aurel Vlaicu Orastie
+#include <bits/stdc++.h>
+
+using namespace std;
+
+int N, M;
+int i;
+long double ans;
+int P;
+
+int main()
+{
+    cin >> N >> M;
+    ans = 1;
+    P = N + M - 2;
+    for(i = N; i <= N + M - 2; i++)
+    {
+        ans = ans * ((long double)i / (i - N + 1));
+        while(ans >= 1 && P > 0)
+            ans /= 2., P--;
+    }
+    while(P--)
+        ans /= 2.;
+    cout << ans << "\n";
+    return 0;
+}

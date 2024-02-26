@@ -1,0 +1,42 @@
+#include <bits/stdc++.h>
+using namespace std;
+int Euler(int x)
+{
+    int d,e=x;
+    if(x%2==0)
+    {
+        e=e-e/2;
+        while(x%2==0)
+            x/=2;
+    }
+    for(d=3; d*d<=x; d=d+2)
+        if(x%d==0)
+        {
+            e=e-e/d;
+            while(x%d==0)
+                x/=d;
+        }
+    if(x>1)
+        e=e-e/x;
+    return e;
+}
+int main()
+{
+    ifstream f("maxprimeintreele.in");
+    ofstream g("maxprimeintreele.out");
+    int x,y;
+    float maxi=0,z;
+    while(f>>x)
+    {
+        z=(float)x/Euler(x);
+        if(z>maxi)
+        {
+            maxi=z;
+            y=x;
+        }
+    }
+    g<<y;
+    f.close();
+    g.close();
+    return 0;
+}

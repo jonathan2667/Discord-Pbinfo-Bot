@@ -1,0 +1,53 @@
+#include <fstream>
+# include <cstring>
+using namespace std;
+
+int main()
+{
+    long long n,x,s,s2,p,t;
+    ifstream fin("vali.in");
+    ofstream fout("vali.out");
+    fin>>p;
+    fin>>n;
+    if (p==1)
+    {
+        s=0;
+        for(int i=1;i<=n;++i)
+        {
+            fin>>x;
+            while (x/10) x/=10;
+            s=(s+x)%3;
+        }
+        if(s==1)
+            fout<<"valentin\n";
+        else
+            fout<<"valentina\n";
+    }
+    else
+    {
+        s=0;s2=0;
+        for (int i=1;i<=n;++i)
+        {
+            fin>>x;
+            p=1;
+            while (x/p) p*=10;
+            p/=10;
+            t=x/p;
+            s=(s+t)%3;
+            if (t==2)
+                x-=p;
+            s2=s2 xor x;
+        }
+        if (s==1)
+            fout<<s2<<'\n';
+        else
+        {
+            p=1;
+            while (s2/p) p*=10;
+            p/=10;
+            fout<<s2+p<<"\n";
+        }
+    }
+    fout.close();
+    return 0;
+}

@@ -1,0 +1,99 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+ifstream in("pixeli.in");
+ofstream out("pixeli.out");
+
+#define NR_FII 4
+#define SIZE 32
+#define Key(i) key[i]-'1'
+
+struct Nod
+{
+    Nod* fii[NR_FII];
+} *rad;
+
+Nod* CreeazaNod(void)
+{
+    Nod* pNode = new Nod;
+    if (!pNode) {
+        cout << "Out of Memory"; exit(1);
+    }
+    for (int i = 0; i < NR_FII; i++)
+        pNode->fii[i] = NULL;
+    return pNode;
+}
+
+bool EsteFrunza(Nod* nod)
+{
+    for (int i = 0; i < NR_FII; i++)
+        if (nod->fii[i])
+            return false;
+    return true;
+}
+
+void Insereaza(char* key)
+{
+    Nod* copie = rad;
+    for (int i = 0; key[i]; i++)
+    {
+        int index = Key(i);
+        if (copie->fii[index])
+            copie = copie->fii[index];
+        else
+        {
+            Nod* nou = CreeazaNod();
+            copie->fii[index] = nou;
+            copie = copie->fii[index];
+        }
+    }
+}
+
+int Interogare(char* key)
+{
+    if (EsteFrunza(rad))
+        return 0;
+    int i=0;
+    for (Nod* copie = rad; key[i] && copie->fii[Key(i)]; i++)
+        copie = copie->fii[Key(i)];
+    return i+1;
+}
+
+int Sterge(Nod* nod, char* key) {
+    if (*key)
+        if (Sterge(nod->fii[Key(0)], key + 1))
+            nod->fii[Key(0)] = NULL;
+    if (EsteFrunza(nod) && nod != rad) {
+        delete nod;
+        return 1;
+    }
+    return 0;
+}
+
+int main()
+{
+    int N, K, M, tip;
+    char key[SIZE];
+    in >> N >> M;
+    K= log2(N);
+    rad = CreeazaNod();
+
+    for (int i = 0; i < M; i++)
+    {
+        in >> tip >> key;
+        if (tip == 1)
+            if (Interogare(key) == K+1)
+                Sterge(rad, key);
+            else
+                Insereaza(key);
+        else
+        {
+            int x = Interogare(key);
+            if (x == K + 1)
+                out << 0 << "\n";
+            else
+                out << (1LL << 2*(K - x)) << "\n";
+        }
+    }
+    return 0;
+}

@@ -1,0 +1,70 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+struct person{
+  int id,from,to,cost,best;
+};
+struct person v[100005];
+int N,M,i,j,k,q,s,t,T[100005],Dmax,Pmax,nr,x[100005],d;
+int z[100005],w[505],P,rP;
+int comp_to(const void *a, const void *b){
+  struct person x=*(struct person*)a, y=*(struct person*)b;
+  if((x.to<y.to)||(x.to==y.to && x.from<y.from))return -1;
+  if((x.to>y.to)||(x.to==y.to && x.from>y.from))return +1;
+  return 0;
+}
+int comp_from(const void *a, const void *b){
+  struct person x=*(struct person*)a, y=*(struct person*)b;
+  if(x.from<y.from)return -1;
+  if(x.from>y.from)return +1;
+  return 0;
+}
+int main(){
+    FILE  *fin=fopen("train.in","r");
+    FILE *fout=fopen("train.out","w");
+    fscanf(fin,"%d %d",&N,&M);
+    for(i=1;i<=N;i++){
+      fscanf(fin,"%d %d %d",&v[i].from,&v[i].to,&v[i].cost);
+      v[i].id=i;
+    }
+    qsort(v+1,N,sizeof(struct person),comp_from);
+    for(P=1,i=2;i<=N;i++){
+      if(v[i-1].from<v[i].from){v[i-1].from=P;P++;}
+      else v[i-1].from=P;
+    }
+    v[N].from=P;
+    rP=1;while(rP*rP<P)rP++;
+    qsort(v+1,N,sizeof(struct person),comp_to);
+    Dmax=0;
+    for(i=1;i<=N;i++){
+      d=0; q=(v[i].from-1)/rP+1;
+      for(j=1;j<=q-1;j++){
+        if(d<v[w[j]].best){
+          d=v[w[j]].best;k=w[j];
+        }
+      }
+      for(j=(q-1)*rP+1;j<=v[i].from;j++){
+        if(d<v[z[j]].best){
+          d=v[z[j]].best;k=z[j];
+        }
+      }
+      if(d==0){ v[i].best=v[i].cost; T[i]=0; }
+      else{ v[i].best=d+v[i].cost; T[i]=k; }
+      ///actualizez in grupa lui v[i].from
+      if(v[z[v[i].from]].best<v[i].best){
+        z[v[i].from]=i;
+        if(v[w[q]].best<v[i].best){ w[q]=i; }
+      }
+      if(Dmax<v[i].best){ Dmax=v[i].best; Pmax=i;}
+    }
+
+    nr=0;i=Pmax;
+    while(i){ x[++nr]=v[i].id; i=T[i]; }
+    fprintf(fout,"%d\n%d\n",Dmax,nr);
+    for(i=nr;i>=1;i--){fprintf(fout,"%d ",x[i]);}
+    fclose(fout); fclose(fin);
+    return 0;
+}
+
+
+

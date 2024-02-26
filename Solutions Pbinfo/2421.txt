@@ -1,0 +1,22 @@
+#include <iostream>
+#include <fstream>
+using namespace std;
+
+ifstream f("calculsume.in");
+ofstream g("calculsume.out");
+int a[101], b[101][101], i, j, k, n;
+
+int main()
+{
+    f >> n >> k;
+    for (i = 1; i <= n; i++)
+        f >> a[i];
+    for (i = 0; i<= n; i++)
+        b[i][0] = 1;
+    b[1][1] = a[1];
+    for (i = 2; i <= n; i++)
+        for (j = 1; j <= i; j++)
+            b[i][j] = ((a[i] * b[i-1][j-1])%9973 + b[i-1][j])%9973;
+    g << b[n][k];
+    return 0;
+}

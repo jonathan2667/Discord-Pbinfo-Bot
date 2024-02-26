@@ -1,0 +1,33 @@
+void Impare(int &n) {
+    
+    int ogl = 0;
+    int zerouri = 0;
+    
+    
+    while((n % 10 == 0) || (n % 10 == 1)) {
+        zerouri++;
+        n /= 10;
+    }
+    
+    
+    while(n > 0) {
+        int cif = n % 10;
+        
+        if(cif % 2 == 1) {
+            cif--;
+        }
+        
+        ogl = ogl * 10 + cif;
+        
+        n /= 10;
+    }
+    
+    while(ogl > 0) {
+        n = n * 10 + ogl % 10;
+        ogl /= 10;
+    }
+    
+    for(int i = 0; i < zerouri; i++) {
+        n *= 10;
+    }
+}

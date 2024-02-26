@@ -1,0 +1,6 @@
+void sterge(int v[],int &n, int i, int j){
+    int nn = n-(j-i+1);
+    for(j++; j <= n; ++i, ++j)
+        v[i] = v[j];
+    n = nn;
+}

@@ -1,0 +1,25 @@
+#include <cstdio>
+
+using namespace std;
+long long n,i,j,x,y,p,q,r;
+int main()
+{
+    freopen("jumatate1.in","r",stdin);
+    freopen("jumatate1.out","w",stdout);
+    scanf("%lld\n",&n);
+    p=q=1;
+    while (n/q>0)
+    {
+        p*=10;
+        q*=100;
+    }
+    x=n/p;  y=n%p;  r=x%y;
+    while(r)
+    {
+        x=y;
+        y=r;
+        r=x%y;
+    }
+    printf("%lld\n",y);
+    return 0;
+}

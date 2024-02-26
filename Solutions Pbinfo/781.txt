@@ -1,0 +1,42 @@
+#include <iostream>
+#include <algorithm>
+#define NORD 1
+#define EST 2
+#define SUD 3
+#define VEST 4
+using namespace std;
+
+int n,a[102][102], v[5];
+
+int main()
+{
+    cin >> n;
+    for(int i = 1 ; i <= n ; ++i)
+        for(int j = 1 ; j <= n ; ++j)
+            cin >> a[i][j];
+    
+    for(int i = 1 ; i <= n ; i ++ )
+        for(int j =1 ; j <= n ; j ++)
+            if(i!=j && i + j != n + 1)
+                if(i < j)
+                    if(i + j < n + 1)
+                        v[NORD] += a[i][j];
+                    else
+                        v[EST] += a[i][j];
+                else
+                    if(i + j < n + 1)
+                        v[VEST] += a[i][j];
+                    else
+                        v[SUD] += a[i][j];
+    for(int i =1 ; i < 4; i ++)
+        for(int j = i + 1 ; j <= 4 ; j ++)
+            if(v[i] > v[j])
+            {
+                int aux = v[i];
+                v[i] = v[j];
+                v[j] = aux;
+            }
+    for(int i =1 ; i <= 4; i ++)
+        cout << v[i] << " ";
+    return 0;
+}

@@ -1,0 +1,62 @@
+#include <cstdio>
+#include <vector>
+
+using namespace std;
+
+#define MAX_N 180
+#define FIN "castel.in"
+#define FOUT "castel.out"
+
+const int di[] = {-1,+1, 0, 0};
+const int dj[] = { 0, 0,-1,+1};
+
+int N, M, K, A[MAX_N][MAX_N], Q[MAX_N*MAX_N], Res;
+char U[MAX_N][MAX_N], key[MAX_N*MAX_N];
+vector<int> key_list[MAX_N*MAX_N];
+
+int main(void)
+{
+    int n, i, j, d, ii, jj, ql, qr;
+    vector<int>::iterator it;
+
+    freopen(FIN, "r", stdin);
+    freopen(FOUT, "w", stdout);
+
+    scanf("%d %d %d", &N, &M, &K);
+    for (i = 0; i < N; i++)
+        for (j = 0; j < M; j++)
+        {
+            scanf("%d", A[i]+j);
+            A[i][j]--;
+        }
+
+    Q[ql = qr = 0] = --K;
+    U[K/M][K%M] = 1;
+    for (; ql <= qr; ql++)
+    {
+        // am cheia N
+        key[n = Q[ql]] = 1; Res++;
+        for (it = key_list[n].begin(); it != key_list[n].end(); it++)
+            if (!U[*it/M][*it%M])
+            {
+                Q[++qr] = *it;
+                U[*it/M][*it%M] = 1;
+            }
+        i = n/M; j = n%M;
+        for (d = 0; d < 4; d++)
+        {
+            ii = i+di[d], jj = j+dj[d];
+            if (ii < 0 || jj < 0 || ii >= N || jj >= M || U[ii][jj]) continue;
+            if (key[A[ii][jj]])
+            {
+                Q[++qr] = ii*M+jj;
+                U[ii][jj] = 1;
+            }
+            else key_list[A[ii][jj]].push_back(ii*M+jj);
+        }
+    }
+
+    printf("%d\n", Res);
+
+    return 0;
+}

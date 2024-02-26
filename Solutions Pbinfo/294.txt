@@ -1,0 +1,25 @@
+#include <iostream>
+#include <cassert>
+
+using namespace std;
+
+int n,m,a[101];
+
+int main(){
+    cin >> n;
+    for(int i=1 ; i<=n ; ++i)
+        assert(cin >> a[i]);
+    int pp = 0;
+    int x = a[1], ogl=0;
+    while(x)
+        ogl = 10*ogl+x%10, x /= 10;
+    for(int i=2 ; i<=n ; ++i){
+        if(ogl == a[i])
+            pp = 1;
+    }
+    if(pp)
+        cout << "DA";
+    else
+        cout << "NU";
+    return 0;
+}

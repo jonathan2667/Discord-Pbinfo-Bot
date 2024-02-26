@@ -1,0 +1,78 @@
+//Autor: Andy Paicu
+//100 puncte
+
+#include <stdio.h>
+#include <string.h>
+
+#define NMAX 100000
+#define KMAX 20
+#define VMAX (1 << KMAX)
+
+int a[NMAX];
+int count[VMAX];
+
+int main()
+{
+    FILE* fin = fopen("xor.in", "r");
+    FILE* fout = fopen("xor.out", "w");
+
+    int n, m;
+
+    fscanf(fin, "%d %d", &n, &m);
+
+    int i, k, j;
+    for (i = 0; i < n; i++)
+    {
+        fscanf(fin, "%d", &a[i]);
+    }
+
+    int comb = n * (n - 1) / 2;
+
+    long long countXor0;
+    int len;
+
+    len = 2;
+
+    int x = 0;
+    for (k = KMAX - 1; k >= 0; k--)
+    {
+        memset(count, 0, sizeof(count));
+        for (i = 0; i < n; i++)
+        {
+            count[a[i] >> k]++;
+        }
+
+        countXor0 = 0;
+        x = x << 1;
+
+        for (i = 0; i < len; i++)
+        {
+            //acum nr de posibilitati astfel incat sa avem (x0)
+            j = i ^ x;
+            if (i == j)
+            {
+                countXor0 += (long long)count[i] * (count[i] - 1) / 2;
+            }
+            if (i < j)
+            {
+                countXor0 += (long long)count[i] * count[j];
+            }
+        }
+
+        if (countXor0 < m)
+        {
+            //alegem 1
+            x++;
+            m -= countXor0;
+        }
+
+        len = len * 2;
+    }
+
+    fprintf(fout, "%d", x);
+
+    fclose(fin);
+    fclose(fout);
+
+    return 0;
+}

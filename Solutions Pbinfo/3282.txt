@@ -1,0 +1,89 @@
+#include <cstdio>
+#include <algorithm>
+#define N 260001
+#define BRUT 0
+using namespace std;
+long long n,x,y,i,j,k,a[N],Suma,Sol,root,
+Root[N],Val[N],T[N],Card[N],r_old,r_new,v_old,v_new;
+int main()
+{
+    freopen("transform.in","r",stdin);
+    freopen("transform.out","w",stdout);
+    scanf("%lld%lld%lld",&n,&x,&y);
+    for(i=1;i<=n;i++){scanf("%lld",&a[i]);Suma+=a[i];}
+    if(BRUT)
+    {
+        for(i=1;i<=n;i++)
+        {
+            v_old=a[i];
+            v_new=1+(x*i+y*a[i])%n;
+            for(j=i;j<=n;j++)
+                if(a[j]==v_old)
+                {
+                    Suma-=v_old;
+                    Suma+=v_new;
+                    a[j]=v_new;
+                }
+            Sol=max(Sol,Suma);
+        }
+        printf("%lld",Sol);
+        return 0;
+    }
+    for(i=n;i>=1;i--)
+    {
+        //Suma+=a[i];
+        if(!Root[a[i]])
+        {
+            Root[a[i]]=i;
+            Val[i]=a[i];
+        }
+        T[i]=Root[a[i]];
+        Card[a[i]]++;
+    }
+    Sol=0;
+    for(i=1;i<=n;i++)
+    {
+        for(r_old=i;r_old!=T[r_old];)
+            r_old=T[r_old];
+        v_old=Val[r_old];
+        v_new=1+(i*x+v_old*y)%n;
+        r_new=Root[v_new];
+        if(v_old==v_new)
+        {
+            Card[v_old]--;
+            if(Card[v_old]==0)
+            {
+                Val[r_old]=0;
+                Root[v_old]=0;
+            }
+        }
+        else
+        {
+            Suma=Suma+Card[v_old]*(v_new-v_old);
+            Card[v_new]=Card[v_new]+Card[v_old]-1;
+            Card[v_old]=0;
+            if(r_old<r_new)
+            {
+                T[r_old]=r_new;
+                Root[v_new]=r_new;
+                Val[r_new]=v_new;
+                Root[v_old]=0;
+                Val[r_old]=0;
+            }
+            else
+            {
+                T[r_new]=r_old;
+                Root[v_new]=r_old;
+                Val[r_old]=v_new;
+                Root[v_old]=0;
+                Val[r_new]=0;
+
+            }
+
+        }
+        T[i]=0;
+        Sol=max(Sol,Suma);
+    }
+    printf("%lld",Sol);
+    return 0;
+}

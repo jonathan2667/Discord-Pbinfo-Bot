@@ -1,0 +1,47 @@
+#include <iostream>
+#include <fstream>
+using namespace std;
+
+char x[25005];
+int s[25005], d[25005], n;
+ifstream f("secmax.in");
+ofstream g("secmax.out");
+
+void citeste()
+{
+    f>>n;
+    for (int i=1 ; i<=n ; i++)
+        f>>x[i];
+}
+
+
+
+void solutie()
+{
+    int i;
+    long long nrsec=0;
+    s[1]=1;
+    for (i=2 ; i<=n ; i++)
+        if (x[i-1]<x[i])s[i]=s[i-1]+1;
+        else s[i]=1;
+
+    d[n]=1;
+    for (i=n-1 ; i>=1 ; i--)
+        if (x[i]>x[i+1]) d[i]=d[i+1]+1;
+        else d[i]=1;
+
+    for (i=1 ; i<=n ; i++)
+        nrsec+=(s[i]-1)*(d[i]-1);
+    g<<nrsec<<endl;
+    cout<<nrsec<<endl;
+}
+
+
+
+int main()
+{
+    citeste();
+    //cout<<n;
+    solutie();
+    return 0;
+}

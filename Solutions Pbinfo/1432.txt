@@ -1,0 +1,14 @@
+void interschimbare(int& a, int& b) {
+    int c = a;
+    a = b;
+    b = c;
+}
+
+void aranjare(int v[], int n) {
+    int j = 0;
+    for(int i = 0; i < n; i++) {
+        if(v[i] % 2) {
+            interschimbare(v[i], v[j++]);
+        }
+    }
+}

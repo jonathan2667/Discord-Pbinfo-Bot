@@ -1,0 +1,105 @@
+//  student Alexandru Murtaza - Universitatea Bucuresti
+
+#include <fstream>
+
+using namespace std;
+
+const char InFile[] = "procente.in";
+const char OutFile[] = "procente.out";
+const int MaxN = 82;
+const int MaxVal = 205;
+
+ifstream fin(InFile);
+ofstream fout(OutFile);
+
+int N,p,v[MaxVal];
+int e2[MaxVal];
+int e5[MaxVal];
+char ch;
+long long D[MaxN*2][MaxN*2][MaxN];
+
+int main()
+{
+    fin >> N;
+    fin >> ch >> p;
+    fin.close();
+
+    if (ch == '+')
+    {
+        p += 100;
+    }
+    else
+    {
+        p = 100 - p;
+    }
+
+    for (int i = 1; i <= 200; ++i)
+    {
+        int e2t = 0;
+        int e5t = 0;
+
+        int t = i;
+        while (t % 2 == 0)
+        {
+            t /= 2;
+            ++e2t;
+        }
+        while (t % 5 == 0)
+        {
+            t /= 5;
+            ++e5t;
+        }
+
+        if (t == 1)
+        {
+            v[++v[0]] = i;
+            e2[v[0]] = e2t;
+            e5[v[0]] = e5t;
+        }
+    }
+
+    int N2 = N*2;
+
+    D[0][0][0] = 1;
+    for (int nr = 1; nr <= v[0]; ++nr)
+    {
+        int e2t = e2[nr];
+        int e5t = e5[nr];
+
+        for (int i = 0; i <= N2 - e2t; ++i)
+        {
+            for (int j = 0; j <= N2 - e5t; ++j)
+            {
+                for (int k = 0; k < N; ++k)
+                {
+                    D[i + e2t][j + e5t][k + 1] += D[i][j][k];
+                }
+            }
+        }
+    }
+
+    int A = N2;
+    int B = N2;
+
+    while (p % 2 == 0)
+    {
+        --A;
+        p /= 2;
+    }
+    while (p % 5 == 0)
+    {
+        --B;
+        p /= 5;
+    }
+
+    if (p != 1)
+    {
+        fout << "0";
+    }
+    else
+    {
+        fout << D[A][B][N-1];
+    }
+    fout.close();
+    return 0;
+}

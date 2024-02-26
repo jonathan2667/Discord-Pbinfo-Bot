@@ -1,0 +1,36 @@
+#include <iomanip>
+#include <fstream>
+#include <iostream>
+#include <cassert>
+using namespace std;
+
+ifstream fin("secventa.in");
+ofstream fout("secventa.out");
+
+
+int main(){
+    int p, u, n;
+    int x[100005], SMax = -1;
+    fin >> n;
+    for(int i=1 ; i<=n ; i++)
+        fin >> x[i];
+    p = 1, u = -1;
+    SMax = -1;
+    for(int i=1 ; i<=n ; i++){
+        int j = i+1 , s=x[i];
+        while(j<=n && x[j]%2 != x[j-1]%2)
+            s += x[j], j++;
+        if(j-i> u-p+1)
+            u = j-1, p = i, SMax = s;
+        else
+            if(j-i == u-p+1)
+                if(s > SMax)
+                    u = j-1, p = i, SMax = s;
+                else
+                    if(s == SMax)
+                        u = j-1, p = i;
+        i = j-1;
+    }
+    fout << p << " " << u;
+    return 0;
+}

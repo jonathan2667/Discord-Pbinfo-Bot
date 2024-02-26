@@ -1,0 +1,85 @@
+#include <iostream>
+
+using namespace std;
+
+int n,m,i,j,x,r,c,d,e,k,j1,v[100],d1,r1,c1,q,z,u ;
+char sir[128];
+
+int main()
+{
+    cin >> n >> m ;
+    for ( i=1 ; i<=n ; i++ )
+    {
+        cin >> x ;
+        r = x % m ;
+        c = x / m ;
+        d = m - r ;
+        e = c + 1 ;
+        k=0;
+        c1 = c ;
+        if(c1==0){k=1;v[1]=0;}
+        else
+        while( c1!=0 )
+        {
+            k++ ;
+            v[k] = c1 % 10 ;
+            c1 = c1 / 10 ;
+        };
+        q=127/(k+1);
+        z=127%(k+1);
+        u=-1 ;
+        for(j=1 ; j<=q ; j++)
+        {
+           for(j1=k ; j1>=1 ; j1--)
+           {
+               u++ ;
+               sir[u]='0'+v[j1];
+           }
+           u++ ;
+           sir[u]=' ' ;
+        }
+        for(j=1;j<=z;j++)
+        {
+            u++ ;
+            sir[u]=' ' ;
+        }
+        d1 = d / q ;
+        r1 = d % q ;
+        for ( j=1 ; j<=d1 ; j++ ) cout << sir ;
+        for ( j=1 ; j<=r1 ; j++ ) cout << c << " " ;
+        k=0;
+        c1 = e ;
+        if(c1==0){k=1;v[1]=0;}
+        else
+        while( c1!=0 )
+        {
+            k++ ;
+            v[k] = c1 % 10 ;
+            c1 = c1 / 10 ;
+        };
+        q=127/(k+1);
+        z=127%(k+1);
+        u=-1 ;
+        for(j=1 ; j<=q ; j++)
+        {
+           for(j1=k ; j1>=1 ; j1--)
+           {
+               u++ ;
+               sir[u]='0'+v[j1];
+           }
+           u++ ;
+           sir[u]=' ' ;
+        }
+        for(j=1;j<=z;j++)
+        {
+            u++ ;
+            sir[u]=' ' ;
+        }
+        d1 = r / q ;
+        r1 = r % q ;
+        for ( j=1 ; j<=d1 ; j++ ) cout << sir ;
+        for ( j=1 ; j<=r1 ; j++ ) cout << e << " " ;
+        cout << "\n" ;
+    }
+    return 0;
+}

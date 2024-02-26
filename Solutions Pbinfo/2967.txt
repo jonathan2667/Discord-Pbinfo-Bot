@@ -1,0 +1,100 @@
+#include <fstream>
+using namespace std;
+ifstream in("pif.in");
+ofstream out("pif.out");
+int n,k,zb,zf;
+int npnf[1000010],// numarul de persoane de sex feminin noi
+    npaff[1000010],// numarul de persoane de sex feminin active pt fete
+    npafb[1000010],// numarul de persoane de sex feminin active pt baieti
+    sf[1000010];// numarul total de persoane de sex feminin
+int npnb[1000010],// numarul de persoane de sex masculin noi
+    npabf[1000010],// numarul de persoane de sex masculin active pt fete
+    npabb[1000010],// numarul de persoane de sex masculin active pt baieti
+    sb[1000010];// numarul total de persoane de sex masculin
+int main(){
+    in>>n>>k>>zf>>zb;
+    if(zf<=zb){
+        npnb[1]=1;
+        npabf[1]=1; // Trevor
+        sb[0]=1; // Trevor
+        sb[1]=1; // Trevor
+    }else{
+        swap(zf,zb);
+        npnf[1]=1;
+        npaff[1]=1; // Trevor
+        sf[0]=1; // Trevor
+        sf[1]=1; // Trevor
+    }
+    int vk=k/2;
+    if(k%2==1)vk++;
+    for(int i=2;i<=n+1;i++){
+        if(i>zf){
+            npnf[i]=npaff[i-zf];
+            if(i>zb)npnf[i]+=npabf[i-zb];
+            npaff[i]=npaff[i-zf]+npnf[i];
+            npafb[i]=npafb[i-zf];//???
+            if(i>vk*zf){
+                npaff[i]-=npnf[i-vk*zf];
+                if(npaff[i]<0)npaff[i]+=1234567;
+                npafb[i]+=npnf[i-vk*zf];
+                if(i>k*zf){
+                    npafb[i]-=npnf[i-k*zf];
+                    if(npafb[i]<0)npafb[i]+=1234567;
+                }
+            }
+        }
+        npnf[i]%=1234567;
+        npaff[i]%=1234567;
+        npafb[i]%=1234567;
+        if(i>zf){
+            npnb[i]=npafb[i-zf];
+            if(i>zb){
+                npnb[i]+=npabb[i-zb];
+                npabb[i]=npabb[i-zb];
+                npabf[i]=npabf[i-zb];
+            }
+            npabf[i]+=npnb[i];
+            if(i>vk*zb){
+                npabf[i]-=npnb[i-vk*zb];
+                if(npabf[i]<0)npabf[i]+=1234567;
+                npabb[i]+=npnb[i-vk*zb];
+                if(i>k*zb){
+                    npabb[i]-=npnb[i-k*zb];
+                    if(npabb[i]<0)npabb[i]+=1234567;
+                }
+            }
+        }
+        npnb[i]%=1234567;
+        npabf[i]%=1234567;
+        npabb[i]%=1234567;
+        sb[i]=sb[i-1]+npnb[i];
+        sb[i]%=1234567;
+        sf[i]=sf[i-1]+npnf[i];
+        sf[i]%=1234567;
+    }
+    long long ntfbr=0;
+    for(int i=1;i<=k;i++){
+        if(n+1-(i-1)*zf>=1){
+            if(n+1-i*zf-1>=0){
+                long long dif=(sf[n+1-(i-1)*zf]-sf[n+1-i*zf]);
+                if(dif<0)dif+=1234567;
+                ntfbr=ntfbr+(k-i+1)*dif;
+            }else{
+                ntfbr=ntfbr+(k-i+1)*sf[n+1-(i-1)*zf];
+            }
+            ntfbr%=1234567;
+        }
+        if(n+1-(i-1)*zb>=1){
+            if(n+1-i*zb-1>=0){
+                long long dif=(sb[n+1-(i-1)*zb]-sb[n+1-i*zb]);
+                if(dif<0)dif+=1234567;
+                ntfbr=ntfbr+(k-i+1)*dif;
+            }else{
+                ntfbr=ntfbr+(k-i+1)*sb[n+1-(i-1)*zb];
+            }
+            ntfbr%=1234567;
+        }
+    }
+    out << ntfbr << endl;
+    return 0;
+}

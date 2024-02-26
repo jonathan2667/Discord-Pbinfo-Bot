@@ -1,0 +1,191 @@
+#include <fstream>
+#include <cmath>
+
+#define FIN "joc5.in"
+#define FOU "joc5.out"
+#define Cmax 500000
+#define init 999999
+
+using namespace std;
+
+
+int in1, in2, in3, in4;                         //configuratia initiala
+int fi1, fi2, fi3, fi4;                         //configuratia finala
+int cr1, cr2, cr3, cr4;                         //configuratia curenta
+int C1[Cmax], C2[Cmax], C3[Cmax], C4[Cmax];     //coada
+int prim, ultim;                                //indicii necesari cozii
+short Nr[Cmax];                                 //numarul minim de mutari
+int Pr[Cmax];                                   //indicele din C al mutarii precedente
+short Mv[Cmax];                                 //numarul mutarii
+
+int putere(int e)
+{
+    int i, rez = 1;
+    for(i=1;i<=e;i++) rez *= 10;
+    return rez;
+}
+
+void SetCif(int &x, int c, int i)
+{
+    int p = putere(7-i);
+    x = ((x / p) * 10 + c) *  ( p / 10 ) + x % ( p / 10);
+}
+
+int GetCif(int x, int i)
+{
+    int p = putere(6-i);
+    return  (x / p) % 10;
+}
+
+int E_Final(int n1, int n2, int n3, int n4)
+{
+    return n1 == fi1 && n2 == fi2 && n3 == fi3 && n4 == fi4;
+}
+
+int E_Egal(int n1, int n2, int n3, int n4, int poz)
+{
+    return n1 == C1[poz] && n2 == C2[poz] && n3 == C3[poz] && n4 == C4[poz];
+}
+
+int Apare(int n1, int n2, int n3, int n4)
+{
+    int i , cat;
+    cat  = max(1, ultim - 50);
+    for(i = ultim - 50 ; i <= ultim; i++ )
+        if(C1[i] == n1 && C2[i] == n2 && C3[i] == n3 && C4[i] == n4 && i != prim) return 1;
+    return 0;
+}
+
+void read()
+{
+    ifstream in(FIN);
+    int x, y, z, t;
+    in1 = in2 = in3 = in4 = init;
+    //citesc configuratia initiala
+    in>>x>>y>>z>>t; SetCif(in1, x, 3); SetCif(in2, y, 3); SetCif(in1, z, 4); SetCif(in2, t, 4);  //fata 1
+    in>>x>>y>>z>>t; SetCif(in3, x, 1); SetCif(in3, y, 2); SetCif(in4, z, 1); SetCif(in4, t, 2);  //fata 2
+    in>>x>>y>>z>>t; SetCif(in1, x, 5); SetCif(in2, y, 5); SetCif(in1, z, 6); SetCif(in2, t, 6);  //fata 3
+    in>>x>>y>>z>>t; SetCif(in1, x, 1); SetCif(in2, y, 1); SetCif(in1, z, 2); SetCif(in2, t, 2);  //fata 4
+    in>>x>>y>>z>>t; SetCif(in3, x, 5); SetCif(in3, y, 6); SetCif(in4, z, 5); SetCif(in4, t, 6);  //fata 5
+    in>>x>>y>>z>>t; SetCif(in3, x, 3); SetCif(in3, y, 4); SetCif(in4, z, 3); SetCif(in4, t, 4);  //fata 6
+    fi1 = fi2 = fi3 = fi4 = init;
+    //citesc configuratia finala
+    in>>x>>y>>z>>t; SetCif(fi1, x, 3); SetCif(fi2, y, 3); SetCif(fi1, z, 4); SetCif(fi2, t, 4);  //fata 1
+    in>>x>>y>>z>>t; SetCif(fi3, x, 1); SetCif(fi3, y, 2); SetCif(fi4, z, 1); SetCif(fi4, t, 2);  //fata 2
+    in>>x>>y>>z>>t; SetCif(fi1, x, 5); SetCif(fi2, y, 5); SetCif(fi1, z, 6); SetCif(fi2, t, 6);  //fata 3
+    in>>x>>y>>z>>t; SetCif(fi1, x, 1); SetCif(fi2, y, 1); SetCif(fi1, z, 2); SetCif(fi2, t, 2);  //fata 4
+    in>>x>>y>>z>>t; SetCif(fi3, x, 5); SetCif(fi3, y, 6); SetCif(fi4, z, 5); SetCif(fi4, t, 6);  //fata 5
+    in>>x>>y>>z>>t; SetCif(fi3, x, 3); SetCif(fi3, y, 4); SetCif(fi4, z, 3); SetCif(fi4, t, 4);  //fata 6
+    in.close();
+}
+
+void move3(int &n1, int &n2, int &n3, int &n4)   //vd1 -> Nord
+{
+    int a1, a2;
+    a1 = GetCif(n1, 1); a2 = GetCif(n1, 2);
+    SetCif(n1, GetCif(n1, 3), 1); SetCif(n1, GetCif(n1, 4), 2);
+    SetCif(n1, GetCif(n1, 5), 3); SetCif(n1, GetCif(n1, 6), 4);
+    SetCif(n1, GetCif(n4, 4), 5); SetCif(n1, GetCif(n3, 4), 6);
+    SetCif(n4, a1, 4); SetCif(n3, a2, 4);
+    a1 =  GetCif(n3, 5); SetCif(n3, GetCif(n3, 6),5); SetCif(n3, GetCif(n4, 6), 6);
+    SetCif(n4, GetCif(n4, 5),6); SetCif(n4, a1, 5);
+}
+
+void move4(int &n1, int &n2, int &n3, int &n4)   //vd2 -> Nord
+{
+    int a1, a2;
+    a1 = GetCif(n2, 1); a2 = GetCif(n2, 2);
+    SetCif(n2, GetCif(n2, 3), 1); SetCif(n2, GetCif(n2, 4), 2);
+    SetCif(n2, GetCif(n2, 5), 3); SetCif(n2, GetCif(n2, 6), 4);
+    SetCif(n2, GetCif(n4, 3), 5); SetCif(n2, GetCif(n3, 3), 6);
+    SetCif(n4, a1, 3); SetCif(n3, a2, 3);
+    a1 =  GetCif(n3, 1); SetCif(n3, GetCif(n4, 1), 1); SetCif(n4, GetCif(n4, 2), 1);
+    SetCif(n4, GetCif(n3, 2), 2); SetCif(n3, a1, 2);
+}
+
+void move1(int &n1, int &n2, int &n3, int &n4)   //od3 -> Est
+{
+    int a1, a2;
+    a1 = GetCif(n1, 3); SetCif(n1, GetCif(n1, 4) ,3); SetCif(n1, GetCif(n2, 4) ,4);
+    SetCif(n2, GetCif(n2, 3) ,4); SetCif(n2, a1 ,3);
+    a1 = GetCif(n1, 2); a2 = GetCif(n2, 2);
+    SetCif(n1, GetCif(n4, 6), 2); SetCif(n2, GetCif(n3, 6), 2);
+    SetCif(n4, GetCif(n2, 5), 6); SetCif(n3, GetCif(n1, 5), 6);
+    SetCif(n2, GetCif(n3, 1), 5); SetCif(n1, GetCif(n4, 1), 5);
+    SetCif(n3, a1, 1); SetCif(n4, a2, 1);
+}
+
+void move2(int &n1, int &n2, int &n3, int &n4)   //od4 -> Est
+{
+    int a1, a2;
+    a1 = GetCif(n3, 3); SetCif(n3, GetCif(n3, 4) ,3); SetCif(n3, GetCif(n4, 4) ,4);
+    SetCif(n4, GetCif(n4, 3) ,4); SetCif(n4, a1 ,3);
+    a1 = GetCif(n1, 1); a2 = GetCif(n2, 1);
+    SetCif(n1, GetCif(n4, 5), 1); SetCif(n2, GetCif(n3, 5), 1);
+    SetCif(n4, GetCif(n2, 6), 5); SetCif(n3, GetCif(n1, 6), 5);
+    SetCif(n2, GetCif(n3, 2), 6); SetCif(n1, GetCif(n4, 2), 6);
+    SetCif(n3, a1, 2); SetCif(n4, a2, 2);
+}
+
+void solve_and_print()
+{
+    int rez = init;
+    int tm1, tm2, tm3, tm4;
+    short R[100], Lm;
+    int i, j, poz;
+    //initializez
+    prim = ultim = 1;
+    C1[prim] = in1; C2[prim] = in2; C3[prim] = in3; C4[prim] = in4;
+    Nr[1] = 0; Pr[1] = 0; Mv[1] = 0;
+    while( prim <= ultim )
+    {
+        cr1 = C1[prim]; cr2 = C2[prim]; cr3 = C3[prim]; cr4 = C4[prim];
+        if( E_Final(cr1, cr2, cr3, cr4) ) { rez = Nr[prim]; poz = prim; Lm = 0; break; }
+        //move 1
+        tm1 = cr1; tm2 = cr2; tm3 = cr3; tm4 = cr4;
+        move1(tm1, tm2, tm3, tm4);
+        if( E_Final(tm1, tm2, tm3, tm4) ) { rez = Nr[prim] + 1; poz = prim;  Lm = 1; break; }
+        if( !Apare(tm1, tm2, tm3, tm4) ) { ultim++; C1[ultim] = tm1; C2[ultim] = tm2; C3[ultim] = tm3; C4[ultim] = tm4; Nr[ultim] = 1 + Nr[prim]; Pr[ultim] = prim; Mv[ultim] = 1; }
+        //move 2
+        tm1 = cr1; tm2 = cr2; tm3 = cr3; tm4 = cr4;
+        move2(tm1, tm2, tm3, tm4);
+        if( E_Final(tm1, tm2, tm3, tm4) ) { rez = Nr[prim] + 1; poz = prim;  Lm = 2; break; }
+        if( !Apare(tm1, tm2, tm3, tm4) ) { ultim++; C1[ultim] = tm1; C2[ultim] = tm2; C3[ultim] = tm3; C4[ultim] = tm4; Nr[ultim] = 1 + Nr[prim]; Pr[ultim] = prim; Mv[ultim] = 2; }
+        //move 3
+        tm1 = cr1; tm2 = cr2; tm3 = cr3; tm4 = cr4;
+        move3(tm1, tm2, tm3, tm4);
+        if( E_Final(tm1, tm2, tm3, tm4) ) { rez = Nr[prim] + 1;  poz = prim;  Lm = 3; break; }
+        if( !Apare(tm1, tm2, tm3, tm4) ) { ultim++; C1[ultim] = tm1; C2[ultim] = tm2; C3[ultim] = tm3; C4[ultim] = tm4; Nr[ultim] = 1 + Nr[prim]; Pr[ultim] = prim; Mv[ultim] = 3; }
+        //move 4
+        tm1 = cr1; tm2 = cr2; tm3 = cr3; tm4 = cr4;
+        move4(tm1, tm2, tm3, tm4);
+        if( E_Final(tm1, tm2, tm3, tm4) ) { rez = Nr[prim] + 1; poz = prim;  Lm = 4; break; }
+        if( !Apare(tm1, tm2, tm3, tm4) ) { ultim++; C1[ultim] = tm1; C2[ultim] = tm2; C3[ultim] = tm3; C4[ultim] = tm4; Nr[ultim] = 1 + Nr[prim]; Pr[ultim] = prim; Mv[ultim] = 4; }
+
+        prim++;
+      
+    }
+    ofstream OUT(FOU);
+    OUT << rez << '\n';
+    //determin mutarile
+
+    i = rez;
+    if(Lm) { R[i] = Lm; i--;}
+    while(Pr[poz])
+    {
+        R[i--] = Mv[poz];
+        poz = Pr[poz];
+    }
+    for(j = 1; j <= rez ; j++ ) OUT << R[j] << '\n';
+    OUT.close();
+}
+
+int main()
+{
+    read();
+    solve_and_print();
+   
+    return 0;
+}
+
+

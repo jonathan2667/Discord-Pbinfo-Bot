@@ -1,0 +1,87 @@
+program cna;
+const nmax=200;
+      nota=21;
+      grup=19;
+var mat,rom:array[0..nmax] of integer;
+    l,s:array[0..grup,0..2*nota*grup+1] of integer;
+    sol:set of byte;{solutia}
+ n,m,suma,diferenta,sm,sr:integer;
+procedure citire;
+var f:text;i:byte;
+begin
+ assign(f,'materom.in');reset(f);
+ readln(f,n,m);
+ for i:=0 to n-1 do readln(f,mat[i],rom[i]);
+ close(f);
+end;
+procedure rezolva;
+var i,j,k,p,p2,v:integer;
+begin
+for i:=0 to m do
+ for j:=0 to 2*nota*m+1 do l[i,j]:=-1;
+s:=l;{rez. pt. un elev}
+for i:=0 to n-1 do
+  if mat[i]+rom[i]>s[0,m*nota+mat[i]-rom[i]] then
+   begin
+    l[0,m*nota+mat[i]-rom[i]]:=i;
+    s[0,m*nota+mat[i]-rom[i]]:=mat[i]+rom[i];
+   end;
+{restul}
+for j:=0 to m-2 do
+ for k:=0 to 2*nota*m-1 do
+  if l[j,k]>=0 then
+    for i:=0 to n-1 do
+     if s[j+1,k+mat[i]-rom[i]]<s[j,k]+mat[i]+rom[i] then
+      begin
+       p2:=k;p:=j;{cautam daca l-am mai folosit}
+       while (p>=0)and(l[p,p2]<>i)do
+        begin
+         p2:=p2-(mat[l[p,p2]]-rom[l[p,p2]]);
+         p:=p-1;
+        end;
+       {daca nu il folosim}
+       if p<0 then
+        begin
+          l[j+1,k+mat[i]-rom[i]]:=i;
+          s[j+1,k+mat[i]-rom[i]]:=s[j,k]+mat[i]+rom[i];
+        end;
+      end;
+    {determinare diferenta minima}
+    v:=nota*m+1;
+    for i:=0 to nota*m do
+     if (s[m-1,nota*m+i]>=0) or(s[m-1,nota*m-i]>=0) then
+      begin
+       if s[m-1,nota*m+i]>s[m-1,nota*m-i] then v:=nota*m+i
+                                          else v:=nota*m-i;
+       break;
+      end;
+     {det solutie}
+     sol:=[];sm:=0;sr:=0;
+     for j:=m-1 downto 0 do
+      begin
+       sol:=sol+[l[j,v]+1];
+       sm:=sm+mat[l[j,v]];
+       sr:=sr+rom[l[j,v]];
+       v:=v-(mat[l[j,v]]-rom[l[j,v]]);
+
+      end;
+end;
+procedure scrie;
+var i:byte;f:text;
+begin
+assign(f,'materom.out');rewrite(f);
+{calculeaza diferenta}
+
+{calculeaza suma}
+suma:=sr+sm;
+diferenta:=abs(sr-sm);
+writeln(f, diferenta);
+writeln(f, suma);
+close(f);
+end;
+
+BEGIN
+citire;
+rezolva;
+scrie;
+END.

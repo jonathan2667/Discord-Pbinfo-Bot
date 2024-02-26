@@ -1,0 +1,139 @@
+//Autor: Stefan Negrus 
+//O(N*M) - 100 puncte
+
+#include <fstream>
+#define DMAX 501
+#define INFILE "drum.in"
+#define OUTFILE "drum.out"
+
+using namespace std ;
+
+ifstream FIN (INFILE) ;
+ofstream FOUT (OUTFILE) ;
+
+int mat[DMAX][DMAX] ;
+int d1[4]={-1, 0, 1, 0}, d2[4]={0, 1, 0, -1} ;
+int N, M, VMAX ;
+int CX[DMAX * DMAX + 1], CY[DMAX * DMAX + 1] ;
+
+int Solve() ;
+void Read() ;
+void Path(int x, int y, int val) ;
+void GetXY(int& x, int& y, int pos) ;
+
+int main()
+{
+    int i, ok1 ;
+    Read() ;
+    for (i = 1; i <= VMAX; ++ i)
+    {
+        ok1 = Solve() ;
+        if (ok1)
+        {
+            FOUT << i << '\n' ;
+            return 0 ;
+        }
+    }
+
+    FIN.close() ;
+    FOUT.close() ;
+    return 0 ;
+}
+
+void Read()
+{
+    FIN >> N >> M >> VMAX ;
+}
+
+void GetXY(int& x, int& y, int pos)
+{
+    x = pos / M ;
+    if (pos % M)
+    {
+        ++ x ;
+    }
+    y = pos % M ;
+    if (!y)
+    {
+        y = M ;
+    }
+}
+
+int Solve()
+{
+    int nr, i, pos, x, y, k, ok1, ok2 ;
+    FIN >> nr ;
+    for (i = 1; i <= nr; ++i)
+    {
+        FIN >> pos ;
+        GetXY(x, y, pos) ;
+        ok1 = ok2 = 0 ;
+
+        mat[x][y] = 3 ;
+
+        for (k = 0; k < 4; ++k)
+        {
+            if (mat[x+d1[k]][y+d2[k]] == 1)
+            {
+                ok1 = 1 ;
+                mat[x][y] = 1 ;
+            }
+            if (mat[x+d1[k]][y+d2[k]] == 2)
+            {
+                ok2 = 2 ;
+                mat[x][y] = 2 ;
+            }
+        }
+
+        if (x == 1)
+        {
+            mat[x][y] = 1 ;
+            ok1 = 1 ;
+        }
+
+        if (x == N)
+        {
+            mat[x][y] = 2 ;
+            ok2 = 1 ;
+        }
+
+        if (ok1 && ok2)
+        {
+            return 1 ;
+        }
+
+        if (mat[x][y] != 3)
+        {
+            Path(x, y, mat[x][y]) ;
+        }
+    }
+    return 0 ;
+}
+
+void Path(int x, int y, int val)
+{
+    int k ;
+    int st, en ;
+    st = en = 1 ;
+    CX[st] = x ;
+    CY[st] = y ;
+    while(st <= en)
+    {
+        x = CX[st] ;
+        y = CY[st] ;
+        ++st ;
+        mat[x][y] = val ;
+        for (k = 0; k < 4; ++k)
+        {
+            if (mat[x+d1[k]][y+d2[k]] == 3)
+            {
+                mat[x+d1[k]][y+d2[k]] = val ;
+                ++en ;
+                CX[en] = x + d1[k] ;
+                CY[en] = y + d2[k] ;
+            }
+        }
+    }
+}
+
+

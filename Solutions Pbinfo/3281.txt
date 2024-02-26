@@ -1,0 +1,36 @@
+#include<bits/stdc++.h>
+using namespace std;
+
+int s[100003];
+int main()
+{
+    int n, lo, i, st, dr, bst = -1000000000;
+    ifstream fin("sminus.in");
+    ofstream fout("sminus.out");
+    fin >> n;
+    lo=0;
+    for(i = 1; i <= n; i++)
+    {
+        fin >> s[i];
+        s[i] += s[i - 1];
+        if(s[i] - s[lo] > bst)
+        {
+            st = lo;
+            dr = i;
+            bst = s[dr] - s[st];
+        }
+        else if (s[i] - s[lo] == bst)
+        {
+            if(lo <= st)
+            {
+                st = lo;
+                dr = i;
+            }
+        }
+        if(s[i] < s[lo]) lo = i;
+    }
+    fout << (st + 1) << " " << dr << "\n" << (s[n] - 2 * bst) << "\n";
+    fin.close();
+    fout.close();
+    return 0;
+}

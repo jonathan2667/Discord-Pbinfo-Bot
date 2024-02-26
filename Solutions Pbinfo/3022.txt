@@ -1,0 +1,32 @@
+#include <iostream>
+#define p 1000000007
+
+using namespace std;
+long long n, r, k, a, sol;
+
+long long pow(long long e)
+{
+    if(e == 0) return 1;
+    else if(e % 2 == 0) { long long x = pow(e / 2); return (x * x) % p;}
+        else return (2 * pow(e-1)) % p;
+}
+
+int main()
+{
+    cin >> n;
+    r = n % 8;
+    k = n / 8;
+    switch(r)
+    {
+      case  0: a = pow(4*k-1); sol = (a * (a + 1)) % p; break;
+      case  1: a = pow(4*k-1); sol = (a * (2 * a + 1)) % p; break;
+      case  2: a = pow(8*k); sol = a; break;
+      case  3: a = pow(4*k); sol = (a * (2 * a - 1 + p)) % p; break;
+      case  4: a = pow(4*k+1); sol = (a * (a - 1 + p)) % p; break;
+      case  5: a = pow(4*k+1); sol = (a * (2 * a - 1 + p)) % p; break;
+      case  6: a = pow(8*k+4); sol = a; break;
+      case  7: a = pow(4*k+2); sol = (a * (2 * a + 1)) % p; break;
+    }
+    cout << (sol - 1 + p) % p;
+    return 0;
+}

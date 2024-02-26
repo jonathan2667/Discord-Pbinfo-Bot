@@ -1,0 +1,38 @@
+#include <bits/stdc++.h>
+#define Int long long
+using namespace std;
+queue<pair<Int,Int>> q;
+Int n,x,s,r,sol;
+inline Int val(Int L)
+{
+    return (L*L+2*L+L%2)/4;
+}
+inline Int progresion_sum(Int a1,Int r,Int n)
+{
+    return n*(2*a1+(n-1)*r)/2;
+}
+inline void updateQueue(Int x,Int n)
+{
+    if(x==0)return;
+    if(q.back().first==x)
+        q.back().second+=n;
+    else
+        q.push(make_pair(x,n));
+}
+int main()
+{
+    cin>>n;
+    q.push(make_pair(n,1));
+    s=val(n);
+    for(;q.size();q.pop())
+    {
+        tie(x,n)=q.front();
+        r=val(x)-val(x/2)-val(x-x/2-1);
+        sol+=n*(2*s-(n-1)*r)/2;
+        s-=n*r;
+        updateQueue(x/2,n);
+        updateQueue(x-x/2-1,n);
+    }
+    cout<<sol;
+    return 0;
+}

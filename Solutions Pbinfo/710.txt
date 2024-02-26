@@ -1,0 +1,64 @@
+// Solutie 100p 
+// Autor: Constantin Galatan
+#include <iostream>
+#include <string>
+#include <fstream>
+using namespace std;
+
+
+string res, str;
+int varsta;
+int n, m;
+
+ofstream fout("verone.out");
+ifstream fin("verone.in");
+
+
+int Verone(string s, int varsta)
+{
+        
+    if ( varsta == 13)
+        return -1;
+    if (s == str )
+    {
+        res = s;
+        return varsta;
+    }
+    
+    n = (int)s.length();
+    for ( int i = 0; i < n - m + 1; ++i )
+        if ( s.substr(i, m) == str )
+        {
+            res = s;
+            return varsta;
+        }
+    
+    string c(s);
+    for ( int i = 0; i < n; ++i )
+        if ( c[i] == 'V')
+            c[i] = 'R';
+        else
+            if ( c[i] == 'R' )
+                c[i] = 'N';
+            else
+                c[i] = 'V';
+
+    
+    return Verone(s + c + s, varsta + 1);
+}
+
+
+int main()
+{   
+    string cul;
+    fin >> cul >> str;
+    
+    m = (int)str.length();
+    fout << Verone(cul, 1) << '\n'; 
+    fout << res << '\n';
+    
+    fout.close();
+    fin.close();
+    return 0;
+}
+  

@@ -1,0 +1,78 @@
+#define TuTTy "Cosmin-Mihai Tutunaru"
+#include <cstdio>
+#include <algorithm>
+#define infile "carti.in"
+#define outfile "carti.out"
+#define nMax 103
+#define lMax 10013
+
+using namespace std;
+
+int dp[lMax];
+int v[nMax];
+int n, l;
+int sol;
+
+void read() {
+    scanf("%d %d\n", &n, &l);
+
+    for (int i = 0; i < n; ++i) {
+        scanf("%d", &v[i]);
+    }
+}
+
+void solve() {
+
+    sol = n;
+    dp[0] = 0;
+    sort(v, v+n);
+
+    for (int i = 1; i <= l; ++i) {
+        dp[i] = l;
+    }
+
+    for (int i = n-1; i >= 0; --i) {
+
+        if (i < n-1) {
+            for (int s = l; s >= v[i+1]; --s) {
+                dp[s] = min(dp[s], dp[s - v[i+1]] + 1);
+            }
+        }
+
+        int s = 0;
+
+        for (int j = 0; j < i; ++j) {
+            s += v[j];
+        }
+
+        for (int k = 0; k <= l; ++k) {
+            if (dp[k] < l && k+s <= l && v[i] * (dp[k]+i+1) > l-k-s) {
+                sol = min(sol, dp[k]+i);
+            }
+        }
+
+    }
+
+}
+
+void write() {
+    printf("%d\n", sol);
+}
+
+int main() {
+    freopen(infile, "r", stdin);
+    freopen(outfile, "w", stdout);
+
+    int t;
+    scanf("%d\n", &t);
+
+    while(t--) {
+        read();
+        solve();
+        write();
+    }
+
+    fclose(stdin);
+    fclose(stdout);
+    return 0;
+}

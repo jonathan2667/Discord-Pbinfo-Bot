@@ -1,0 +1,142 @@
+/* Eugenie Daniel Posdarascu
+    100 de puncte
+*/
+#include<stdio.h>
+#include<vector>
+#include<stdlib.h>
+#include<time.h>
+using namespace std;
+
+#define MOD 1000000007
+#define NMAX 400005
+
+int n, m, k, l, f[NMAX], fb[NMAX];
+int bucket = 100, indexB[NMAX];
+long long answer = 1;
+long long ans = 0;
+vector<int> matrix[NMAX], matrix2[NMAX];
+
+void deleteElements(int a, int b, int c, int d) {
+    for(int i = a; i <= c; i++)
+        for(int j = b; j <= d; j++) {
+            int value = matrix[i][j];
+            f[value]--;
+            if(!f[value])
+                fb[indexB[value]]--;
+
+        }
+}
+
+void addElements(int a, int b, int c, int d) {
+    for(int i = a; i <= c; i++)
+        for(int j = b; j <= d; j++) {
+            int value = matrix[i][j];
+            f[value]++;
+            if(f[value] == 1)
+                fb[indexB[value]]++;
+        }
+}
+
+void query() {
+    for(int buc = 1; ; buc++) {
+        if(fb[buc] == bucket)
+            continue;
+        for(int i = (buc - 1) * bucket + 1; ; i++) {
+            if(!f[i]) {
+                answer *= i;
+                ans += i;
+                if(answer >= MOD)
+                    answer %= MOD;
+                break;
+            }
+        }
+        break;
+    }
+}
+
+void initializeaza() {
+    addElements(1,1,k,l);
+    query();
+}
+
+int main () {
+    int value, sign;
+
+    srand(time(0));
+    freopen("mexitate.in","r",stdin);
+    freopen("mexitate.out","w",stdout);
+
+    scanf("%d%d%d%d",&n,&m,&k,&l);
+    for(int i = 1; i <= n; i++) {
+        matrix2[i].push_back(0);
+        for(int j = 1; j <= m; j++) {
+            scanf("%d",&value);
+            matrix2[i].push_back(value);
+        }
+    }
+    if(k > l) { // linia devine coloana // m linia 1 m - 1 2
+        for(int i = 1; i <= m; i++)
+            for(int j = 0; j <= n; j++)
+                matrix[i].push_back(0);
+        for(int i = 1; i <= n; i++)
+            for(int j = 1; j <= m; j++)
+                matrix[m - j + 1][i] = matrix2[i][j];
+        int aux = n;
+        n = m;
+        m = aux;
+
+        aux = l;
+        l = k;
+        k = aux;
+    }
+    else {
+        for(int i = 1; i <= n; i++) {
+            matrix[i].push_back(0);
+            for(int j = 1; j <= m; j++) {
+                matrix[i].push_back(matrix2[i][j]);
+            }
+        }
+    }
+
+    int last = 1;
+    for(int i = 1; i <= n * m; i++) {
+        indexB[i] = last;
+        if(i % bucket == 0)
+            last++;
+    }
+
+    initializeaza();
+    for(int i = 1; i <= n - k + 1; i++) {
+        sign = ((i&1) ? +1 : -1);
+        if(sign == 1) {
+            for(int j = 2; j <= m - l + 1; j++) {
+                deleteElements(i, j - 1, i + k - 1, j - 1);
+                addElements(i, j + l - 1, i + k - 1, j + l - 1);
+                query();
+            }
+            if(i <= n - k) {
+                deleteElements(i, m - l + 1, i, m);
+                addElements(i + k, m - l + 1, i + k, m);
+                query();
+            }
+        }
+        else {
+            for(int j = m - l; j >= 1; j--) {
+                deleteElements(i, j + l, i + k - 1, j + l);
+                addElements(i, j, i + k - 1, j);
+                query();
+            }
+            if(i <= n - k) {
+                deleteElements(i, 1, i, l);
+                addElements(i + k, 1, i + k, l);
+                query();
+            }
+        }
+    }
+
+    printf("%lld\n", answer);
+
+    return 0;
+}
+
+ 

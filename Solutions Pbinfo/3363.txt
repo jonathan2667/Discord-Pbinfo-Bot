@@ -1,0 +1,54 @@
+#include <fstream>
+#include <cmath>
+
+using namespace std;
+
+int p;
+int phi_p;
+int M,N,C,K;
+
+unsigned long long int fact[1000001];
+
+ifstream fin("fmat.in");
+ofstream fout("fmat.out");
+
+void f()
+{
+    fact[0]=1;
+    for(int i=1;i<=1000000;i++)
+        fact[i]=((i%p)*(fact[i-1]%p))%p;
+    return;
+}
+
+unsigned long long int powr(unsigned long long int b,unsigned long long int e)
+{
+    if(e==0)
+        return 1;
+    if(e%2==0)
+        return powr(((b%p)*(b%p))%p,e/2)%p;
+    return  ((b%p)*powr(((b%p)*(b%p))%p,(e-1)/2)%p)%p;
+}
+
+unsigned long long int Comb(unsigned long long int N,unsigned long long int K)
+{
+    return ((fact[N]%p)*(((powr(fact[N-K]%p,phi_p-1)%p)*(powr(fact[K],phi_p-1)%p))%p))%p;
+}
+
+int main()
+{
+    int T;
+    fin>>T>>p;
+    f();
+    phi_p=p-1;
+    for(int i=1;i<=T;i++)
+    {
+        fin>>M>>N>>C>>K;
+        if(K>N)
+            fout<<"0"<<"\n";
+        else
+        {
+            fout<<(((Comb(N,K)%p)*((powr(C%p,K)%p)*(powr((powr(C%p,M)%p-C%p)%p,N-K))%p))%p)%p<<"\n";
+        }
+    }
+    return 0;
+}

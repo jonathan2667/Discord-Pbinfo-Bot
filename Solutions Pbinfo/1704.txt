@@ -1,0 +1,62 @@
+#include <fstream>
+using namespace std;
+#define Nmax 10002
+ifstream fin ("cercetasi.in");
+ofstream fout ("cercetasi.out");
+
+int n,ok[Nmax][3];
+int mutare(int poz){
+
+    int k=0,aux;
+    do
+    {
+        k++;
+        aux=ok[poz][2];
+        ok[poz][2]=poz;
+        ok[poz][1]=1;
+        poz=aux;
+    }while (ok[poz][2]!=poz);
+    return k;
+
+}
+void calcul(int n, int &k, int &x)
+{
+   k=1;x=n;
+     if(n%4==0)
+        {while(n%(k*2)==0&&n/(k*2)%2==0&&n/(k*2)-(k*2-1)>0)
+            k=k*2;
+         x=n/k-(k-1);
+        }
+}
+
+int main(){
+    int m,i,nr=0,x,cx;
+    fin>>n;
+    calcul(n,m,cx);
+   x=cx;
+   fout<<m<<"\n";
+   for(i=1;i<=m;i++){
+        fout<<x<<" ";
+        ok[x][0]=1;
+        x=x+2;
+    }
+    fout<<"\n";
+    for(i=1;i<=n;i++)
+        {fin>>x;
+        if(x==i) ok[x][1]=1;
+        if(ok[x][0]==1&&x==i)nr++;
+        ok[x][2]=i;
+        }
+
+    if(nr==m) fout<<"0\n";
+    else
+    {   nr=0;
+        for(i=1;i<=m;i++)
+            {if(ok[cx][0]==1&&ok[cx][1]==0)
+                nr=nr+mutare(cx);
+             cx=cx+2;
+            }
+        fout<<nr<<"\n";
+    }
+  return 0;
+}

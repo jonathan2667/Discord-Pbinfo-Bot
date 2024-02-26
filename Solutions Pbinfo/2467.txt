@@ -1,0 +1,102 @@
+#include <iostream>
+#include <fstream>
+#include <vector>
+#include <algorithm>
+#include <cassert>
+#include <climits>
+
+using namespace std;
+
+int main() {
+    ifstream cin("grup1.in");
+    ofstream cout("grup1.out");
+
+    int N, S, K1, K2; assert(cin >> N >> S >> K1 >> K2);
+    assert(1 <= N && N <= 100 * 1000);
+    assert(0 <= K1 && K1 <= S);
+    assert(0 <= K2 && K2 <= S);
+    assert(1 <= S && S <= N);
+
+    vector<int> A(N);
+    for (int i = 0; i < N; ++i) {
+        assert(cin >> A[i]);
+        assert(1 <= A[i] && A[i] <= 1000 * 1000 * 1000);
+    }
+
+    string friendsA, friendsB;
+    assert(cin >> friendsA >> friendsB);
+    assert(int(friendsA.size()) == N);
+    assert(int(friendsB.size()) == N);
+    for (auto &c : friendsA)
+        assert(c == '0' || c == '1');
+    for (auto &c : friendsB) {
+        assert(c == '0' || c == '1');
+        c ^= '0' ^ '1';
+    }
+
+    K2 = S - K2;
+    vector<int> have[4];
+    for (int i = 0; i < N; ++i) {
+        int mask = 0;
+        if (friendsA[i] == '1')
+            mask ^= 1;
+        if (friendsB[i] == '1')
+            mask ^= 2;
+        have[mask].push_back(A[i]);
+    }
+
+    for (int i = 0; i < 4; ++i)
+        sort(have[i].begin(), have[i].end());
+
+    int x[4] = {0, 0, 0, 0};
+    int64_t total_sum = 0;
+    int64_t answer = numeric_limits<int64_t>::max();
+
+    for (x[3] = -1; x[3] <= S && x[3] < int(have[3].size()); ) {
+        if (x[3] == -1)
+            ++x[3];
+        else
+            total_sum += have[3][x[3]++];
+        if (K1 - x[3] > int(have[1].size()))
+            continue; // not enough friends for A
+        if (K2 - x[3] > int(have[2].size()))
+            continue; // not enough friends for B
+        if (K1 - x[3] + K2 - x[3] + x[3] > S) // need to many people
+            continue;
+
+        if (x[3] + int(have[0].size()) + int(have[1].size()) + int(have[2].size()) < S) { // not enough people to get S
+            continue;
+        }
+
+        for (int i = 0; i < 3; ++i)
+            if (x[i] > 0) {
+                total_sum -= have[i][--x[i]];
+            }
+
+        while (x[3] + x[1] < K1) {
+            total_sum += have[1][x[1]++];
+        }
+        while (x[3] + x[2] < K2) {
+            total_sum += have[2][x[2]++];
+        }
+
+        while (x[0] + x[1] + x[2] + x[3] < S) {
+            int best = numeric_limits<int>::max();
+            int where = 0;
+            for (int j = 0; j < 3; ++j)
+                if (x[j] < int(have[j].size()) && have[j][x[j]] < best) {
+                    best = have[j][x[j]];
+                    where = j;
+                }
+            total_sum += have[where][x[where]++];
+        }
+
+        answer = min(answer, total_sum);
+    }
+
+    if (answer == numeric_limits<int64_t>::max()) {
+        answer = 1LL << 62;
+    }
+
+    cout << answer << "\n";
+} 

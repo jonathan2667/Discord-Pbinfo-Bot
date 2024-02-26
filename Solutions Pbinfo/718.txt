@@ -1,0 +1,101 @@
+//Marius Nicoli 100, coada pe stari
+#include <stdio.h>
+#define DIM 505
+int din[] = {1,1,-1,-1};
+int djn[] = {1,-1,1,-1};
+int dic[] = {1,1,-1,-1,2,2,-2,-2};
+int djc[] = {2,-2,2,-2,1,-1,1,-1};
+struct stare {
+    int i;
+    int j;
+    int c;
+};
+
+
+char A[DIM][DIM];
+stare C[DIM*DIM*3],P;
+int V[DIM][DIM][3];
+int T[DIM*DIM*3];
+int N,i1,j1,i2,j2,p,u,iv,jv,sol,R,i,d,U;
+
+int inMat(int i, int j) {
+    if (i > 0 && j > 0 && i<=N && j<=N)
+        return 1;
+    return 0;
+}
+
+int main() {
+    FILE *f = fopen("sah2.in","r");
+    FILE *g = fopen("sah2.out","w");
+    fscanf(f,"%d %d %d %d %d\n",&N,&i1,&j1,&i2,&j2);
+    for (i=1;i<=N;i++)
+        fscanf(f,"%s",A[i]+1);
+    fclose(f);
+    
+    p = u = 1;
+    C[1].i = i1;C[1].j = j1;C[1].c = 0;
+    V[i1][j1][0] = 2;
+    while (p<=u && !sol) {
+        P = C[p];
+        //mut ca nebun
+        for (d = 0; d<=3 && !sol;d++) {
+            iv = P.i + din[d];
+            jv = P.j + djn[d];
+            while (inMat(iv,jv) && A[iv][jv] != '1' && !sol) {
+                if (V[iv][jv][P.c] == 0) {
+                    u++;
+                    C[u].i = iv;
+                    C[u].j = jv;
+                    C[u].c = P.c;
+                    V[iv][jv][P.c] = V[P.i][P.j][P.c] + 1;
+                    T[u] = p;
+                    if (iv == i2 && jv == j2) {
+                        sol = 1;
+                        R = V[iv][jv][P.c] - 2;
+                        U = u;
+                    }
+                }
+                iv+=din[d];
+                jv+=djn[d];
+            }
+        }
+        //mut cal
+        if (P.c !=2){
+            for (d = 0;d<=7;d++) {
+                iv = P.i + dic[d];
+                jv = P.j + djc[d];
+                if (inMat(iv,jv) && A[iv][jv]!='1' && V[iv][jv][P.c+1]==0) {
+                    u++;
+                    C[u].i = iv;
+                    C[u].j = jv;
+                    C[u].c = P.c+1;
+                    V[iv][jv][P.c+1] = V[P.i][P.j][P.c] + 1;
+                    T[u] = p;
+                    if (iv == i2 && jv == j2) {
+                        sol = 1;
+                        R = V[iv][jv][P.c+1] - 2;
+                        U = u;
+                    }
+                    
+                }
+            }
+        }
+        p++;
+    }
+    fprintf(g,"%d\n",R);
+/*
+    int ok = 1;
+    printf("%d\n",C[U].c);
+    while (U) {
+        printf("%d %d\n",C[U].i,C[U].j);
+        if (A[C[U].i][C[U].j] != '0') {
+            ok = 0;
+        }
+        A[C[U].i][C[U].j] = '2';
+        U = T[U];
+    }
+    printf("%s\n",ok == 1 ? "OK" : "NU E OK");
+*/  
+    fclose(g);
+    return 0;
+}

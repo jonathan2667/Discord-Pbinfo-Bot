@@ -1,0 +1,58 @@
+#include <fstream>
+using namespace std;
+ifstream fin("fractal.in");
+ofstream fout("fractal.out");
+unsigned N,C,i,j,ct,a[100001],b[100001],p;
+
+int main()
+{
+    fin>>C>>N;
+    ///cerinta 1
+    if(C==1)
+    {
+        ///calculam 4 la puterea N-2
+        a[0]=a[1]=1;
+
+        for(i=1;i<=N-2;i++)
+        {
+            for(j=1,ct=0;j<=a[0];j++)
+            { a[j]=a[j]*4+ct;ct=a[j]/10; a[j]=a[j]%10;}
+            while(ct){a[0]++;a[a[0]]=ct%10;ct/=10;}
+        }
+        for(j=a[0];j>=1;j--)
+            fout<<a[j];
+        fout<<'\n';
+        return 0;
+    }
+    ///cerinta 2
+    ///calculam 4 la N in vect a
+    a[0]=1;a[1]=1;
+
+    for(i=1;i<=N;i++)
+    {
+        for(j=1,ct=0;j<=a[0];j++)
+        { a[j]=a[j]*4+ct;ct=a[j]/10; a[j]=a[j]%10;}
+        while(ct){a[0]++;a[a[0]]=ct%10;ct/=10;}
+    }
+    ///calculam 4*(3^(N-1)) in vect b
+    b[0]=1;b[1]=4;
+    for(i=1;i<=N-1;i++)
+    {
+        for(j=1,ct=0;j<=b[0];j++)
+        { b[j]=b[j]*3+ct;ct=b[j]/10; b[j]=b[j]%10;}
+        while(ct){b[0]++;b[b[0]]=ct%10;ct/=10;}
+    }
+    ///in final calculez (4^N)-4*(3^(N-1))
+    for(i=1,ct=0;i<=a[0];i++)
+    {
+        if(a[i]>=b[i]+ct){a[i]=a[i]-ct-b[i];ct=0;}
+        else
+        {a[i]=a[i]+10-ct-b[i];ct=1;}
+    }
+    while(a[a[0]]==0)a[0]--;///nu e cazul, dar...
+    ///afisam rezultatul final
+    for(j=a[0];j>=1;j--)
+        fout<<a[j];
+    fout<<'\n';
+    return 0;
+}

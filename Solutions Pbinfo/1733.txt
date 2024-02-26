@@ -1,0 +1,84 @@
+// prof. Ionel Vasile Pit-Rada
+// sursa O(sqrt(n)+sqrt(fi(n))*log(fi(n))
+// Utilizeaza algoritmul de ridicare la putere in timp logaritmic - 100 puncte
+
+#include<fstream>
+using namespace std;
+ifstream  fin("perioada.in");
+ofstream fout("perioada.out");
+
+long long N;
+int p10(int b, int MOD){
+    long long p=1,a=10;
+    while(b){
+        if(b%2==1){
+            p=(p*a)%MOD;
+        }
+        b=b/2;
+        a=(a*a)%MOD;
+    }
+    return p;
+}
+
+int main(){
+    long long fi,x,d,p,perioada;
+    int c;
+    fin>>N;
+    fi=N;
+    x=N;
+
+    c=0;
+    while(x%2==0){
+        x=x/2;
+        c++;
+    }
+    if(c){
+        fi=fi/2;
+    }
+    d=3;
+    while(d*d<=x){
+        c=0;
+        while(x%d==0){
+            x=x/d;
+            c++;
+        }
+        if(c){
+            fi=fi/d*(d-1);
+        }
+        d=d+2;
+    }
+    if(x>1){
+        fi=fi/x*(x-1);
+    }
+    perioada=0;
+    for(d=1;d*d<fi;d++){
+        if(fi%d==0){
+            p=p10(d,N);
+            if(p==1){
+                perioada=d;
+                break;
+            }
+        }
+    }
+    if(d*d==fi){
+        p=p10(d,N);
+        if(p==1){
+            perioada=d;
+        }
+    }
+    if(!perioada){
+        for(d=d-1;d>=1;d--){
+            if(fi%d==0){
+                p=p10(fi/d,N);
+                if(p==1){
+                    perioada=fi/d;
+                    break;
+                }
+            }
+        }
+    }
+    fout<<perioada;
+    fout.close();
+    fin.close();
+    return 0;
+}

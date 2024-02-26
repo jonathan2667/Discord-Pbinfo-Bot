@@ -1,0 +1,103 @@
+#include <iostream>
+#include <fstream>
+#include <string.h>
+#include <math.h>
+using namespace std;
+ifstream fin("vraji.in");//fisier de intrare
+ofstream fout("vraji.out");//fisier de iesire
+int p;//variabila pentru stabilirea cerintei
+int N,V,C;// nr vraji;  puterea unei vocale; puterea unei consoane
+int nrVS;//numar vraji speciale
+int pMax=-2000000000,nrMax;//puterea maxima, numarul de vraji de putere maxima
+char spellMax[105];//vraja de putere maxima
+int fl[30];//vector de frecvente al literelor
+int main()
+{
+    int i,j;//variabile contor
+    int pc;//puterea vrajii curente
+    int nrv,nrc,nrd;// numar vocale; numar consoane; numar litere diferite
+    int n,k;//lungimea vrajii curente; nr de litere vecine identice
+    int aux,auxp;//variabile auxiliara pentru calculul puterii
+    int vrajaspeciala;//1-vraja curenta e special sau 0 in caz contrar
+    char c;//variabila caracter
+    char spell[105];//vraja curenta
+    fin>>p;
+    fin>>N>>V>>C;
+    fin.get();
+    for(i=1;i<=N;i++){//parcurgere vraji
+        fin.get(spell,100,'\n');//citire vraja
+        fin.get();//citire newline
+        n=strlen(spell);//n<-lungimea stringului citit
+        //reinitializare variabile pentru calculul puterii vrajii
+        pc=1;
+        nrv=nrc=nrd=0;
+        k=1;
+        c=0;
+        vrajaspeciala=0;
+        for(j=0;j<n;j++){//parcugere caractere
+            if(c==spell[j]){//verificare daca este vraja speciala
+                k++;//ultimele k litere sunt identice
+                vrajaspeciala=1;
+            }
+            else{
+                if(k>1){//calculeaza puterea grupului de k litere vecine identice
+                    if(c=='a'||c=='e'||c=='i'||c=='o'||c=='u'||c=='q'||c=='w'||c=='y')//identifica daca litera este vocala sau consoana
+                        auxp=V;
+                    else
+                        auxp=C;
+                    aux=auxp;
+                    while(k>1){//calculeaza auxp^k
+                        aux*=auxp;
+                        k--;
+                    }//k=1 la iesire din bucla
+                    pc+=aux;//aux=puterea grupului de k litere vecine identice
+                }
+            }
+            c=spell[j];//c<- caracterul curent
+            fl[c-'a']++;//aduna frecventa pentru a calcula mai tarziu nrd
+            if(c=='a'||c=='e'||c=='i'||c=='o'||c=='u'||c=='q'||c=='w'||c=='y'){//verifica daca litera curenta este vocala sau consoana
+                nrv++;//daca este vocala incrementeaza nrv
+            }
+            else{
+                nrc++;//daca este consoana incrementeaza nrc
+            }
+        }
+        if(k>1){//verifica daca stringul se termina cu un grup de k litere identice
+            if(c=='a'||c=='e'||c=='i'||c=='o'||c=='u'||c=='q'||c=='w'||c=='y')
+                auxp=V;
+            else
+                auxp=C;
+            aux=auxp;
+            while(k>1){
+                aux*=auxp;
+                k--;
+            }
+            pc+=aux;
+        }
+        for(j=0;j<26;j++){//calculeaza nrd  si reintializeaza vectorul cu 0
+            if(fl[j]>0)//daca frecventa unei litere este pozitiva
+                nrd++;//atunci incrementeaza nrd
+            fl[j]=0;
+        }
+        pc+=(int)((nrv*V+nrc*C)/nrd);//calculeaza puterea vrajii curente
+        nrVS+=vrajaspeciala;//nrVS va fi incrementat daca vraja curenta este speciala
+        if(pc>pMax){//verifica daca puterea vrajii actuale este mai mare decat cea mai mare putere de pana acum
+            pMax=pc;//actualizeaza puterea maxima
+            nrMax=1;//numarul de vraji de putere maxima este 1 in acest moment
+            strcpy(spellMax,spell);//actualizeaza vraja de putere maxima
+        }
+        else if(pc==pMax){//daca s-a gasit o vraja de putere maxima
+            nrMax++;//atunci se incrementeaza nrMax
+        }
+//        k=(int)((nrv*V+nrc*C)/nrd);
+//        cout<<spell<<" "<<nrc<<" "<<nrv<<" "<<nrd<<" -> "<<k<<"                 "<<pc<<" "<<vrajaspeciala<<"\n";
+//        fout<<spell<<" "<<pc<<" "<<vrajaspeciala<<"\n";
+    }
+    fin.close();
+    if(p==1)
+        fout<<nrVS<<"\n";
+    else
+        fout<<nrMax<<" "<<spellMax<<"\n";
+    fout.close();
+    return 0;
+}

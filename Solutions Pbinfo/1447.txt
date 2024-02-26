@@ -1,0 +1,106 @@
+#include <fstream>
+
+using namespace std;
+
+ifstream f("secventak.in");
+ofstream g("secventak.out");
+long long n,i,sol, suma,a[100001],b[100001],poz[100001],aib[100001],k,x,j;
+
+void quik(long long inf, long long sup) {
+  long long x, i, j, t;
+  i = inf;
+  j = sup;
+  x = a[(i + j) / 2];
+  do {
+    while ( (i < sup) && (a[i] < x) ) i++;
+    while ( (j > inf) &&(a[j] > x) ) j--;
+    if ( i<= j ) {
+      t = a[i];
+      a[i] = a[j];
+      a[j] = t;
+      t=poz[i];
+      poz[i]=poz[j];
+      poz[j]=t;
+      i++;
+      j--;
+    }
+  } while ( i <= j );
+  if ( inf < j ) quik(inf, j);
+  if ( i < sup ) quik(i, sup);
+}
+
+void sor(long long inf, long long sup) {
+  long long x, i1, j, t;
+  i1 = inf;
+  j = sup;
+  x = poz[(i1 + j) / 2];
+  do {
+    while ( (i1 < sup) && (poz[i1] < x) ) i1++;
+    while ( (j > inf) &&(poz[j] > x) ) j--;
+    if ( i1<= j ) {
+
+      t=poz[i1];
+      poz[i1]=poz[j];
+      poz[j]=t;
+      i1++;
+      j--;
+    }
+  } while ( i1 <= j );
+  if ( inf < j ) sor(inf, j);
+  if ( i1 < sup ) sor(i1, sup);
+}
+
+
+int zeros(int x)
+{
+    return  (x^(x-1))&x ;
+}
+
+void add(int x)
+{
+   int j;
+   for(j=x; j<=n;j+=zeros(j)) aib[j]++;
+}
+
+int cal(int x)
+{
+    int j, ret=0;
+    for(j=x; j>0; j-=zeros(j)) ret+=aib[j];
+    return ret;
+}
+
+int main()
+{
+    f>>n>>k;
+    suma=0;
+    for(i=1;i<=n;i++)
+    {
+        f>>x;
+        suma=suma+x;
+        a[i]=suma-k*i;
+        poz[i]=i;
+    }
+
+    quik(1,n);
+    i=1;
+    while(i<n)
+    {
+        if(a[i]==a[i+1])
+        {
+            j=i;
+            while((a[i]==a[i+1])and(i<n))i++;
+            sor(j,i);
+        }
+        else i++;
+
+    }
+    for(i=1;i<=n;i++)b[poz[i]]=i;
+    for(i=1;i<=n;i++)
+    {
+        sol=sol+cal(b[i]);
+        if(a[b[i]]>=0)sol++;
+        add(b[i]);
+    }
+    g<<sol;
+    return 0;
+}

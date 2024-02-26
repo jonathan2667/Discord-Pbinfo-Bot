@@ -1,0 +1,78 @@
+#include <cstdio>
+#include <cstring>
+using namespace std;
+
+char S[300];
+
+int sum, prod, L, aux, pa, d, k, e, i, j, C;
+
+int P[30];
+
+int main() {
+    FILE *f = fopen("grad.in","r");
+    fgets(S, 300, f);
+    fclose(f);
+    
+    S[strlen(S)+1] = 0;
+    S[strlen(S)] = ' ';
+    
+    L = strlen(S);
+    
+    for (i=0;S[i] == ' ';i++);
+    
+    k = 1;
+    C = S[i];
+    pa = S[i] - 'a' + 1;
+    aux = pa;
+    d = 2;
+    while (aux!=1) {
+        e = 0;
+        while (aux % d ==0) {
+            e++;
+            aux/=d;
+        }
+        if (e) {
+            P[d] += (e*k);
+        }
+        d++;
+    }
+    for (i++;i<L;i++) {
+        if (S[i] >= 'a' && S[i]<='z') {
+            k++;
+            pa = S[i] - 'a' + 1;
+            aux = pa;
+            d = 2;
+            while (aux!=1) {
+                e = 0;
+                while (aux % d ==0) {
+                    e++;
+                    aux/=d;
+                }
+                if (e) {
+                    P[d] += (e*k);
+                }
+                d++;
+            }
+        } else
+            if ((S[i] < 'a' || S[i]>'z') && S[i-1]>='a' && S[i-1]<='z') {
+                int prod = 1;
+                for (j=2;j<=23;j++) {
+                    prod = prod * (P[j]+1);
+                    P[j] = 0;
+                    prod %= k;
+                }
+                sum += prod;
+                k = 0;
+            } else 
+                k=0;
+    }
+    
+    
+//  printf("%s",S);
+    
+    FILE *g = fopen("grad.out","w");
+    fprintf(g,"%d",sum);
+    fclose(g);
+    
+    return 0;
+}

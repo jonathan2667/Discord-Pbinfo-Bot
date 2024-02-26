@@ -1,0 +1,72 @@
+#include <bits/stdc++.h>
+
+#define Nmax 1005
+#define dz(x) ((x ^ (x - 1)) & x)
+
+using namespace std;
+
+ifstream fin("cntsq.in");
+ofstream fout("cntsq.out");
+
+int N, M;
+char C[Nmax];
+int A[Nmax][Nmax];
+int LRU[Nmax][Nmax], CRU[Nmax][Nmax], LDL[Nmax][Nmax], CDL[Nmax][Nmax];
+vector <int> E[Nmax];
+int ans;
+int bit[Nmax];
+
+void update(int pos, int val)
+{
+    for(; pos <= N; pos += dz(pos))
+        bit[pos] += val;
+}
+
+int query(int pos)
+{
+    int ret = 0;
+    for(; pos >= 1; pos -= dz(pos))
+        ret += bit[pos];
+    return ret;
+}
+
+int main()
+{
+    fin >> N >> M;
+    for(int i = 1; i <= N; i++)
+    {
+        fin >> (C + 1);
+        for(int j = 1; j <= M; j++)
+            A[i][j] = C[j] - '0';
+    }
+    for(int i = 1; i <= N; i++)
+        for(int j = 1; j <= M; j++)
+            if(A[i][j] == 1)
+                LDL[i][j] = 1 + LDL[i][j - 1], CDL[i][j] = 1 + CDL[i - 1][j];
+    for(int i = N; i >= 1; i--)
+        for(int j = M; j >= 1; j--)
+            if(A[i][j] == 1)
+                LRU[i][j] = 1 + LRU[i][j + 1], CRU[i][j] = 1 + CRU[i + 1][j];
+    for(int si = N, sj = 1; sj <= M; (si == 1 ? sj++ : si--))
+    {
+        memset(bit, 0, sizeof(bit));
+        for(int i = si, j = sj; i <= N && j <= M; i++, j++)
+        {
+            while(!E[i].empty())
+            {
+                update(E[i].back(), -1);
+                E[i].pop_back();
+            }
+            if(A[i][j] == 1)
+            {
+                update(i, 1);
+                E[i + min(LRU[i][j], CRU[i][j])].push_back(i);
+                ans += query(i) - query(i - min(LDL[i][j], CDL[i][j]));
+            }
+        }
+        E[N + 1].clear();
+        E[M + 1].clear();
+    }
+    fout << ans << "\n";
+    return 0;
+}

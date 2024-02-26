@@ -1,0 +1,13 @@
+#include <iostream>
+using namespace std;
+
+int main()
+{
+    int n, k;
+    cin >> n >> k;
+    while (n > 0 && n % 10 <= k)
+        n /= 10;
+    if (n == 0) cout << "DA";
+    else cout << "NU";
+    return 0;
+}

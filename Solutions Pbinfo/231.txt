@@ -1,0 +1,26 @@
+    #include <iostream>
+#include <fstream>
+using namespace std;
+
+ifstream fin("exista.in");
+ofstream fout("exista.out");
+
+int a[105][105],n,m, k;
+
+int main(){
+    fin >> k >> m >> n;
+    for(int i=1;i<=m;++i)
+        for(int j=1;j<=n;++j)
+            fin >> a[i][j];
+    int s = 0;
+    for(int j=1;j<=n;++j){
+        int ok = 0;
+        for(int i=1;i<=m;i++)
+            if(a[i][j]==k)
+                ok = 1;
+        if(ok == 1)
+            s += j;
+    }
+    fout << s;
+    return 0;
+}

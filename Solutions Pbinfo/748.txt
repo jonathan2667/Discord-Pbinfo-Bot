@@ -1,0 +1,40 @@
+#include <stdio.h>
+
+int n,a,b,c,d,i,n2;
+
+int main(){
+    FILE *f = fopen("bile.in","r");
+    fscanf(f,"%d",&n);
+    fclose(f);
+    FILE *g = fopen("bile.out","w");
+
+    n2 = n/2;
+    
+    if (n%2==1) {
+        a = (n+1)/2;
+        b = a+1;
+        c = 2*n+1-n/2-1;
+        d = c+2;
+        for (i=1;i<=n2;i++) {
+            fprintf(g,"%d %d\n",a,b);
+            fprintf(g,"%d %d\n",c,d);
+            a--,b++,c--,d++;
+        }
+        fprintf(g,"%d %d\n%d",1,n+1,2*n+1-n/2);
+    } else {
+        a = 2*n+1-n/2;
+        b = a+1;
+        c = n/2;
+        d = c+2;
+        for (i=1;i<=n2;i++) {
+            fprintf(g,"%d %d\n",a,b);
+            fprintf(g,"%d %d\n",c,d);
+            a--,b++,c--,d++;
+        }
+        fprintf(g,"%d",n/2+1);
+    }
+
+
+    fclose(g);
+    return 0;
+}

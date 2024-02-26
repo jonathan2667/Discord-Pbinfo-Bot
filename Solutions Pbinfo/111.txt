@@ -1,0 +1,35 @@
+#include <iostream>
+
+using namespace std;
+
+
+
+int main(){
+    int n,x,max = 1,nrmax=0;
+    cin >> n;
+    for(int i = 1 ; i <= n ; ++i){
+        cin >> x;
+        // pentru a determina numarul de factor primi ai unui numar vom folosi descompunerea in factori
+        int nrf = 0, d = 2, cx = x;
+        while(x != 1)
+        {
+            if(x % d == 0){
+                nrf ++;
+                while(x % d == 0)
+                    x /= d;
+            }
+            d ++;
+            if(d * d > x && x > 1)
+                x = 1 , nrf ++;
+        }
+        if(nrf > nrmax)
+            nrmax = nrf, max = cx;
+        else
+            if(nrf == nrmax)
+                if(cx < max)
+                    max = cx;
+    }
+    cout << max << endl;
+    
+    return 0;
+}

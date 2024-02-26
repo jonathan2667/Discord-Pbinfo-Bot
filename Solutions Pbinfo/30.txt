@@ -1,0 +1,4 @@
+void sub(int n, int k){
+    for( ; n ; --n)
+        cout << n * k << " ";
+}

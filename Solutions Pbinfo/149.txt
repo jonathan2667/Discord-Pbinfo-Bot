@@ -1,0 +1,46 @@
+//Autor: Tudose Vlad Andrei
+//O(H^3 * log(N)) - 100 puncte
+
+#include<cstdio>
+#define HMAX 105
+#define MOD 666013
+using namespace std;
+int A[HMAX][HMAX], P[HMAX][HMAX], n, h, k;
+
+void mul(int A[HMAX][HMAX], int B[HMAX][HMAX]) {
+    int C[HMAX][HMAX];
+    for(int i = 0; i <= h; ++i)
+        for(int j = 0; j <= h; ++j) {
+            long long sum = 0;
+            for(int k = 0; k <= h; ++k)
+                sum += (long long)A[i][k] * B[k][j];
+            C[i][j] = sum % MOD;
+        }
+
+    for(int i = 0; i <= h; ++i)
+        for(int j = 0; j <= h; ++j)
+            A[i][j] = C[i][j];
+}
+
+int main() {
+    freopen("scara.in", "r", stdin);
+    freopen("scara.out", "w", stdout);
+    scanf("%d%d%d", &n, &h, &k);
+
+    for(int j = 0; j <= h; ++j) {
+        A[j][j] = 1;
+        for(int i = 0; i <= h; ++i)
+            if(j - k <= i && i <= j + k)
+                P[i][j] = 1;
+    }
+
+    for(--n; n; n >>= 1) {
+        if(n & 1)
+            mul(A, P);
+        mul(P, P);
+    }
+
+    printf("%d\n", A[0][h]);
+    return 0;
+}
+

@@ -1,0 +1,36 @@
+//Emanuela Cerchez - 100 puncte
+#include <stdio.h>
+#include <string.h>
+#include <assert.h>
+#define MAXN 100000
+
+
+char s[MAXN];
+int n;
+int p[MAXN];
+
+int main()
+{
+int i, crt, k, j, lg;
+freopen("compar.in", "r", stdin);
+freopen("compar.out", "w", stdout);
+scanf("%s", s);
+n=strlen(s)+1;
+assert((1 <= n) && (n <= MAXN));
+crt=1;//elementul curent
+for (i = 0; i < n - 1; )
+     if (s[i] == '<') p[i++]=crt++;
+     else
+     {//de la i la j este o secventa formata din >
+      for (j=i; s[j]=='>'; j++);
+      lg=j-i;
+      for (k=crt+lg; k>=crt; k--) p[i++]=k;//plasez numerele de la crt la crt +lg in ordine inversa
+      crt+=lg+1;
+      }
+if (s[n-2]=='<') p[n-1]=crt;
+printf("%d\n",n);
+for (i = 0; i < n-1; ++i)
+    printf("%d ", p[i]);
+printf("%d\n", p[n-1]);
+return 0;
+}

@@ -1,0 +1,53 @@
+#include <fstream>
+
+using namespace std;
+
+const int kMaxN = 500, kInf = 0x3f3f3f3f;
+
+char s[kMaxN + 1];
+bool compress[kMaxN][kMaxN];
+int mx_rem[kMaxN][kMaxN];
+int mn_size[kMaxN];
+
+int main() {
+    ifstream cin("zuma.in");
+    ofstream cout("zuma.out");
+    int n, k; cin >> n >> k >> s;
+    if (k == 1) {
+        cout << 0 << endl;
+        return 0;
+    }
+
+    for (int l = n - 1; l >= 0; --l) {
+        mx_rem[l][l] = 1;
+        for (int r = l + 1; r < n; ++r) {
+            if (s[l] == s[r]) {    
+                mx_rem[l][r] = mx_rem[l][r - 1] + 1; 
+            } else {
+                mx_rem[l][r] = -kInf;
+            }
+
+            for (int split = l; split < r; ++split) {
+                if (compress[split + 1][r]) {
+                    mx_rem[l][r] = max(mx_rem[l][r], mx_rem[l][split]);
+                }
+            }
+             
+            compress[l][r] = (mx_rem[l][r] >= k);
+            for (int split = l; split < r; ++split) {
+                compress[l][r] |= compress[l][split] and compress[split + 1][r];
+            }
+        }
+    }
+    
+    for (int i = 0; i < n; ++i) {
+        mn_size[i] = 1 + (i > 0 ? mn_size[i - 1] : 0);
+        for (int j = 0; j < i; ++j) {
+            if (compress[j][i]) {
+                mn_size[i] = min(mn_size[i], (j > 0 ? mn_size[j - 1] : 0));
+            }
+        }
+    }
+    cout << mn_size[n - 1] << endl;
+    return 0;
+}

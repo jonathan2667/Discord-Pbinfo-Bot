@@ -1,0 +1,22 @@
+#include <iostream>
+#include <fstream>
+using namespace std;
+ifstream f("nrasoc.in");
+ofstream g("nrasoc.out");
+int main()
+{
+    int x,y,z;
+    f>>x>>y;
+
+    while(f>>z && x>=z)
+            {
+                g<<x<<" ";
+                x=y;
+                y=z;
+
+            }
+   if(!f.eof())g<< z <<" ";
+   while(f>>z)
+        g<<z<<" ";
+    return 0;
+}

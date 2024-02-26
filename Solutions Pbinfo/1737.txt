@@ -1,0 +1,81 @@
+#include <bits/stdc++.h>
+#define nmax 50005
+#define MOD 123457
+#define inFile "ksiruri.in"
+#define outFile "ksiruri.out"
+
+using namespace std;
+
+int a[nmax], n, K;
+int d[1030], v[1030];
+
+void Citire()
+{
+    int i, j, x, m;
+    ifstream fin(inFile);
+    fin >> K >> n;
+    for (i = 1; i <= n; ++i)
+    {
+        fin >> m;
+        for (j = 1; j <= m; ++j)
+        {
+            fin >> x;
+            a[i] |= (1 << x);
+        }
+    }
+    fin.close();
+}
+
+inline int NrBiti(int n)
+{
+    int cnt = 0;
+    while (n > 0)
+    {
+        cnt++;
+        n = n & (n - 1);
+    }
+    return cnt;
+}
+
+void Dinamica()
+{
+    int i, j, x, y;
+    d[a[n]] = 1;
+    for (i = n - 1; i >= 1; --i)
+    {
+        for (j = 0; j < 1024; ++j)
+            v[j] = d[j];
+        x = a[i];
+        v[x]++;
+        if (v[x] == MOD) v[x] = 0;
+        for (j = 0; j < 1024; ++j)
+            if (d[j] > 0)
+            {
+                y = x ^ (x & j);
+                v[y] += d[j];
+            }
+        for (j = 0; j < 1024; ++j)
+            d[j] = v[j] % MOD;
+    }
+}
+
+void Afisare()
+{
+    int i, cnt;
+    cnt = 0;
+    for (i = 0; i < 1024; ++i)
+        if (NrBiti(i) >= K && d[i] > 0)
+            cnt += d[i];
+    cnt %= MOD;
+    ofstream fout(outFile);
+    fout << cnt << "\n";
+    fout.close();
+}
+
+int main()
+{
+    Citire();
+    Dinamica();
+    Afisare();
+    return 0;
+}

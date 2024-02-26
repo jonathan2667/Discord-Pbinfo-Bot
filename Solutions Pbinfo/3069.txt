@@ -1,0 +1,140 @@
+#include <stdio.h>
+
+
+ FILE *f, *g;
+
+int n,viz[27];
+char startc[1001];
+int startl[1001];
+
+void cerinta_1()
+{
+    int i, maxf=0, maxv=0, val, x;
+    char ch,xx;
+    fscanf(f,"%d", &n);
+    for(i=1; i<=n; i++)
+    {
+        fscanf(f," %c%d", &ch, &val);
+        x = ch -'A';
+        if(x > maxv)
+            maxv = x;
+        viz[x]++;
+        if(viz[x] > maxf)
+            maxf = viz[x];
+    }
+    for(x=0; x<=maxv; x++)
+        if(viz[x] == maxf)
+            {
+                xx=(char)(x+'A');
+         fprintf(g,"%c ",xx);
+            printf("%c ",xx);}
+    fprintf(g,"\n");
+}
+
+void cerinta_2()
+{
+    char ant, urm, cif;
+    int k,j,valin, valfin, val, i, c, cate;
+    fscanf(f,"%d", &n);
+    for(i=1; i<=n; i++)
+    {
+        fscanf(f," %c%d", &startc[i],&startl[i]);
+
+    }
+    for(i=1; i<=n; i++)
+    {
+        ant = startc[i];
+        valin = startl[i];
+        fscanf(f,"%d ", &cate);
+        for(j=1; j<=cate; j++)
+        {
+            fscanf(f,"%c", &cif);
+            c = ant - 'A';
+            val = cif - '0';
+            if(c%2 == 0)
+            {
+                switch(val)
+                {
+                case 1:
+                    urm = ant;
+                    valfin = valin + 1;
+                    break;;
+                case 2:
+                    urm =(char)(ant + 1);
+                    valfin = valin + 1;
+                    break;
+                case 3:
+                    urm =(char)(ant + 1);
+                    valfin = valin;
+                    break;
+                case 4:
+                    urm = ant;
+                    valfin = valin - 1;
+                    break;
+                case 5:
+                    urm = (char)(ant - 1);
+                    valfin = valin;
+                    if(urm < 'A')
+                        urm = 'Z';
+                    break;
+                case 6:
+                    urm = (char)(ant - 1);
+                    valfin = valin + 1;
+                    if(urm < 'A')
+                        urm ='Z';
+                    break;
+                }
+            }
+            else
+            {
+                switch(val)
+                {
+                case 1:
+                    urm = ant;
+                    valfin = valin + 1;
+                    break;
+                case 2:
+                    urm = (char)(ant + 1);
+                    valfin = valin;
+                    if(urm > 'Z')
+                        urm = 'A';
+                    break;
+                case 3:
+                    urm = (char)(ant + 1);
+                    valfin = valin - 1;
+                    if(urm > 'Z')
+                        urm = 'A';
+                    break;
+                case 4:
+                    urm = ant;
+                    valfin = valin - 1;
+                    break;
+                case 5:
+                    urm = (char)(ant - 1);
+                    valfin = valin - 1;
+                    break;
+                case 6:
+                    urm = (char)(ant - 1);
+                    valfin = valin;
+                    break;
+                }
+            }
+            ant = urm;
+            valin = valfin;
+        }
+        fprintf(g,"%c%d\n",ant,valin);
+
+    }
+}
+int main()
+{
+    int pr;
+    f=fopen("maya.in","r");
+    g=fopen("maya.out","w");
+    fscanf(f,"%d", &pr);
+    if(pr == 1)
+        cerinta_1();
+    else
+        cerinta_2();
+    return 0;
+}

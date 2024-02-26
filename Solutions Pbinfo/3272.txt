@@ -1,0 +1,27 @@
+#include <iostream>
+
+using namespace std;
+
+int main()
+{
+    int n , a , ogl;
+    long long S = 0;
+    for(cin >> n ; n ; --n)
+    {
+        cin >> a;
+        ogl = 0;
+        while(a)
+            ogl = ogl * 10 + a % 10, a /= 10;
+        long long S1 = 0;
+        for(int d = 1 ; d * d <= ogl ; d ++)
+            if(ogl % d == 0)
+            {
+                S1 += d;
+                if(d * d < ogl)
+                    S1 += ogl / d;
+            }
+        S += S1;
+    }
+    cout << S << endl;
+    return 0;
+}

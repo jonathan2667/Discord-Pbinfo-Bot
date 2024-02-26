@@ -1,0 +1,79 @@
+#include <iostream>
+
+using namespace std;
+
+long long a,b,c,c1,p,d,i,j,r,t,t1,k,p1,m,n,v[100000], cif[100] ;
+
+int main()
+{
+    cin >> a >> b ;
+    c = a * b ;
+    c1 = c ;
+    k = 0 ;
+    while ( c1!=0 )
+    {
+        k++ ;
+        cif[k] = c1 % 2 ;
+        c1 = c1 / 2 ;
+    }
+    p = 1 ;
+    for ( i=1 ; i<=a ; i++ )
+        p = p * 2 ;
+    p-- ;
+    for ( i=2 ; i<=p ; i++ )
+    {
+        p1 = 1 ;
+        for ( j=k ; j>=1 ; j-- )
+            if ( cif[j] == 0 ) p1 = ( p1 * p1 ) % i ;
+            else p1 = ( p1 * p1 * 2) % i ;
+        if ( p1 == 1 ) { d = i ; break ; }
+    }
+    r = c % 15 ;
+    p = 1 ;
+    for ( i=1 ; i<=r ; i++ )
+        p = p * 2 ;
+    n = c / 15 ;
+    v[1] = 1 ;
+    m = 1 ;
+    for ( i=1 ; i<=n ; i++ )
+    {
+        t = 0 ;
+        for( j=1 ; j<=m ; j++ )
+        {
+            t1 = ( v[j] * 32768 + t ) % 1000000 ;
+            t = ( v[j] * 32768 + t ) / 1000000 ;
+            v[j] = t1 ;
+        }
+        if ( t > 0 ) { m++ ; v[m] = t ; }
+    }
+    t = 0 ;
+    for( j=1 ; j<=m ; j++ )
+    {
+        t1 = ( v[j] * p + t ) % 1000000 ;
+        t = ( v[j] * p + t ) / 1000000 ;
+        v[j] = t1 ;
+    }
+    if ( t > 0 ) { m++ ; v[m] = t ; }
+    i = 1 ;
+    while ( v[i]==0 ) i++ ;
+    v[i]-- ;
+    t = 0 ;
+    for( i=m ; i>=1 ; i-- )
+    {
+        t1 = ( t * 1000000 + v[i] ) / d ;
+        t = ( t * 1000000 + v[i] ) % d ;
+        v[i] = t1 ;
+    }
+    while ( v[m] == 0 ) m-- ;
+    cout << v[m] ;
+    for ( i=m-1 ; i>=1 ; i-- )
+        if ( v[i] >= 100000 ) cout << v[i] ;
+        else if ( v[i] >= 10000 ) cout << "0" << v[i] ;
+             else if ( v[i] >= 1000 ) cout << "00" << v[i] ;
+                  else if ( v[i] >= 100 ) cout << "000" << v[i] ;
+                       else if ( v[i] >= 10 ) cout << "0000" << v[i] ;
+                            else if ( v[i] >= 0 ) cout << "00000" << v[i] ;
+
+
+    return 0;
+}

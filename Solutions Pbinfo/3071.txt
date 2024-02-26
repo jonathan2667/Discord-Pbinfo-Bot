@@ -1,0 +1,12 @@
+#include <iostream>
+#include <cmath>
+using namespace std;
+
+int main()
+{
+    double a,c,b,densitate_moneda;
+    cin>>a>>b>>c;
+    densitate_moneda=b/(a+b-c);
+    cout<<densitate_moneda;
+    return 0;
+}

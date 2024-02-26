@@ -1,0 +1,60 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <assert.h>
+#include <string.h>
+#include <ctype.h>
+#define Nmax 1300000
+
+int A[Nmax], poz, j, P, N, K, l, k, x,Max, nMax, y, S=0;
+int i, mx, n, cx, ed, nrC=0, C, mp, np, ngen, nm, Vmax, nr, nc, cmx, mu, nu;
+char s[25], c;
+
+int main()
+{
+    freopen("carte.in", "r", stdin);
+    freopen("carte.out","w", stdout);
+
+    scanf("%d\n%d\n",&C,&N);
+
+    assert(0 < N && N <= 1000000);
+
+    for( i = 1; i <= N; i++)
+    {
+        s[0]='\0';
+        scanf("%s\n", &s);
+        n = strlen(s);
+        assert(0 < n && n <= 20);
+        mx = 0; j = 0;
+        while(j < n)
+        {
+            assert(isdigit(s[j]) || isalpha(s[j]) && s[j]<='j');
+            if(isdigit(s[j])) x=s[j]-'0'; else x=s[j]-'a' + 10;
+            mx |= 1<<x;
+            ++j;
+        }
+        A[mx]++;
+        if(A[mx]==1) ngen++;
+        if(A[mx] > Max) Max = A[mx], nMax=1;
+        else if(A[mx] == Max) nMax++;
+        if(i==N) {mu = mx; nu = n;}
+        if(mx>Vmax) Vmax=mx;
+    }
+        if(C==1) printf("%d\n%d\n", Max, nMax);
+        else {
+            for(mx = 0; mx <= Vmax; mx++)
+                if(A[mx]){
+                    ed = mu ^ mx;
+                    nc=0;
+                    do {ed &= ed-1; nc++;} while (ed);
+                    nr=0; cmx = mx;
+                    do { cmx&= cmx-1; nr++;} while (cmx);
+                    if(nr==nu && nc==2) nrC+=A[mx];
+                }
+                printf("%d\n", nrC);
+        }
+        s[0]='\0';
+        scanf("%s\n", &s);
+        n = strlen(s);
+        assert(0==n);
+        return 0;
+}

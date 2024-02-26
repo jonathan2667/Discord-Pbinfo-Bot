@@ -1,0 +1,15 @@
+#include <iostream>
+#include<cstring>
+using namespace std;
+char s1[256], s2[256], * p;
+int main(){
+    cin.getline(s1, 256);
+    cin.getline(s2, 256);
+    p = strpbrk(s1, s2);
+    while(p){
+        cout << p[0];
+        p++;
+        p = strpbrk(p, s2);
+    }
+    return 0;
+}

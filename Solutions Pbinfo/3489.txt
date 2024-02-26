@@ -1,0 +1,83 @@
+#include <iostream>
+#include <vector>
+
+using namespace std;
+
+struct punct{
+    double x=0, y=0;
+};
+struct cerc{
+    double x=0, y=0,r=0;
+};
+
+vector<punct> v[100][100]; // matrice 100x100 ce va contintine distributia punctelor
+vector<cerc> q;
+
+int main()
+{
+    int n, m;
+
+    // citim cele n puncte:
+    cin >> n;
+    for(int i=0; i<n; i++)
+    {
+        punct p;
+        double valoare;
+        cin >> valoare;
+        p.x = valoare;
+        cin >> valoare;
+        p.y = valoare;
+        v[(int)p.x][(int)p.y].push_back(p); // inregistram punctul intr-o matrice de 100x100
+    }
+
+    // cele m cercuri:
+    cin >> m;
+    for(int i=0; i<m; i++)
+    {
+        cerc c;
+        double valoare;
+        cin >> valoare;
+        c.x = valoare;
+        cin >> valoare;
+        c.y = valoare;
+        cin >> valoare;
+        c.r = valoare;
+        q.push_back(c);
+    }
+
+    for(int k=0; k<m; k++) // pentru fiecare cerc in parte
+    {
+        int x1,y1,x2,y2;
+        x1 = (int)(q[k].x-q[k].r);
+        y1 = (int)(q[k].y-q[k].r);
+        x2 = (int)(q[k].x+q[k].r);
+        y2 = (int)(q[k].y+q[k].r);
+        if (x1<0) x1=0;
+        if (y1<0) y1=0;
+        if (x2>99) x2=99;
+        if (y2>99) y2=99;
+        // voi calcula distanta pana la punctele din cele maxim 60x60 patrate
+        // din jurul centrului cercului si nu pana la toate punctele
+
+        int contor=0;
+        for(int i=x1; i<=x2; i++)
+            for(int j=y1; j<=y2; j++)
+            {
+                // penru fiecare patratel ce se afla in patratul ce acopera cercul
+                // vom calcula distantele pana la punctle din acesta. Daca sunt
+                // mai mici decat raza, il numaram:
+                for(int poz=0; poz<v[i][j].size(); poz++)
+                {
+                    punct p = v[i][j][poz];
+                    double distx = p.x-q[k].x;
+                    double disty = p.y-q[k].y;
+                    if(distx*distx + disty*disty <= q[k].r*q[k].r)
+                    {
+                        contor++;
+                    }
+                }
+            }
+        cout << contor << '\n';
+    }
+    return 0;
+}

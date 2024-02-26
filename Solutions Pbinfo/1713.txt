@@ -1,0 +1,56 @@
+// Solutie de 100 puncte - sursa cu descompunere in factori primi si produs de combinari
+// O(sqrt(n))
+
+#include <fstream>
+#define fmax 50
+
+using namespace std;
+
+int main()
+{
+    unsigned long long n,w,i,j,k=0,fact,p=1,t,e[fmax];
+
+    ifstream f("ecuatie3.in");
+    ofstream g("ecuatie3.out");
+
+    f>>n>>t;
+
+
+    w=t;
+
+    // extrag factorii de 2
+    fact=0; 
+    while (w%2==0)
+            {w/=2;fact++;}
+
+    if (fact) e[++k]=fact;
+            
+
+    // descompun t in factori primi
+    i=3;
+    while (i*i<=w)
+    {
+        if (w%i==0)
+            {
+            fact=0;
+            while (w%i==0) {w/=i;fact++;}
+            if (fact) e[++k]=fact;
+            }
+        i+=2;
+    }
+
+    if (w>i-1) e[++k]=1;
+
+    //calculez cate solutii are ecuatia
+
+    for(i=1;i<=k;i++)
+        for(j=1;j<=n-1;j++)
+            p=p*(e[i]+j)/j;
+
+
+    g<<p<<"\n";
+
+    f.close();
+    g.close();
+    return 0;
+}

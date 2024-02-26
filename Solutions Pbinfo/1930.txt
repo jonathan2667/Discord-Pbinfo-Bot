@@ -1,0 +1,43 @@
+// Popa Bogdan Ioan, Colegiul National Aurel Vlaicu Orastie, clasa a 10-a
+#include <bits/stdc++.h>
+#define ll long long
+using namespace std;
+ifstream fin("zen.in");
+ofstream fout("zen.out");
+struct Zen
+{
+    int idx;
+    ll val;
+};
+deque<Zen>DQ;
+int n,K;
+ll sol;
+int val;
+int i;
+void update(ll val, int idx)
+{
+    Zen it={idx,val};
+    while(!DQ.empty() && DQ.back().val>=it.val)
+        DQ.pop_back();
+    DQ.push_back(it);
+}
+ll query(int idx)
+{
+    if(idx>K)
+        if(DQ.front().idx<idx-K)
+            DQ.pop_front();
+    return DQ.front().val;
+}
+int main()
+{
+    fin>>n>>K;
+    DQ.push_back({0,0});
+    for(i=1;i<=n;i++)
+    {
+        fin>>val;
+        sol=val+query(i);
+        update(sol,i);
+    }
+    fout<<sol<<"\n";
+    return 0;
+}

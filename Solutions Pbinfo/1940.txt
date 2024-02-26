@@ -1,0 +1,49 @@
+/*
+    Proposer: Daniel Rusu
+    Solution: O(N^2)
+    Score: 100
+*/
+
+#include <fstream>
+#include <cstring>
+
+using namespace std;
+
+ifstream fin("bomba.in");
+ofstream fout("bomba.out");
+
+#define DIM 1002
+
+char Map[DIM][DIM];
+int Line[DIM], Col[DIM];
+int N, M;
+
+int main() {
+    fin >> N >> M;
+
+    int totalEnemies = 0;
+    for(int i = 1; i <= N; ++i) {
+        fin >> (Map[i] + 1);
+
+        for(int j = 1; j <= M; ++j) {
+            if(Map[i][j] == '1') {
+                ++Line[i];
+                ++Col[j];
+                ++totalEnemies;
+            }
+        }
+    }
+
+    for(int i = 1; i <= N; ++i) {
+        for(int j = 1; j <= M; ++j) {
+            int totalDestroyed = Line[i] + Col[j] - (Map[i][j] == '1');
+
+            if(totalDestroyed == totalEnemies) {
+                fout << i << ' ' << j << '\n';
+                i = j = N + M;
+            }
+        }
+    }
+
+    return 0;
+}

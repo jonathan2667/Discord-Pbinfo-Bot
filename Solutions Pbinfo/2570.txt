@@ -1,0 +1,76 @@
+#include <iostream>
+#include <fstream>
+using namespace std;
+
+ifstream f("mostenire.in");
+ofstream g("mostenire.out");
+
+int C,N,Q,K,S,D,Z,i,x,v[10001],cod[10],app[10],t,ap[10001],maxim;
+int main()
+{
+    f>>C;
+
+    f>>Q>>N>>K;
+    for(i=1; i<=N; i++)
+    {
+        f>>v[i];
+    }
+    for(i=9; i>=1; i--)
+    {
+        cod[i]=Q%10;
+        Q=Q/10;
+    }
+    if(C==1)
+    {
+        for(i=1; i<=K; i++)
+        {
+            f>>S>>D;
+            for(x=S; x<=D; x++)
+            {
+                {
+                    for(t=1; t<=9; t++)
+                        if(cod[t]==v[x])
+                        {
+                            v[x]=t;
+                            break;
+                        }
+                }
+            }
+        }
+        for(i=1; i<=N; i++)
+            g<<v[i]<<" ";
+    }
+    if(C==2)
+    {
+
+        for(i=1; i<=K; i++)
+        {
+            f>>S>>D;
+            for(x=S; x<=D; x++)
+                ap[x]++;
+        }
+        for(i=1; i<=N; i++)
+            if(ap[i]>maxim)
+            {
+                maxim=ap[i];
+                Z=i;
+            }
+        app[v[Z]]=1;
+        for(i=1; i<=maxim; i++)
+        {
+
+            for(t=1; t<=9; t++)
+                if(cod[t]==v[Z])
+                {
+                    v[Z]=t;
+                    app[t]++;
+                    break;
+                }
+        }
+        g<<Z<<endl;
+        for(i=1; i<=9; i++)
+            if(app[i])
+                g<<i<<" ";
+        return 0;
+    }
+}

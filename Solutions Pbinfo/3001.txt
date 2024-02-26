@@ -1,0 +1,16 @@
+# include <iostream>
+using namespace std;
+
+
+int main()
+{
+    int N, sol = 0; cin >> N;
+    for (int i = 1; i<= N; i++)
+    {
+        long long a,r ; cin>>a>>r;
+        long long r_c = a*a+3*a+1;
+        if (r == r_c) sol++;
+    }
+    cout<<sol;
+    return 0;
+}

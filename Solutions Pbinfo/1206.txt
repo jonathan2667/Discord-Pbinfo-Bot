@@ -1,0 +1,70 @@
+#include <fstream>
+#define DIM 1000002
+
+using namespace std;
+
+int v[DIM], a[DIM], b[DIM], c[DIM], d[DIM];
+int n, m, k, x, y, i, j, sol, solc, p, u, mid;
+
+int main() {
+    ifstream fin("placa.in");
+    ofstream fout("placa.out");
+
+    fin>>n>>m>>k;
+    for (i=1;i<=m;i++) {
+        fin>>x>>y;
+        if (x!=n)
+            v[i] = x+y;
+        else
+            v[i] = n;
+    }
+
+    a[1] = v[1];
+    for (i=2;i<=m;i++)
+        if (a[i-1] > v[i])
+            a[i] = a[i-1];
+        else
+            a[i] = v[i];
+
+    b[m] = v[m];
+    for (i=m-1;i>=1;i--)
+        if (v[i] > b[i+1])
+            b[i] = v[i];
+        else
+            b[i] = b[i+1];
+
+    sol = m+2;
+    for (i=1,j=k;j<=m;i++,j++) {
+        if (a[i-1] > b[j+1])
+            x = a[i-1];
+        else
+            x = b[j+1];
+
+        if (x < sol)
+            sol = x;
+    }
+
+    fout<<sol<<"\n";
+
+
+    for (i=1;i<=m;i++) {
+        if (a[i] > sol)
+            c[i] = 1;
+        else
+            c[i] = c[i-1];
+    }
+
+    for (i=m;i>=1;i--) {
+        if (b[i] > sol)
+            d[i] = 1;
+        else
+            d[i] = d[i+1];
+        c[i] = c[i] && d[i];
+        if (c[i] == 1)
+            p++;
+    }
+
+    fout<<p<<"\n";
+
+    return 0;
+}

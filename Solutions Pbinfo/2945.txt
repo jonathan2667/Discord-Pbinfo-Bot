@@ -1,0 +1,4 @@
+int main() {
+    unsigned v = 1;
+    while(v = 11 - comunica(v));
+}

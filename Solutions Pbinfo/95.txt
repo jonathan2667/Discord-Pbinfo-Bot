@@ -1,0 +1,14 @@
+#include <iostream>
+#include <cstring>
+using namespace std;
+
+int main(){
+    char s[256];
+    cin.getline(s,256);
+    int r = 0;
+    for(int i=1;s[i];++i)
+        if(strchr("aeiou",s[i]) && strchr("aeiou",s[i-1]))
+            r++;
+    cout << r;
+    return 0;
+}

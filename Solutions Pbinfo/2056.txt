@@ -1,0 +1,140 @@
+/* O(N * logVALMAX * log*N) */
+#include <iostream>
+#include <fstream>
+#include <vector>
+#include <algorithm>
+#include <cassert>
+
+using namespace std;
+
+struct Interval {
+    int x, y, weight;
+};
+
+istream& operator>>(istream& input, Interval& i) {
+    input >> i.x >> i.y >> i.weight;
+    --i.y;
+    return input;
+}
+
+class DisjointSet {
+  public:
+    DisjointSet(int size):
+        m_data(size, 0),
+        m_anc(size, 0),
+        m_before(size, 0),
+        m_total(0),
+        m_count(size) {
+        for (int i = 0; i < size; ++i) {
+            m_anc[i] = i;
+            m_before[i] = i - 1;
+        }
+    }
+
+    int anc(int x) {
+        if (m_anc[x] == x)
+            return x;
+        return (m_anc[x] = anc(m_anc[x]));
+    }
+
+    void merge(int x, int y) {
+        x = anc(x);
+        y = anc(y);
+        assert(anc(m_before[y]) == x);
+        m_anc[y] = x;
+        m_data[x] += m_data[y];
+        m_count[x] = m_count[y];
+    }
+
+    void increment(int x, int64_t value) {
+        m_data[anc(x)] += value;
+        m_total += value;
+    }
+
+    int64_t total() const {
+        return m_total;
+    }
+
+    int64_t value(int x) {
+        return m_data[anc(x)];
+    }
+
+    int count(int x) {
+        return m_count[anc(x)];
+    }
+
+    void setCount(int x, int count) {
+        m_count[anc(x)] = count;
+    }
+
+    bool check_merge(int x) {
+        x = anc(x);
+        if (m_before[x] == -1)
+            return false;
+        if (m_data[x] >= 0) {
+            merge(m_before[x], x);
+            return true;
+        }
+        return false;
+    }
+
+  private:
+    vector<int64_t> m_data;
+    vector<int> m_anc, m_before;
+    int64_t m_total = 0;
+    vector<int> m_count;
+};
+
+int main() {
+    ifstream cin("popcorn.in");
+    ofstream cout("popcorn.out");
+
+    int M, N; assert(cin >> M >> N);
+    assert(1 <= M && M <= 200000);
+    assert(1 <= N && N <= M);
+
+    vector<Interval> intervals(M);
+    int max_coord = 0;
+    for (int i = 0; i < M; ++i) {
+        assert(cin >> intervals[i]);
+        assert(1 <= intervals[i].x && intervals[i].x <= intervals[i].y && intervals[i].y <= 200000);
+        max_coord = max(max_coord, intervals[i].y);
+    }
+
+    vector< vector< pair<int, int> > > ends_at(max_coord + 1);
+    for (auto &interval: intervals)
+        ends_at[interval.y].emplace_back(interval.x, interval.weight);
+
+    int step = 1<<30;
+    int answer;
+    int real_answer = 0;
+    for (answer = 0; step; step >>= 1) {
+        answer += step;
+        DisjointSet D(max_coord + 1);
+
+        for (int j = 1; j <= max_coord; ++j) {
+            D.increment(j, D.value(0) - answer - D.total());
+            D.setCount(j, D.count(0) + 1);
+
+            while (D.check_merge(j));
+
+            // first let's update with all intervals ending at j
+            for (auto &interval : ends_at[j]) {
+                int a = interval.first;
+                int weight = interval.second;
+                // so now (theoretically) we have to increment for all j = b >= k >= a, that is for all k in [a, b] with weight
+                // so we increment only a's component
+                D.increment(a, weight);
+
+                // but now this component might be better than the previous
+                while (D.check_merge(a));
+            }
+        }
+        if (D.count(0) >= N)
+            real_answer = D.value(0) + answer * N;//D.count(0);
+        else
+            answer -= step;
+    }
+
+    cout << real_answer << "\n";
+}

@@ -1,0 +1,25 @@
+#include <iostream>
+#include <fstream>
+#include <cassert>
+
+using namespace std;
+
+ifstream fin("maxmat.in");
+ofstream fout("maxmat.out");
+
+int n,m,a[110][110];
+
+int main(){
+    fin >> n >> m;
+    for(int i=1;i<=n;++i)
+        for(int j=1; j<=m;++j)
+            fin >> a[i][j];
+    for(int i=1;i<=n;++i){
+        int pmax = 1;
+        for(int j=2;j<=m;++j)
+            if(a[i][j]>a[i][pmax])
+                pmax = j;
+        fout << a[i][pmax] << " " << pmax << endl;
+    }
+    return 0;
+}

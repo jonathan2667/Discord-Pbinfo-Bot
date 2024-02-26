@@ -1,0 +1,61 @@
+// sursa 100 puncte - Chesca Ciprian
+
+#include <fstream>
+#define nmax 1005
+
+using namespace std;
+
+int a[nmax][nmax],n,k,st[nmax];
+
+ifstream f("partitie.in");
+ofstream g("partitie.out");
+
+
+void solve()
+{
+    int i,j,aux;
+
+    // construiesc stiva
+    for(i=1;i<=(n+1)/2;i++)
+        st[i]=2*i-1;
+    for(i=1;i<=n/2;i++)
+        st[(n+1)/2+i]=2*i;
+
+    // fac permutari circulare cu stiva
+
+        for(j=1;j<=n;j++)
+            {
+            for(i=1;i<=n;i++)
+                g<<a[i][st[i]]<<" ";
+            g<<"\n";
+
+            aux=st[1];
+            for(i=1;i<n;i++)
+                st[i]=st[i+1];
+            st[n]=aux;
+            }
+
+}
+
+
+
+int main()
+{
+    int i,j;
+
+    // citesc n - impar
+    f>>n;
+
+    // construiesc matricea
+    for(i=1;i<=n;i++)
+        for(j=1;j<=n;j++)
+            a[i][j]=(i-1)*n+j;
+    
+    solve();
+
+    f.close();
+    g.close();
+
+
+    return 0;
+}

@@ -1,0 +1,17 @@
+int Egal(int n)
+{
+    int x = -1, m = n;
+    while(m)
+    {
+        if(m % 2 == 1)
+            x = m % 10;
+        m /= 10;
+    }
+    while(n)
+    {
+        if(n % 2 == 1 && n % 10 != x)
+            return 0;
+        n /= 10;
+    }
+    return 1;
+}

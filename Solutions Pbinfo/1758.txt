@@ -1,0 +1,37 @@
+#include <stdio.h>
+#include <stdlib.h>
+struct coord
+{
+    int x;
+    int y;
+} a[10002];
+int fc(const void *a, const void *b)
+{
+    return ((struct coord *)a)->x - ((struct coord *)b)->x;
+}
+int main()
+{
+    FILE *fi, *fo;
+    int m,n,i,j,p,b[5002];
+    coord t;
+    fi=fopen("bile.in","r");
+    fscanf(fi,"%d %d %d",&m,&n,&p);
+    for(i=1; i<=p; i++) fscanf(fi,"%d %d",&a[i].x,&a[i].y);
+    for(i=1; i<=n; i++) fscanf(fi,"%d",&b[i]);
+    fclose(fi);
+    /*for(i=1;i<n;i++)
+     for(j=i+1;j<=n;j++)
+       if(a[i].x>a[j].x) {t=a[i]; a[i]=a[j]; a[j]=t;}*/
+    qsort(a+1,p,sizeof a[0],fc);
+    for(i=1; i<=p; i++)
+    {
+        j=a[i].y;
+        b[j-1]+=b[j]/2+b[j]%2;
+        b[j+1]+=b[j]/2;
+        b[j]=0;
+    }
+    fo=fopen("bile.out","w");
+    for(i=1; i<=n; i++) fprintf(fo,"%d\n",b[i]);
+    fclose(fo);
+    return 0;
+}

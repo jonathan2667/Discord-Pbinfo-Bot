@@ -1,0 +1,19 @@
+#include <iostream>
+
+using namespace std;
+int n, i, x, f[2021];
+
+int main()
+{
+    cin >> n;
+    for(i = 1; i <= n; i++)
+    {
+        cin >> x;
+        f[x]++;
+    }
+    if((f[2020]>0)or((f[2]>0)and(f[1010]>0))or((f[4]>0)and(f[505]>0))or((f[5]>0)and(f[404]>0))or((f[10]>0)and(f[202]>0))or((f[20]>0)and(f[101]>0))or((f[2]>1)and(f[505]>0))or((f[2]>0)and(f[5]>0)and(f[202]>0))or((f[4]>0)and(f[5]>0)and(f[101]>0))or((f[2]>0)and(f[10]>0)and(f[101]>0))or((f[2]>1)and(f[5]>0)and(f[101]>0)))
+       cout << "DA";
+    else cout << "NU";
+
+    return 0;
+}

@@ -1,0 +1,40 @@
+#include <fstream>
+#include <vector>
+using namespace std;
+ifstream f("arbori_xor.in");
+ofstream g("arbori_xor.out");
+int n, q, i, u, v, w, viz[10001], d[10001];
+vector< pair<int, int> > arb[10001];
+
+void make_arb(int nod, int nr)
+{
+    viz[nod] = 1;
+    d[nod] = nr;
+    int h, lung = arb[nod].size(), fiu, val;
+    for(h = 0; h < lung; h++)
+    {
+        fiu = arb[nod][h].first;
+        val = arb[nod][h].second;
+        if(viz[fiu] == 0)
+            make_arb(fiu, nr^val);
+    }
+}
+
+int main()
+{
+    f >> n >> q;
+    for(i = 1; i < n; i++)
+    {
+        f >> u >> v >> w;
+        arb[u].push_back(make_pair(v,w));
+        arb[v].push_back(make_pair(u,w));
+    }
+    make_arb(1, 0);
+    for(i = 1; i <= q; i++)
+    {
+        f >> u >> v;
+        w = d[u]^d[v];
+        g << w << "\n";
+    }
+    return 0;
+}

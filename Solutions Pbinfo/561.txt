@@ -1,0 +1,20 @@
+#include <iostream>
+using namespace std;
+
+int n, maxim, s, i, poz, x;
+
+int main(){
+    cin>>s>>n;
+
+    maxim = 0;
+    for (i=1;i<=n;i++) {
+        cin>>x;
+        if (s/x > maxim) {
+            maxim = s/x;
+            poz = i;
+        }
+    }
+    cout<<maxim<<" "<<poz<<"\n";
+
+    return 0;
+}

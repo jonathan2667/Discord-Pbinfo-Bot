@@ -1,0 +1,16 @@
+#include <iostream>
+using namespace std;
+int main()
+{
+    long long  n,s=0,x=0,S;
+    cin>>n;
+    while(n>0)
+    {
+        s=s+n%10;
+        n=n/10;
+        x=x*10+1;
+    }
+    S=s*x;
+    cout<<S;
+    return 0;
+}

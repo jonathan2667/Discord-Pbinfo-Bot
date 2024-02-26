@@ -1,0 +1,82 @@
+// o posibila solutie de 100p pentru problema dim_maxim_binar #1459 @pbinfo.ro
+// ideile prezentate pot fi imbunatatite
+// compilat cu Code::Blocks 13.12
+
+#include <iostream> // std::cin, std::cout
+#include <cstring>  // strlen
+
+using namespace std;
+
+int matriceBinara[105][10], numarLinii, numarColoane;
+char cuvant[105];
+
+//-------------------------------------------------------------------------------------------------------
+// functie care returneaza, prin intermediul parametrului vect (vector de numere intregi), codificarea binara a
+// caracterului transmis prin intermediul parametrului caracter (de tip char)
+void charToInt(char caracter, int vect[]) {
+    int ordinAscii = (int) caracter;
+    for(int i = 8; i >= 1; i--) {
+        vect[i] = ordinAscii % 2;
+        ordinAscii /= 2;
+    }
+}
+
+//-------------------------------------------------------------------------------------------------------
+// transforma matriceBinara (declarata global) in reprezentarea binara a cuvantului citit de la tastatura
+void transformareMatrice()
+{
+    int lungime = strlen(cuvant), vect_local[10];
+    for(int i = 1; i <= lungime; i++) {
+        charToInt(cuvant[i-1], vect_local);
+        for(int j = 1; j <= 8; j++)
+            matriceBinara[i][j] = vect_local[j];
+    }
+
+    // stabilirea dimensiunilor
+    numarLinii = lungime; // lungimea cuvantului
+    numarColoane = 8;
+}
+
+//-------------------------------------------------------------------------------------------------------
+// verifica daca submatricea patratica, delimitata de (i_start, j_start) (colt stanga sus) si
+// (i_final, j_final) (colt dreapta jos) are toate elementele egale (0 sau 1)
+bool verificareSubmatrice(int i_start, int i_final, int j_start, int j_final)
+{
+    for(int i = i_start; i <= i_final; i++)
+        for(int j = j_start; j <= j_final; j++)
+            if(matriceBinara[i][j] != matriceBinara[i_start][j_start])
+                return false;
+    return true;
+}
+
+//-------------------------------------------------------------------------------------------------------
+// subprogram care returneaza dimensiunea celei mai mari submatrici patratice avand toate elementele egale
+int secventaMaxima()
+{
+    int secventa_max = 1;
+    // parcurgem matricea binara, fara ultima linie si ultima coloana
+    for(int i = 1; i < numarLinii; i++)
+        for(int j = 1; j < numarColoane; j++)
+            // parcurgem toate submatricile patratice posibile, pornind de la pozitia (i, j)
+            for(int _i = i + 1, _j = j + 1; _i <= numarLinii && _j <= numarColoane; _i++, _j++)
+                if(verificareSubmatrice(i, _i, j, _j)) { // submatricea are toate elementele egale
+                    if(_i - i + 1 > secventa_max)
+                        secventa_max = _i - i + 1;
+                }
+                else
+                    break;  // oprim for-ul, deoarece nu mai are rost sa continuam cu el
+    return secventa_max;
+}
+
+//-------------------------------------------------------------------------------------------------------
+// Programul principal
+int main(void)
+{
+    cin >> cuvant;
+
+    transformareMatrice();
+
+    cout << secventaMaxima();
+
+    return 0;
+}

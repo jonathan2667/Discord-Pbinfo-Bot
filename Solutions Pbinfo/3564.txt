@@ -1,0 +1,45 @@
+#include <bits/stdc++.h>
+
+using namespace std;
+
+ifstream fin ("copaci1.in");
+ofstream fout ("copaci1.out");
+
+static const int NMAX = 200001;
+int N, rez, h[NMAX], st[NMAX], dr[NMAX];
+stack < pair < int, int > > S;
+
+int main () {
+    fin >> N;
+    for (int i = 0; i < N; i ++)
+    fin >> h[i];
+  for (int i = 0; i < N; i ++) {
+    while (!S.empty() && h[i] > S.top().first) {
+            dr[S.top().second] = 1;
+            S.pop();
+        }
+        if (!S.empty() && h[i] == S.top().first)
+            S.pop();
+        else
+            S.push (make_pair (h[i], i));
+  }
+  while (!S.empty())
+    S.pop();
+  for (int i = N - 1; i >= 0; i --) {
+        while (!S.empty() && h[i] > S.top().first) {
+            st[S.top().second] = 1;
+            S.pop();
+        }
+        if (!S.empty() && h[i] == S.top().first)
+            S.pop();
+        else
+            S.push (make_pair (h[i], i));
+    }
+    for (int i = 0; i < N; i ++)
+    rez += (st[i] && dr[i]);
+  fout << rez << '\n';
+  fin.close();
+  fout.close();
+    return 0;
+}
+

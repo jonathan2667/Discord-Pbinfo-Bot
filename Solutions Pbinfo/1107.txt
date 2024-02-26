@@ -1,0 +1,53 @@
+#include <iostream>
+#include <iomanip>
+#include <fstream>
+
+using namespace std;
+
+
+long cmmdc(long a, long b)
+{
+    while (a!=b)
+      {
+          if (a>b)
+             a=a-b;
+          else
+             b=b-a;
+      }
+    return a;
+}
+
+int main()
+{
+    long n,m,N,M,CMMDC,nl,nh;
+    long long s;
+    int colt=0;
+    ifstream inFile;
+    ofstream outFile;
+    // citire date din fis
+    inFile.open("reflex.in");
+    outFile.open("reflex.out");
+    inFile >> n >> m;
+    N=n-1;
+    M=m-1;
+    CMMDC=cmmdc(N,M);
+    // CMMMC = N * M / CMMDC;
+    nl=N/CMMDC;
+    nh=M/CMMDC;
+    if (nl%2==0)
+         colt=4;
+    else
+       if (nh%2==0)
+          colt=2;
+       else
+          colt=3;
+    s = nl;
+    s = s * M + 1;
+    outFile << s << " " << colt << "\n";
+    outFile << nh -1 << " " << nl -1 << "\n";
+
+
+    inFile.close();
+    outFile.close();
+    return 0;
+}

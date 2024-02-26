@@ -1,0 +1,58 @@
+#include <bits/stdc++.h>
+
+using namespace std;
+
+#define int long long
+const int MAXN = 300000 + 10;
+int V[MAXN], n;
+
+long long countSmall(long long x) {
+    long long ans = 0;
+
+    for(int i = 1, j = n; i <= n; ++i) {
+        while(1LL * V[i] * V[j] > x)
+            --j;
+        ans += j;
+    }
+
+    return ans;
+}
+
+
+long long kth(long long pos) {
+    long long ans = 0;
+    for(long long i = (1LL << 40); i; i >>= 1LL) {
+        int x = countSmall(ans + i);
+        if(x < pos) {
+            ans += i;
+        }
+    }
+    return ans + 1;
+}
+
+int32_t main() {
+    ifstream cin("dif2.in");
+    ofstream cout("dif2.out");
+    
+    int t;
+    long long a, b;
+
+    cin >> t >> n;
+
+    if(t == 2) cin >> a >> b;
+
+    for(int i = 1; i <= n; ++i) {
+        cin >> V[i];
+    }
+
+    sort(V + 1, V + n + 1);
+
+    if(t == 1) {
+        cout << 1LL * V[n] * V[n] - 1LL * V[1] * V[1] << endl;
+    } else {
+        cout << kth(1LL * n * n - a + 1) - kth(1LL * n * n - b + 1) << endl;
+    }
+
+
+    return 0;
+}

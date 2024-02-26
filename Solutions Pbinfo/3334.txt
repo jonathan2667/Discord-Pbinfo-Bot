@@ -1,0 +1,56 @@
+/// Solutie - Moca Andrei - 100p
+#include <bits/stdc++.h>
+using namespace std;
+unordered_map<int, map<int, int>> M;
+int cer, k, n, x, y, curr(1), s, smax, ind;
+const int DIM = 10000;
+char buff[DIM + 5];
+int poz;
+inline void read(int &numar)
+{
+     numar = 0;
+     while (buff[poz] < '0' || buff[poz] > '9')
+        if (++poz == DIM)
+            fread(buff, 1, DIM, stdin), poz = 0;
+     while ('0' <= buff[poz] && buff[poz] <= '9')
+     {
+        numar = numar * 10 + buff[poz] - '0';
+        if (++poz == DIM)
+            fread(buff, 1, DIM, stdin), poz = 0;
+     }
+}
+int main()
+{
+    read(k), read(n), read(x);
+    for (int i = 2; i <= n; ++i)
+    {
+        read(y);
+        if (x == y)
+            ++curr;
+        else ++M[x][-curr], curr = 1;
+        x = y;
+    }
+    read(cer);
+    ++M[x][-curr];
+    for (const auto& m : M)
+    {
+        x = m.first;
+        curr = k;
+        s = 0;
+        for (const auto& p : m.second)
+        {
+            if (curr >= p.second)
+                curr -= p.second, s -= p.first * p.second;
+            else if (curr < p.second)
+                s -= p.first * curr, curr = 0;
+            if (!curr)
+                break;
+        }
+        if ((s > smax) || (s == smax && x > ind))
+            smax = s, ind = x;
+    }
+    if (cer == 1)
+        cout << smax;
+    else cout << ind;
+    return 0;
+}

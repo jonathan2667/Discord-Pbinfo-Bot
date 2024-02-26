@@ -1,0 +1,76 @@
+#include <fstream>
+#include <vector>
+#include <bitset>
+#define DIM 100010
+
+using namespace std;
+
+vector<pair<int, int> > L[DIM];
+bitset<DIM> v;
+int Do[DIM],  Up[DIM], G[DIM], T[DIM];
+
+int n, x, y, z, r, sol;
+
+void dfsDown(int nod) {
+    v[nod] = 1;
+    Do[nod] = 0;
+    for (int i=0;i<L[nod].size();i++) {
+        int vecin = L[nod][i].first;
+        if(v[vecin] == 0) {
+            int cost = L[nod][i].second;
+            T[vecin] = nod;
+            dfsDown(vecin);
+            Do[nod] = max(Do[nod], Do[vecin] + cost);
+        }
+    }
+}
+
+void dfsUp(int nod, int tata, int costTata) {
+    v[nod] = 1;
+    Up[nod] = Up[tata] + costTata;
+
+    if (tata != 0) {
+        for (int i=0;i<L[tata].size();i++) {
+            int fiuTata = L[tata][i].first;
+            if (fiuTata != nod && fiuTata != T[tata]) {
+                int costFiuTata = L[tata][i].second;
+                Up[nod] = max(Up[nod], costTata + costFiuTata + Do[fiuTata]);
+            }
+        }
+    }
+
+    for (int i=0;i<L[nod].size();i++) {
+        int vecin = L[nod][i].first;
+        if (v[vecin] == 0) {
+            int cost = L[nod][i].second;
+            dfsUp(vecin, nod, cost);
+        }
+    }
+}
+
+int main () {
+    ifstream fin ("arborelantmaxim.in");
+    ofstream fout("arborelantmaxim.out");
+
+    fin>>n;
+    for (int i=1;i<n;i++) {
+        fin>>x>>y>>z;
+        L[x].push_back(make_pair(y, z));
+        L[y].push_back(make_pair(x, z));
+        G[x]++;
+        G[y]++;
+    }
+    for (int i=1;i<=n;i++)
+        if (G[i] == 1) {
+            r = i;
+            break;
+        }
+    dfsDown(r);
+    v.reset();
+    dfsUp(r, 0, 0);
+
+    for (int i=1;i<=n;i++)
+        sol = max(sol, Do[i] + Up[i]);
+    fout<<sol<<"\n";
+    return 0;
+}

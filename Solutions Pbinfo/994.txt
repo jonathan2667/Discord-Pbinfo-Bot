@@ -1,0 +1,37 @@
+#include <iostream>
+#include <fstream>
+using namespace std;
+
+ifstream fin ("fiboverif1.in");
+ofstream fout("fiboverif1.out");
+
+bool fibo(int n)
+{
+    if(n == 1)
+        return true;
+    int a = 1 , b = 1 , c;
+    while(b < n)
+    {
+        c = a + b;
+        a = b;
+        b = c;
+    }
+    if(b == n)
+        return true;
+    return false;
+}
+
+int main()
+{
+    int n , x ;
+    fin >> n;
+    while(n > 0)
+    {
+        fin >> x;
+        if(fibo(x))
+            fout << x << " ";
+        n --;
+    }
+    return 0;
+}
+

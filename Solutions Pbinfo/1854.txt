@@ -1,0 +1,33 @@
+#include <iostream>
+#include <fstream>
+using namespace std;
+
+fstream fin, fout;
+
+int A[100005], n , m , op, k;
+
+int main(){
+    fin.open("complet.in", ios::in);
+    fout.open("complet.out", ios::out);
+    fin >> n;
+    for(int i = 1 ; i <= n ;  i ++)
+        fin >> A[i];
+    fin >> m;
+    for( ; m ; m --)
+    {
+        fin >> op >> k;
+        if(op == 1)
+            fout << A[k/2] << "\n";
+        else
+        {
+            int s = 0;
+            if(2 * k <= n)
+                s += A[2 * k];
+            if(2 * k + 1 <= n)
+                s += A[2 * k + 1];
+            fout << s << "\n";
+        }
+    }
+    fin.close() ,fout.close();
+    return 0;
+}

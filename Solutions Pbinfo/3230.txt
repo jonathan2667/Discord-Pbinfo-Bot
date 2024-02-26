@@ -1,0 +1,157 @@
+#include <cstdio>
+#include <cassert>
+#include <algorithm>
+
+using namespace std;
+
+int n, q, t[100010], d[100010], leftt[100010];
+
+struct arbint
+{
+    int ap;
+    long long dif, lazy;
+    arbint *le, *ri;
+
+    arbint ()
+    {
+        ap = 0;
+        dif = 2000000000000000LL;
+        lazy = 0LL;
+
+        le = ri = NULL;
+    }
+} *root, *nul;
+
+void propag (arbint *node, int a, int b)
+{
+    node->dif += node->lazy;
+
+    if (a != b)
+    {
+        if (node->le == NULL) node->le = new arbint;
+        if (node->ri == NULL) node->ri = new arbint;
+
+        node->le->lazy += node->lazy;
+        node->ri->lazy += node->lazy;
+    }
+
+    node->lazy = 0LL;
+}
+
+void update (int a, int b, int x, int y, int val, arbint *node)
+{
+    if (a != b)
+    {
+        if (node->le == NULL) node->le = new arbint;
+        if (node->ri == NULL) node->ri = new arbint;
+    }
+
+    propag (node, a, b);
+
+    if (x <= a && b <= y)
+    {
+        node->lazy += 1LL * val;
+        propag (node, a, b);
+        return;
+    }
+
+    int mij = (a + b) >> 1;
+    if (x <= mij) update (a, mij, x, y, val, node->le);
+    else propag (node->le, a, mij);
+
+    if (y > mij) update (mij + 1, b, x, y, val, node->ri);
+    else propag (node->ri, mij + 1, b);
+
+    node->dif = min (node->le->dif, node->ri->dif);
+}
+
+bool query ()
+{
+    if (root->le == NULL) root->le = new arbint;
+    if (root->ri == NULL) root->ri = new arbint;
+
+    propag (root, 1, 1000000000);
+
+    return (root->dif > 0LL);
+}
+
+void change (int a, int b, int x, int val, arbint *node)
+{
+    if (a != b)
+    {
+        if (node->le == NULL) node->le = new arbint;
+        if (node->ri == NULL) node->ri = new arbint;
+    }
+
+    propag (node, a, b);
+
+    if (x <= a && b <= x)
+    {
+        if (node->ap == 0) node->dif -= 2000000000000000LL - x;
+
+        node->ap += val;
+
+        if (node->ap == 0) node->dif += 2000000000000000LL - x;
+
+        return;
+    }
+
+    int mij = (a + b) >> 1;
+    if (x <= mij) change (a, mij, x, val, node->le), propag (node->ri, mij + 1, b);
+    else if (x > mij) change (mij + 1, b, x, val, node->ri), propag (node->le, a, mij);
+
+    node->dif = min (node->le->dif, node->ri->dif);
+}
+
+int main ()
+{
+  //  freopen ("file.in", "r", stdin);
+
+    assert (scanf ("%d %d", &n, &q) == 2);
+
+    assert (1 <= n && n <= 100000);
+    assert (1 <= q && q <= 100000);
+
+    for (int i = 1; i <= n; ++i)
+    {
+        assert (scanf ("%d %d", &t[i], &d[i]) == 2);
+
+        assert (1 <= t[i] && t[i] <= 1000000000);
+        assert (1 <= d[i] && d[i] <= 1000000000);
+    }
+
+    root = new arbint;
+
+
+    int p = 1;
+    for (int i = 1; i <= n; ++i)
+    {
+        change (1, 1000000000, d[i], 1, root);
+        update (1, 1000000000, d[i], 1000000000, -t[i], root);
+
+        for (; !query ();)
+        {
+            update (1, 1000000000, d[p], 1000000000, t[p], root);
+            change (1, 1000000000, d[p], -1, root);
+
+            ++p;
+        }
+
+        leftt[i] = p;
+    }
+
+    for (int i = 1; i <= q; ++i)
+    {
+        int st, dr;
+        assert (scanf ("%d %d", &st, &dr) == 2);
+
+        assert (1 <= st);
+        assert (st <= dr);
+        assert (dr <= n);
+
+        if (leftt[dr] <= st) printf ("1\n");
+        else printf ("0\n");
+    }
+
+    return 0;
+}

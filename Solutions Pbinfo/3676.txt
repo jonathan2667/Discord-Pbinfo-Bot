@@ -1,0 +1,26 @@
+#include <fstream>
+
+using namespace std;
+//multipli lui k1 + multipli lui k2  - multipli cmmmc(k1,k2)
+ifstream cin("abk1k2.in");
+ofstream cout("abk1k2.out");
+
+int cmmdc(int a, int b)
+{
+    int r;
+    while(b)
+        r=a%b, a=b, b=r;
+    return a;
+}
+int main()
+{
+    long long a, b, k1, k2, x, y, z, cate;
+    cin>>a>>b>>k1>>k2;
+    if(a>b)swap(a,b);
+    x = b/k1 - (a-1)/k1;
+    y = b/k2 - (a-1)/k2;
+    z = b/(k1*k2/cmmdc(k1,k2)) - (a-1)/(k1*k2/cmmdc(k1,k2));
+    cate = x*(x-1)/2 + y*(y-1)/2 - z*(z-1)/2;
+    cout<<cate<<'\n';
+    return 0;
+}

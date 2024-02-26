@@ -1,0 +1,63 @@
+///prof. prop. Rotar Mircea
+#include <bits/stdc++.h>
+using namespace std;
+
+constexpr int Nmax=500005;
+constexpr int Mmax=500005;
+
+ifstream f("ghinde.in");
+ofstream g("ghinde.out");
+
+long long rez, nr, rez1, rez2;
+int M, N, K, i, C, a[Mmax], j, x;
+
+int main()
+{
+    f>>C>>N>>M>>K;
+
+    for(i=1; i<=N; ++i)
+    {
+        f>>x;
+        nr += x/M;
+        a[x%M]++;
+    }
+
+    if(C == 1)
+    {
+        if(nr>=K)
+        {
+            g<<1LL*K*M<<'\n' ;
+            return 0;
+        }
+
+        K -= nr;
+        rez =1LL * nr * M;
+
+        for(j= M-1; j && K;)
+            if(a[j]) rez += j, K--, a[j]--;
+            else j--;
+
+        g<< rez <<'\n' ;
+        return 0;
+    }
+
+    if(nr >= 2*K)
+    {
+        g<< 1LL*K*M <<" "<< 1LL*K*M <<'\n' ;
+        return 0;
+    }
+
+    rez1 = (nr+1)/2*M; rez2 = nr/2*M;
+    K = 2*K - nr;
+
+    for(j=M-1; j>0 && K;)
+        if(K%2==0)
+            if(a[j]) rez1 += j, a[j]--, K--;
+            else j--;
+        else
+            if(a[j]) rez2 += j, a[j]--, K--;
+            else j--;
+        g<< rez1 <<" "<< rez2 <<'\n' ;
+
+    return 0;
+}

@@ -1,0 +1,55 @@
+{se da o matrice mare a[m,n], stiind ca este completat cu numere 1,2,...,m*n
+diagonala dupa diagonala, serpuit ,
+  Dandu-se linia si coloana, sa se calculeze valoarea lui
+  k=a[lin,col]}
+program serpuit;
+var p,min,m,s,n,lin,col,k:longint;
+    f,g:text;
+
+begin
+  writeln;
+  assign(f,'piatra.in');
+  reset(f);
+  assign(g,'piatra.out');
+  rewrite(g);
+  readln(f,m,n,lin,col);
+  k:=0;
+  if m<n then min:=m else min:=n;
+  if min+1>lin+col then
+    begin
+      s:=(lin+col-2)*(lin+col-1) div 2;
+      if odd(lin+col) then
+        k:=s+lin
+      else
+        k:=s+col;
+    end
+  else
+    if m+n-min+1<lin+col then
+      begin
+        p:=m+n-lin-col;
+        s:=m*n-p*(p+1) div 2;
+        if odd(lin+col) then
+            k:=s-m+lin
+          else
+            k:=s-n+col
+      end
+    else
+      begin
+        s:=min*(min+1) div 2;
+        p:=col+lin-min-2;
+        s:=s+p*min;
+        if n<m then
+          if odd(lin+col) then
+              k:=s+n-col+1
+          else
+              k:=s+col
+        else
+          if odd(lin+col) then
+            k:=s+lin
+          else
+            k:=s+m-lin+1;
+      end;
+  writeln(g,k);
+  close(f);
+  close(g);
+end.

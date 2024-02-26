@@ -1,0 +1,35 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+int Test, N, h, m, s, M, Max, LastImpar, Durata, nF, nB, i, Last;
+char copil, tip;
+int main()
+{
+    freopen ("cartele.in", "r", stdin);
+    freopen ("cartele.out", "w", stdout);
+    scanf("%d\n%d\n", &Test, &N);
+    nF = nB = Last = LastImpar = Durata = 0;
+    for (i = 1; i <= N; i++)
+    {
+        scanf("%c %c %d %d %d\n", &copil, &tip, &h, &m, &s);
+        M = h * 60 * 60 + m *60 + s;
+        if (nF == nB && nF) Durata += M - Last;
+        if (nB %2 && M - LastImpar > Max && LastImpar) Max = M - LastImpar;
+        if (copil == 'b')
+        {
+            if (tip == 'i') nB++;
+            else nB--;
+            if (nB %2) LastImpar = M;
+            else LastImpar=0;
+        }
+        else if (tip == 'i') nF++;
+        else nF--;
+    Last = M;
+    }
+    if(Test==1)printf("%d %d\n", nB, nF);
+    if(Test==2)printf("%d\n", Durata);
+    if(Test==3)printf("%d\n",
+                      Max);
+
+    return 0;
+}

@@ -1,0 +1,77 @@
+#include <bits/stdc++.h>
+
+using namespace std;
+
+int a[105][105], b[105][105], n, m;
+
+void Citire()
+{
+    ifstream fin("pereti.in");
+    fin >> n >> m;
+    for (int i = 1; i <= n; i++)
+        for (int j = 1; j <= m; j++)
+            fin >> a[i][j];
+    fin.close();
+}
+
+inline int Interior(int i, int j)
+{
+    if (i < 0 || i > n + 1) return 0;
+    if (j < 0 || j > m + 1) return 0;
+    return 1;
+}
+
+void Fill(int i, int j)
+{
+    b[i][j] = 1;
+    if (Interior(i - 1, j) && b[i - 1][j] == 0 && ((a[i][j] & 8) == 0))
+        Fill(i - 1, j);
+    if (Interior(i + 1, j) && b[i + 1][j] == 0 && ((a[i][j] & 2) == 0))
+        Fill(i + 1, j);
+    if (Interior(i, j + 1) && b[i][j + 1] == 0 && ((a[i][j] & 4) == 0))
+        Fill(i, j + 1);
+    if (Interior(i, j - 1) && b[i][j - 1] == 0 && ((a[i][j] & 1) == 0))
+        Fill(i, j - 1);
+}
+
+void Bordare()
+{
+    int i, j;
+    /// linia 0:
+    for (j = 1; j <= m; j++)
+        if ((a[1][j] & 8) != 0) a[0][j] = 2;
+    /// linia n + 1
+    for (j = 1; j <= m; j++)
+        if ((a[n][j] & 2) != 0) a[n + 1][j] = 8;
+    /// coloana 0
+    for (i = 1; i <= n; i++)
+        if ((a[i][1] & 1) != 0) a[i][0] = 4;
+    for (i = 1; i <= n; i++)
+        if ((a[i][m] & 4) != 0) a[i][m + 1] = 1;
+}
+
+void Rezolva()
+{
+    int i, j, cnt = 0;
+    Fill(0, 0);
+    for (i = 0; i <= n + 1; i++)
+        for (j = 0; j <= m + 1; j++)
+            if (b[i][j] == 1)
+            {
+                if ((a[i][j] & 8) != 0) cnt++;
+                if ((a[i][j] & 4) != 0) cnt++;
+                if ((a[i][j] & 2) != 0) cnt++;
+                if ((a[i][j] & 1) != 0) cnt++;
+            }
+    ofstream fout("pereti.out");
+    fout << cnt << "\n";
+    fout.close();
+}
+
+int main()
+{
+    Citire();
+    Bordare();
+    Rezolva();
+    return 0;
+}

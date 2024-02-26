@@ -1,0 +1,218 @@
+#include <fstream>
+#include <algorithm>
+#include <ctime>
+#include <vector>
+#include <iostream>
+using namespace std;
+
+
+
+int genTest(int n, int m, int testNr) {
+    string inputFile = "input.";
+    if (testNr < 10)
+        inputFile.push_back('0');
+    inputFile += to_string(testNr);
+    ofstream out(inputFile);
+
+    vector<int> arr(int(5e6));
+    for (int i = 0; i < arr.size(); ++i)
+        arr[i] = i + 1;
+    for (int i = 1; i < arr.size(); ++i)
+        swap(arr[i], arr[rand() % i]);
+
+    for (int i = 0; i < arr.size(); i += 5000) {
+        for (int nr = 1; nr <= 3; ++nr) {
+            int p1, p2, p3;
+            p1 = i + rand() % 4000;
+            p2 = p1 + rand() % 1000;
+            p3 = rand() % 2;
+            if (0 <= p1 && p1 <= p2 && p2 < n) {
+                sort(arr.begin() + p1, arr.begin() + p2 + 1);
+                if (p3 == 1)
+                    reverse(arr.begin() + p1, arr.begin() + p2 + 1);
+            }
+        }
+    }
+
+    out << n << " " << m << "\n";
+    for (int i = 0; i < n; ++i)
+        out << arr[i] << " ";
+    out << "\n";
+
+    for (int i = 1; i <= m; ++i) {
+        int type = rand() % 8, x, y;
+        if (n <= 100) {
+            x = rand() % n + 1;
+            y = rand() % n + 1;
+            if (x > y)
+                swap(x, y);
+        } else if (type == 0) {
+           x = rand() % (n - 100) + 1;
+           y = x + rand() % 100;
+        } else if (type == 1) {
+            x = rand() % (n - n / 4 - 10) + 1;
+            y = x + n / 4 + rand() % 6;
+        } else if (type == 2) {
+            x = rand() % (n - n / 3 - 10) + 1;
+                    y = x + n / 3 + rand() % 6;
+        } else {
+            x = rand() % (n - n / 2 - 10) + 1;
+            y = x + n / 2 + rand() % 6;
+        }
+        y = min(y, n);
+        //assert(1 <= x && x <= y && y <= n);
+        out << x << " " << y << "\n";
+    }
+
+    return testNr;
+}
+
+void testGeneration(int a, int b) {
+    for (int test = a; test <= b; ++test) {
+        if (test <= 2) {
+            genTest(12, 25, test);
+            continue;
+        }
+        if (test <= 5) {
+            genTest(500, 500, test);
+            continue;
+        }
+        if (test <= 10) {
+            genTest(10000, 10000, test);
+            continue;
+        }
+        if (test <= 20) {
+            genTest(200000, 200000, test);
+            continue;
+        }
+        genTest(10, 10, test);
+    }
+}
+
+vector<long long> solve(int nrTest) {
+    string inputFile = "secvcost.in";
+    if (nrTest >= 0) {
+        inputFile = "input.";
+        if (nrTest < 10) 
+            inputFile.push_back('0');
+        inputFile += to_string(nrTest);
+    }
+    ifstream in(inputFile);
+    vector<long long> ans;
+
+    int n, m; in >> n >> m;
+    vector<int> arr(n + 1);
+    for (int i = 1; i <= n; ++i)
+        in >> arr[i];
+
+    vector<int> lefPos(n + 1), rigPos(n + 1), stk;
+
+    stk.assign(1, 0);
+    for (int i = 1; i <= n; ++i) {
+        while (stk.size() != 1 && arr[stk.back()] < arr[i])
+            stk.pop_back();
+        lefPos[i] = stk.back() + 1;
+        stk.push_back(i);
+    }
+
+    stk.assign(1, n + 1);
+    for (int i = n; i >= 1; --i) {
+        while (stk.size() != 1 && arr[stk.back()] < arr[i])
+            stk.pop_back();
+        rigPos[i] = stk.back() - 1;
+        stk.push_back(i);
+    }
+    vector<long long> psm(n + 1);
+    long long avgLen = 0;
+    for (int i = 1; i <= n; ++i) {
+        avgLen += rigPos[i] - lefPos[i] + 1;
+        psm[i] = psm[i - 1] + 1LL * arr[i] * (rigPos[i] - lefPos[i] + 1);
+    }
+    avgLen /= n;
+    while (m--) {
+        int x, y; in >> x >> y;
+        ans.push_back(psm[y] - psm[x - 1]);
+    }
+    //cerr << avgLen << endl;
+    return ans;
+}
+
+const int DIM = 200005;
+
+int arr[DIM];
+long long psm[DIM];
+
+void solveN3() {
+    ifstream in("secvcost.in");
+    ofstream out("secvcost.out");
+    int n, m;
+    in >> n >> m;
+    
+    for (int i = 1; i <= n; ++i) {
+        in >> arr[i];
+    }
+    while (m--) {
+        int x, y;
+        in >> x >> y;
+        long long ans = 0;
+        for (int i = x; i <= y; ++i) {
+            ans += psm[i];
+            int p1 = i, p2 = i;
+            while (p1 > 1 && arr[p1 - 1] <= arr[i])
+                --p1;   
+            while (p2 < n && arr[p2 + 1] <= arr[i]) 
+                ++p2;
+            ans += 1LL * arr[i] * (p2 - p1 + 1);
+        }
+        out << ans << "\n";
+    }
+}
+void solveN2() {
+    ifstream in("secvcost.in");
+    ofstream out("secvcost.out");
+    int n, m;
+    in >> n >> m;
+    
+    for (int i = 1; i <= n; ++i) {
+        in >> arr[i];
+    }
+    for (int i = 1; i <= n; ++i) {
+        int p1 = i, p2 = i;
+        while (p1 > 1 && arr[p1 - 1] <= arr[i])
+            --p1;   
+        while (p2 < n && arr[p2 + 1] <= arr[i]) 
+            ++p2;
+        psm[i] = 1LL * arr[i] * (p2 - p1 + 1);
+    }
+    while (m--) {
+        int x, y;
+        in >> x >> y;
+        long long ans = 0;
+        for (int i = x; i <= y; ++i)
+            ans += psm[i];
+        out << ans << "\n";
+    }
+}
+
+void solveTest(int test) {
+    vector<long long> ans = solve(test);
+    string outputFile = "secvcost.out";
+    if (test>= 0) {
+        outputFile = "output.";
+        if (test < 10) 
+            outputFile.push_back('0');
+        outputFile += to_string(test);
+    }
+    ofstream out(outputFile);
+    for (long long x : ans)
+        out << x << "\n";
+}
+
+int main(void) {
+    srand(unsigned(time(0)));
+    //testGeneration(1, 20);
+//  for (int i = 1; i <= 20; ++i)
+//      solveTest(i);
+    solveTest(-1);
+    return 0;
+} 

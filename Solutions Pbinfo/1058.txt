@@ -1,0 +1,62 @@
+//prof.Ana Intuneric
+#include <fstream>
+using namespace std;
+ifstream f("puncte1.in");
+ofstream g("puncte1.out");
+int poz[500000];
+int X[2000],Y[2000];
+int maxi,i,xp,yp,n,n1,j,nrp,nrabs,marcate,gasite,b1,b2,nr0,nrd;
+
+int main()
+{
+    //citire-numarare puncte pe abscisa, ordonata si bisectoare
+    f>>n;
+    for(i=1;i<=n;i++)
+    {
+       f>>xp>>yp;
+       if(xp==yp)b1++;
+       if(xp==-yp)b2++;
+       if(xp==0 && yp==0)nr0++;
+       poz[i]=i;
+       X[xp+1000]++;Y[yp+1000]++;
+    }
+    b1=b1-nr0;b2=b2-nr0;
+    //a) determinare max
+    maxi=0;
+    for(i=1;i<=1999;i++)
+    {
+        if(X[i]>maxi)maxi=X[i];
+        if(Y[i]>maxi)maxi=Y[i];
+    }
+    g<<maxi<<'\n';
+    //b) numarul de drepte
+    if(b1==0 && b2==0)nrd=0;
+    else if(b2+nr0>1 && b1+nr0>1) nrd=b1*b2+2;
+         else nrd=b1*b2+1;
+    g<<nrd<<'\n';
+    //c) indicele punctului ramas nemarcat
+    i=1;
+    while(marcate<n-1)
+    {
+        marcate++;poz[i]=0;
+        do{i++;if(i>n) i=1;}while(poz[i]==0);
+        do{i++;if(i>n) i=1;}while(poz[i]==0);
+        do{i++;if(i>n) i=1;}while(poz[i]==0);
+    }
+    nrp=1;while(poz[nrp]==0)nrp++;
+    //c) determinare coordonate
+    i=1;
+    while(nrp>0)
+    {
+      while(X[i]==0)i++;
+      nrabs=X[i];
+      while(nrabs>0 && nrp>0)
+      {
+          nrp--;nrabs--;
+      }
+      i++;
+    }
+    g<<i-1001<<'\n';
+    f.close();g.close();
+    return 0;
+}

@@ -1,0 +1,28 @@
+#include <fstream>
+using namespace std;
+ifstream fin("numere14.in");
+ofstream fout("numere14.out");
+int n,x,s,c,i,j,k,cx;
+int main()
+{
+  fin>>n;
+  s=0;
+  for(i=1;i<=n;i++)
+  {
+      fin>>x;
+      k=0;
+      cx=x;
+      while(cx!=0)
+      {
+          k++;
+          cx=cx/10;
+      }
+      for(j=1;j<=k/2;j++)
+         x=x/10;
+      if(x%2!=0)
+         s=s+x%10;
+  }
+   fout<<s<<endl;
+    return 0;
+}
+

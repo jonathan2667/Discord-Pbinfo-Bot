@@ -1,0 +1,23 @@
+#include <iostream>
+#include <cstring>
+
+using namespace std;
+
+
+int main()
+{
+    char s[101], * p;
+    int n, gasit = 0;
+    cin.getline(s,101);
+    cin >> n;
+    p = strtok(s, " ");
+    while(p)
+    {
+        if(strlen(p) == n)
+            cout << p << "\n", gasit = 1;
+        p = strtok(NULL, " ");
+    }
+    if(! gasit)
+        cout << "nu exista";
+    return 0;
+}

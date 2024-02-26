@@ -1,0 +1,42 @@
+#include <iostream>
+using namespace std;
+
+int T, n, m, a[1001], b[1001];
+
+int main(){
+    cin >> T;
+    for( ; T ; --T) // pentru fiecare test
+    {
+        // citim cei doi vectori
+        cin >> n;
+        for(int i=1;i<=n;++i)
+            cin >> a[i];
+        cin >> m;
+        for(int i = 1;i <=m ; ++i)
+            cin >> b[i];
+        // incercam sa scriem fiecare element din b[] ca suma de elemente consecutive din a[]
+        // daca reusim, a[] se reduce la b[]
+        // daca ceva nu merege bine, a[] nu se reduce la b[]
+        // practic trebuie sa gasim in a[] m secvente disjuncte, care sa contina toate elementele din a[] si
+        // elementele din prima secventa sa dea suma b[1]
+        // elementele din a doua secventa sa dea suma b[2]
+        // etc.
+        int k = 1;
+        int ok = 1;
+        for(int i = 1 ; i <= n && ok ; ++i){
+            if(a[i] <= b[k])
+            {
+                b[k] -= a[i];
+                if(b[k] == 0)
+                    k++;
+            }
+            else
+                ok = 0;
+
+        }
+        if(k != m + 1)
+            ok = 0;
+        cout << ok << endl;
+    }
+    return 0;
+}

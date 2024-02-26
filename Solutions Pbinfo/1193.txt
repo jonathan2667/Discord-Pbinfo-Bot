@@ -1,0 +1,223 @@
+// student MIhai Nitu - Universitatea Bucuresti
+
+#include <fstream>
+#include <iostream>
+#include <cmath>
+#include <vector>
+#include <algorithm>
+
+#define maxn 150010
+#define inf 1000000001
+
+using namespace std;
+
+ifstream fin ("cabana.in");
+ofstream fout("cabana.out");
+
+struct point
+{
+    int x,y,i;
+}v[maxn], v1[maxn], v2[maxn];
+
+bool cmp1 (point a, point b)
+{
+    if (a.x == b.x)
+        return a.y > b.y;
+    return a.x < b.x;
+}
+
+bool cmp2 (point a, point b)
+{
+    if (a.y == b.y)
+        return a.x < b.x;
+    return a.y > b.y;
+}
+
+int bit[maxn], whichL[maxn], whichC[maxn], posL[maxn], posC[maxn], pointer[maxn];
+int sq, p, nr1, nr2, t, n;
+vector<int> C[maxn], L[maxn];
+
+void create_structure()
+{
+    sq = sqrt(nr1);
+
+    v[0].y = -inf;
+    int maxpoint = 0;
+    t = 0;
+
+    for (int i = 1; i <= nr1; ++i)
+    {
+        if (v[C[i][0]].y > v[maxpoint].y)
+            maxpoint = C[i][0];
+
+        if (i % sq == 0)
+        {
+            ++t;
+            bit[t] = maxpoint;
+            maxpoint = 0;
+        }
+    }
+}
+
+void update (int pos)
+{
+    int whbit = (pos-1)/sq+1;
+
+    if (whbit > t)
+        return;
+
+    int maxpoint = 0;
+
+    for (int i = (whbit-1)*sq + 1; i <= whbit*sq; ++i)
+    {
+        if (v[C[i][pointer[i]]].y > v[maxpoint].y)
+            maxpoint = C[i][pointer[i]];
+    }
+
+    bit[whbit] = maxpoint;
+}
+
+int query (int left, int right)
+{
+    int maxpoint = 0;
+
+    if (right - left + 1 <= sq)
+    {
+        for (int i = left; i <= right; ++i)
+        {
+            if (v[C[i][pointer[i]]].y > v[maxpoint].y)
+            {
+                maxpoint = C[i][pointer[i]];
+            }
+        }
+
+        p = whichC[maxpoint];
+        return v[maxpoint].y;
+    }
+
+    int whleft = (left-1)/sq+1;
+    int whright = (right-1)/sq+1;
+
+    for (int i = whleft+1; i <= whright-1; ++i)
+    {
+        if (v[bit[i]].y > v[maxpoint].y)
+            maxpoint = bit[i];
+    }
+
+    for (int i = left; i <= whleft*sq; ++i)
+    {
+        if (v[C[i][pointer[i]]].y > v[maxpoint].y)
+        {
+            maxpoint = C[i][pointer[i]];
+        }
+    }
+
+    for (int i = (whright-1)*sq +1; i <= right; ++i)
+    {
+        if (v[C[i][pointer[i]]].y > v[maxpoint].y)
+        {
+            maxpoint = C[i][pointer[i]];
+        }
+    }
+
+    p = whichC[maxpoint];
+    return v[maxpoint].y;
+}
+
+int main()
+{
+    fin >> n;
+
+    for (int i = 1; i <= n; ++i)
+    {
+        fin >> v[i].x >> v[i].y;
+        v1[i].x = v[i].x;
+        v1[i].y = v[i].y;
+        v2[i].x = v[i].x;
+        v2[i].y = v[i].y;
+        v1[i].i = i;
+        v2[i].i = i;
+    }
+
+    sort(v1+1, v1+n+1, cmp1);
+    sort(v2+1, v2+n+1, cmp2);
+
+    v1[0].x = -inf;
+
+    for (int i=1 ; i <= n; ++i)
+    {
+        if (v1[i].x != v1[i-1].x)
+        {
+            ++nr1;
+        }
+        C[nr1].push_back(v1[i].i);
+        whichC[v1[i].i] = nr1;
+        posC[v1[i].i] = C[nr1].size()-1;
+    }
+
+    v2[0].y = inf;
+
+    for (int i =1 ; i <= n; ++i)
+    {
+        if (v2[i].y != v2[i-1].y)
+        {
+            ++nr2;
+        }
+
+        L[nr2].push_back(v2[i].i);
+        whichL[v2[i].i] = nr2;
+        posL[v2[i].i] = L[nr2].size()-1;
+    }
+
+    for (int i = 1; i <= nr1; ++i)
+    {
+        pointer[i] = 0;
+        C[i].push_back(0);
+    }
+
+    create_structure();
+    long long answer = 0;
+
+    int cnt = 0;
+
+    while (query(1,nr1) != -inf)
+    {
+        ++cnt;
+        point LU = v[C[p][pointer[p]]];
+        int whcol = p;
+        int poscol = pointer[p];
+        int whline = whichL[C[p][pointer[p]]];
+        int posline = posL[C[p][pointer[p]]];
+
+        if (posline + 1 < L[whline].size() && poscol + 1 < C[whcol].size()-1)
+        {
+            int rightp = L[whline][posline+1];
+            int downp = C[whcol][poscol+1];
+
+            point RU = v[rightp];
+            point LD = v[downp];
+
+            int newcol = whichC[rightp];
+            int posnewcol = posC[rightp];
+            int newline = whichL[downp];
+            int posnewline = posL[downp];
+
+            if (posnewcol + 1 < C[newcol].size()-1 && posnewline + 1 < L[newline].size() && C[newcol][posnewcol+1] == L[newline][posnewline+1])
+            {
+                point RD = v[C[newcol][posnewcol+1]];
+
+                int rez = query(whcol+1, newcol-1);
+
+                if (rez < RD.y)
+                {
+                    answer = max(answer, 1LL*(RD.x - LD.x)*(RU.y - RD.y));
+                }
+            }
+        }
+
+        ++pointer[whcol];
+        update(whcol);
+    }
+
+    fout << answer;
+}

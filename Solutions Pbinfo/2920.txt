@@ -1,0 +1,17 @@
+#include<bits/stdc++.h>
+using namespace std;
+
+ifstream in("hidden_number.in");
+ofstream out("hidden_number.out");
+
+int main()
+{
+    int n,ap=0,s=0;
+    while(in>>n)
+        s+=n,ap++;
+    if(s%ap==0)
+        out<<s/ap;
+    else
+        out<<-1;
+    return 0;
+}

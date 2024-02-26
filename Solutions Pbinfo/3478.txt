@@ -1,0 +1,48 @@
+#include <fstream>
+#define M 1000000007
+#define N 50001
+using namespace std;
+ifstream fi("palixor.in");
+ofstream fo("palixor.out");
+int n, i, j, sol, v[10], b[N];
+int dp[N][1024];
+long long a;
+
+int main()
+{
+    fi >> n;
+    for(i = 1; i <= n; i++)
+    {
+        for(j = 0; j <= 9; j++)
+            v[j] = 0;
+        fi >> a;
+        while(a != 0)
+        {
+            v[a % 10]++;
+            a = a / 10;
+        }
+        b[i] = 0;
+        for(j = 0; j <= 9; j++)
+            if(v[j] % 2 == 0) b[i] = b[i]*2;
+            else b[i] = b[i]*2+1;
+    }
+
+    for(i = 1; i <= n; i++)
+    {
+        for(j = 0; j < 1024; j++)
+            dp[i][j] = dp[i-1][j];
+        for(j = 0; j < 1024; j++)
+            dp[i][b[i]^j] = (dp[i][b[i]^j] + dp[i-1][j]) % M;
+        dp[i][b[i]]  = (dp[i][b[i]] + 1) % M;
+    }
+
+    sol = dp[n][0];
+    i = 1;
+    while(i <= 512)
+    {
+        sol = (sol + dp[n][i]) % M;
+        i = i * 2;
+    }
+    fo << sol;
+    return 0;
+}

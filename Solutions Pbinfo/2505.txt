@@ -1,0 +1,129 @@
+var  f,g:text;  c:char;
+aa:array[0..102,0..10002]of byte;
+sus,st,sts,stj:array[0..102,0..10002] of longint;
+bb:array[0..4] of longint; sir:array[0..2,0..10002]of longint;
+d:array[0..2]of longint;
+i,j,n,m,k,q,a,b,p,x,max1,p1,p2:longint;
+function cbinarp(a,b,u:longint):longint;
+var i,j,k,ok:longint;
+begin
+
+    cbinarp:=-1; ok:=0;
+    if (b<sir[a,1])and(ok=0) then begin cbinarp:=-1;ok:=1 end;
+    if (b>sir[a,u])and(ok=0) then begin cbinarp:=-1;ok:=1 end;
+    if (b=sir[a,1])and(ok=0) then begin cbinarp:=1;ok:=1 end;
+    i:=1;j:=u;
+    while (i<=j) and (ok=0) do
+          begin
+          k:=(i+j)div 2;
+          if (sir[a,k]=b)and(sir[a,k-1]<b) then begin cbinarp:=k;ok:=1;end
+                 else if sir[a,k]>=b then j:=k-1
+                          else i:=k+1;
+          end;
+    if ok=0 then cbinarp:=-1;
+end;
+
+function cbinaru(a,b,u:longint):longint;
+var i,j,k,ok:longint;
+begin
+    cbinaru:=-1; ok:=0;
+     if (b<sir[a,1])and(ok=0) then begin  cbinaru:=-1;ok:=1;end;
+     if (b>sir[a,u])and(ok=0) then begin cbinaru:=-1;ok:=1;end;
+     if (b=sir[a,u])and(ok=0) then begin cbinaru:=u;ok:=1;end;
+     i:=1;j:=u;
+     while(i<=j) and(ok=0) do
+           begin
+           k:=(i+j) div 2;
+           if(sir[a,k]=b) and((sir[a,k+1]>b) or(k=u)) then begin cbinaru:=k;ok:=1;end
+                   else if sir[a,k]>b then j:=k-1
+                            else i:=k+1;
+           end;
+     if ok=0 then cbinaru:=-1;
+end;
+begin
+    assign(f,'jocxzero.in'); reset(f);
+    assign(g,'jocxzero.out');rewrite(g);
+    readln(f,p);
+    readln(f,n,m,k);
+    for j:= 1 to n do
+    begin
+        for i:= 1 to m do
+        begin
+        read(f,c);
+        if c='X'then aa[j,i]:=1
+            else if c='0' then aa[j,i]:=0;
+        end;
+        readln(f);
+        end;
+    {for i:=1 to n do
+    begin
+        for j:=1 to m do write(aa[i,j]);
+        writeln
+    end;}
+     st[1,1]:=1;sus[1,1]:=1;sts[1,1]:=1;
+     for j:=2 to m do
+        begin
+           if aa[1,j]=aa[1,j-1] then st[1,j]:=st[1,j-1]+1
+                else st[1,j]:=1;
+           sus[1,j]:=1;
+           sts[1,j]:=1;
+        end;
+     for i:=2 to n do
+        begin
+            if aa[i,1]=aa[i-1,1] then sus[i,1]:=sus[i-1,1]+1
+                else sus[i,1]:=1;
+            st[i,1]:=1;
+            sts[i,1]:=1;
+        end;
+     for i:=2 to n do
+        for j:=2 to m do
+            begin
+                if aa[i,j]=aa[i,j-1] then st[i,j]:=st[i,j-1]+1 else st[i,j]:=1;
+                if aa[i,j]=aa[i-1,j] then sus[i,j]:=sus[i-1,j]+1 else sus[i,j]:=1;
+                if aa[i,j]=aa[i-1,j-1] then sts[i,j]:=sts[i-1,j-1]+1 else sts[i,j]:=1;
+            end;
+     for i:=n downto 1 do stj[i,1]:=1;
+     for j:=2 to m do stj[n,j]:=1;
+     for i:=n-1 downto 1 do
+        for j:=2 to m do
+            if aa[i,j]=aa[i+1,j-1] then stj[i,j]:=stj[i+1,j-1]+1 else stj[i,j]:=1;
+     for i:= 1 to n do
+        for j:=1 to m do
+            begin
+                x:=aa[i,j];
+                if sus[i,j]>=k then inc(bb[x]);
+                if st[i,j]>=k then inc(bb[x]);
+                if sts[i,j]>=k then inc(bb[x]);
+                if stj[i,j]>=k then inc(bb[x]);
+            end;
+     if p=1 then writeln(g,bb[1],' ',bb[0])
+     else
+     begin
+        for j:=1 to m do
+            begin
+                d[0]:=0;d[1]:=0;
+                for i:=1 to n do
+                    begin
+                           x:=aa[i,j];
+                           if st[i,j]>=k then inc(d[x]);
+                           if sus[i,j]>=k then inc(d[x]);
+                           if sts[i,j]>=k then inc(d[x]);
+                           if stj[i,j]>=k then inc(d[x]);
+                    end;
+                sir[1,j]:=sir[1,j-1]+d[1];
+                sir[0,j]:=sir[0,j-1]+d[0];
+            end;
+        readln(f,q);
+        for i:= 1 to q do
+            begin
+                readln(f,c,b);
+                if c='X' then a:=1 else a:=0;
+                p1:=cbinarp(a,b,m-1);
+                p2:=cbinaru(a,b,m-1);
+                if p1=-1 then writeln(g,0)
+                    else writeln(g,p2-p1+1);
+            end;
+     end;
+    close(f);
+    close(g);
+end.

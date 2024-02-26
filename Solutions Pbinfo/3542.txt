@@ -1,0 +1,156 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+ifstream in("jocdesah.in");
+ofstream out("jocdesah.out");
+
+#define INF 1e9
+#define NR_VIETI 16
+#define MAX 101
+
+int N, Drum[MAX][MAX], Dx[] = { -1, 0, 0, 1 }, Dy[] = { 0, -1, 1, 0 } /*N, V, E, S*/, Optiune;
+char A[MAX][MAX];
+int V = INF, Cost = INF;
+
+struct Punct {
+    int x, y;
+}Pt;
+
+struct Nod {
+    Punct pt;
+    int drum;
+}nod_c;
+
+vector <Punct>Regine;
+vector <Punct>Regi;
+vector<int>Sol;
+queue <Nod> Coada;
+map<char, int> Val = { {'P', 0}, {'C', 1}, {'N', 2}, {'T', 3} };
+
+void citire() {
+    in >> Optiune>> N;
+    char c[MAX];
+    for (int i = 1; i <= N; i++) {
+        in>>c;
+        for (int j = 1; j <= N; j++)
+        {
+            A[i][j] = c[j - 1];
+            if (A[i][j] == 'Q')
+                Regine.push_back({ i,j });
+            if (A[i][j] == 'K')
+                Regi.push_back({ i,j });
+        }
+    }
+}
+
+
+bool este_rege(Punct pt)
+{
+    for (Punct p : Regi)
+        if (p.x == pt.x && p.y==pt.y)
+            return true;
+    return false;
+}
+
+Punct cauta_rege_drum_min()
+{
+    int min = INF, imin = -1;
+    for (int i = 0; i < Regi.size(); i++)
+        if (min > Drum[Regi[i].x][Regi[i].y])
+            min = Drum[Regi[i].x][Regi[i].y], imin = i;
+    if(imin!=-1)
+        return { Regi[imin].x, Regi[imin].y };
+    return { 0, 0 };
+}
+
+bool este_valid(int x, int y) {
+    return x >= 1 && y >= 1 && x <= N && y <= N;
+}
+
+bool este_setat(char a, int b) {
+    return a=='K' || (1 << Val[a]) & b;
+}
+
+void rezolvare(int v) {
+    while (!Coada.empty()) {
+        nod_c = Coada.front();
+        Coada.pop();
+        if (Drum[nod_c.pt.x][nod_c.pt.y] > nod_c.drum) {
+            Drum[nod_c.pt.x][nod_c.pt.y] = nod_c.drum;
+            
+            for (int k = 0; k < 4; k++) {
+                int x = nod_c.pt.x + Dx[k], y = nod_c.pt.y + Dy[k];
+                int drum = nod_c.drum + 1;
+                if (este_valid(x, y) && este_setat(A[x][y], v))
+                    Coada.push({ x, y, drum });
+            }
+        }
+    }
+}
+
+void refa_drum(Punct pt, int cost)
+{
+    Sol.clear();
+    
+    while (cost-- > 1)
+    {
+        for (int i = 0; i < 4; i++)
+        {
+            int x1 = pt.x + Dx[i], y1 = pt.y + Dy[i];
+            if (este_valid(x1, y1) && Drum[x1][y1] == cost)
+            {
+                pt.x = x1; pt.y = y1;
+                Sol.push_back(i);
+                break;
+            }
+        }
+    }
+}
+
+void initializare()
+{
+    for (int i = 1; i <= N; i++)
+        for (int j = 1; j <= N; j++)
+            Drum[i][j] = INF;
+    for (Punct pt : Regine)
+        Coada.push({ pt, 1 });
+}
+
+void afisare()
+{
+    if (Optiune == 1)
+        out << NR_VIETI - V;
+    else
+    {
+        out << Cost << "\n";
+        out << Pt.x << " " << Pt.y << "\n";
+        for (int i : Sol)
+            out << (Pt.x += Dx[i]) << " " << (Pt.y += Dy[i]) << "\n";
+    }
+}
+
+int main()
+{
+    citire();
+    
+    for (int v = 0; v <= 15; v++)
+    {
+        initializare();
+
+        rezolvare(v);
+        Pt = cauta_rege_drum_min();
+
+        if (Pt.x * Pt.y != 0)
+        {
+            V = v; Cost = Drum[Pt.x][Pt.y];
+         
+            if (Optiune == 2)
+                refa_drum(Pt, Cost);
+            break;
+        }
+    }
+
+    afisare();
+    
+    return 0;
+}

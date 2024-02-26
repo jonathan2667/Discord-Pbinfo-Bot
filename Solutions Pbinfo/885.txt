@@ -1,0 +1,84 @@
+#include <iostream>
+#include <fstream>
+#include <cassert>
+using namespace std;
+
+ifstream fin("imperii.in");
+ofstream fout("imperii.out");
+
+int n , m;
+int a[4][1005][1005];
+short  x[1000005], y[1000005];
+char P[1005][1005], Imp[5];
+
+
+const int dx[] = {0 , 0 , 1 , -1}, 
+          dy[] = {1 , -1 , 0 , 0};
+
+void fill (int i ,int j , int d)
+{
+    int st , dr;
+    st = dr = 1;
+    x[1] = i , y[1] = j;
+    a[d][i][j] = 1;
+    
+    while(st <= dr)
+    {
+        int i = x[st], j = y[st];
+        for(int k = 0 ; k < 4 ; k ++)
+        {
+            int ii = i + dx[k], jj = j + dy[k];
+            if( ii > 0 && ii <= n && jj > 0 && jj <= m && P[ii][jj] !='#' && a[d][ii][jj] == 0)
+            {
+                a[d][ii][jj] = a[d][i][j] + 1;
+                dr ++;
+                x[dr] = ii, y[dr] = jj;
+            }
+        }
+        st ++;
+    }
+}
+
+int main(){
+    fin >> n >> m;
+    for(int i = 1 ; i <= n ; i ++)
+        for(int j = 1 ; j <= m ; j ++)
+            fin >> P[i][j];
+    Imp[0]=P[1][1];
+    Imp[1]=P[1][m];
+    Imp[2]=P[n][1];
+    Imp[3]=P[n][m];
+    fill(1 , 1 , 0);
+    fill(1 , m , 1);
+    fill(n , 1 , 2);
+    fill(n , m , 3);
+    
+    for(int i = 1 ; i <= n ; i ++)
+        for(int j = 1 ; j <= m ; j ++)
+        {
+            int pmin = 0, ok = 1;
+            while(a[pmin][i][j] == 0 && pmin < 4)
+                pmin ++;
+            if(pmin < 4)
+            {
+                for(int k =  pmin + 1 ; k < 4 ; k ++)
+                    if(a[k][i][j] > 0)
+                    {
+                        if(a[k][i][j] < a[pmin][i][j])
+                            pmin = k , ok = 1;
+                        else
+                            if(a[k][i][j] == a[pmin][i][j])
+                                ok = 0;
+                    }
+                if(ok)
+                    P[i][j] = Imp[pmin];
+            }
+        }
+    for(int i = 1 ; i <= n ; i ++)
+    {
+        for(int j = 1 ; j <= m ; j ++)
+            fout << P[i][j];
+        fout << "\n";
+    }
+    return 0;
+}

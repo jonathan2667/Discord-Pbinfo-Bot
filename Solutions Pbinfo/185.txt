@@ -1,0 +1,30 @@
+#include <iostream>
+using namespace std;
+
+int v[1005], n;
+
+int main(){
+    int n;
+    cin >> n;
+    for(int i = 1 ; i <= n ; i ++)
+    {
+        //citim elementele șirului
+        cin >> v[i];
+        //modificăm elementele, astfel încât să devină prima cifră a valorilor inițiale
+        while(v[i] > 9)
+            v[i] /= 10;
+    }
+    //sortăm vectorul. Folosim sortarea prin selecție
+    for(int i =1 ; i < n ; i ++)
+        for(int j = i + 1 ; j <= n ; j ++)
+            if(v[i] > v[j])
+            {
+                int aux = v[i];
+                v[i] = v[j];
+                v[j] = aux;
+            }
+    // afișam elementele vectorul, fără spații
+    for(int i = 1 ; i <= n ; i ++)
+        cout<< v[i];
+    return 0;
+}

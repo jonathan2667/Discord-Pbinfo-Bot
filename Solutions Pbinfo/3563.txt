@@ -1,0 +1,88 @@
+#include <bits/stdc++.h>
+
+using namespace std;
+
+ifstream fin ("spider.in");
+ofstream fout ("spider.out");
+
+int N, M, lg, a[1001][1001], dp[1001][1001][5];
+pair < int , int > out({-1, -1}), ans;
+const int di[] = {-1, 0, 1, 0}, dj[] = {0, 1, 0, -1};
+
+void Read () {
+  fin >> N >> M;
+  for (int i = 1; i <= N; i ++)
+    for (int j = 1; j <= M; j ++)
+      fin >> a[i][j];
+}
+
+inline bool OK (pair < int , int > p) {
+  return (p.first >= 1 && p.first <= N && p.second >= 1 && p.second <= M);
+}
+
+int val (pair < int , int > p) {
+  if (p == out)
+    return -1;
+  return a[p.first][p.second];
+}
+
+pair < pair < int , int > , int > NextPoz (pair < int , int > crt, pair < int , int > prv) {
+  pair < int , int > ret = out;
+  int dir = -1;
+  for (int k = 0; k < 4; k ++) {
+    pair < int , int > nxt = {crt.first + di[k] , crt.second + dj[k]};
+    if (nxt != prv && OK(nxt) && val(ret) < val(nxt) && val(nxt) <= val(crt))
+      ret = nxt, dir = k;
+  }
+  return {ret, dir};
+}
+
+int get_Distance (int x, int y, int d) {
+  if (dp[x][y][d])
+    return dp[x][y][d];
+  dp[x][y][d] = 1;
+  pair < int , int > prv;
+  if (d == 4)
+    prv = out;
+  else
+    prv = {x + di[d] , y + dj[d]};
+  pair < pair < int , int > , int > nxt = NextPoz({x, y}, prv);
+  if (nxt.first != out)
+    dp[x][y][d] += get_Distance (nxt.first.first, nxt.first.second, (nxt.second + 2) % 4);
+  return dp[x][y][d];
+}
+
+void Solve () {
+  for (int i = 1; i <= N; i ++)
+    for (int j = 1; j <= M; j ++) {
+      int dist = get_Distance(i, j, 4);
+      if (dist > lg) {
+        lg = dist;
+        ans = {i, j};
+      }
+    }
+}
+
+void Print () {
+  fout << lg - 1 << '\n';
+  pair < int , int > prv = out;
+  while (ans != out) {
+    fout << ans.first << ' ' << ans.second << '\n';
+    pair < int , int > aux = NextPoz(ans, prv).first;
+    prv = ans;
+    ans = aux;
+  }
+}
+
+void Close () {
+  fin.close();
+  fout.close();
+}
+
+int main () {
+  Read();
+  Solve();
+  Print();
+  Close();
+  return 0;
+}

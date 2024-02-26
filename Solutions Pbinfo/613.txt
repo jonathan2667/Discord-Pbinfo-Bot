@@ -1,0 +1,70 @@
+// O(N) - 100 puncte
+// Autor: Tudose Vlad Andrei
+
+#include <cstdio>
+#include <algorithm>
+#include <cassert>
+#define NMAX 2000005
+#define ll long long
+using namespace std;
+
+int n;
+ll X[NMAX], Y[NMAX], Z[NMAX], xmin, xmax, ymin, ymax, zmin, zmax;
+
+ll dist(ll x1, ll y1, ll z1, ll x2, ll y2, ll z2) {
+    ll dx = abs(x1 - x2);
+    ll dy = abs(y1 - y2);
+    ll dz = abs(z1 - z2);
+    return max(dx, max(dy, dz));
+}
+
+ll solve(ll y1, ll z1) {
+    ll x1 = xmin, x2 = xmax, y2 = ymin + ymax - y1, z2 = zmin + zmax - z1;
+    
+    ll ans = 0;
+    for(int i = 1; i <= n; ++i) {
+        ll d1 = dist(X[i], Y[i], Z[i], x1, y1, z1);
+        ll d2 = dist(X[i], Y[i], Z[i], x2, y2, z2);
+        ans = max(ans, min(d1, d2));
+    }
+    return ans;
+}
+
+int main() {
+    freopen("cuburi.in", "r", stdin);
+    freopen("cuburi.out", "w", stdout);
+    
+    ll ax, bx, cx, ay, by, cy, az, bz, cz;
+    scanf("%d%lld%lld%lld%lld%lld%lld%lld%lld%lld", &n, &ax, &bx, &cx, &ay, &by, &cy, &az, &bz, &cz);
+    assert(1 <= n && n <= 2000000);
+    assert(1 <= ax && ax <= 1000);
+    assert(1 <= ay && ay <= 1000);
+    assert(1 <= az && az <= 1000);
+    assert(1 <= bx && bx <= 10000000000ll);
+    assert(1 <= by && by <= 10000000000ll);
+    assert(1 <= bz && bz <= 10000000000ll);
+    assert(2 <= cx && cx <= 1000000000000000ll);
+    assert(2 <= cy && cy <= 1000000000000000ll);
+    assert(2 <= cz && cz <= 1000000000000000ll);
+    
+    X[1] = Y[1] = Z[1] = xmin = xmax = ymin = ymax = zmin = zmax = 1;
+    for(int i = 2; i <= n; ++i) {
+        X[i] = (X[i - 1] * ax + bx * i) % cx;
+        Y[i] = (Y[i - 1] * ay + by * i) % cy;
+        Z[i] = (Z[i - 1] * az + bz * i) % cz;
+        xmin = min(xmin, X[i]);
+        xmax = max(xmax, X[i]);
+        ymin = min(ymin, Y[i]);
+        ymax = max(ymax, Y[i]);
+        zmin = min(zmin, Z[i]);
+        zmax = max(zmax, Z[i]);
+    }
+    
+    ll s1 = solve(ymin, zmin);
+    ll s2 = solve(ymin, zmax);
+    ll s3 = solve(ymax, zmin);
+    ll s4 = solve(ymax, zmax);
+    
+    printf("%lld\n", min(min(s1, s2), min(s3, s4)));
+    return 0;
+}

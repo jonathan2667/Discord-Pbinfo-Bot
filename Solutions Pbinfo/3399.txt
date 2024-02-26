@@ -1,0 +1,88 @@
+#include <fstream>
+#include <vector>
+#include <cmath>
+using namespace std;
+
+struct Semaphore
+{
+    int distance;
+    int red;
+    int green;
+    int redGreenCycle;
+};
+
+int n, x, s, k;
+vector<Semaphore> semaphores;
+vector<int> solutions;
+
+int gcd(int a, int b)
+{
+    if (b == 0)
+        return a;
+
+    return gcd(b, a % b);
+}
+
+int lcm(int a, int b)
+{
+    return a * b / gcd(a, b);
+}
+
+int main()
+{
+    ifstream fin("semarun.in");
+    ofstream fout("semarun.out");
+
+    // read data and compute lcm of red + green intervals
+    fin >> n >> x >> s >> k;
+    Semaphore tmpSemaphore;
+    int redGreenLcm = 1;
+
+    for (int i = 0; i < k; i++)
+    {
+        fin >> tmpSemaphore.distance >> tmpSemaphore.red >> tmpSemaphore.green;
+        tmpSemaphore.redGreenCycle = tmpSemaphore.red + tmpSemaphore.green;
+        redGreenLcm = lcm(redGreenLcm, tmpSemaphore.redGreenCycle);
+        semaphores.push_back(tmpSemaphore);
+    }
+
+    // check every moment of time between 0 and lcm-1
+    int maxT = s - (int) ceil((float) n / x);
+    for (int t = 0; t <= min(maxT, redGreenLcm - 1); t++)
+    {
+        bool isSolution = true;
+        for (auto &semaphore:semaphores)
+        {
+            // check if any semaphore will indicate red colour
+            int timeAtSemaphore = t + (semaphore.distance / x);
+            if (timeAtSemaphore % semaphore.redGreenCycle < semaphore.red)
+            {
+                isSolution = false;
+                break;
+            }
+        }
+
+        if (isSolution)
+            solutions.push_back(t);
+    }
+
+    // compute solution on intervals [lcm, 2*lcm-1] ... [y*lcm, maxT]
+    int initialSolutionsCount = solutions.size();
+    for (int i = 1; i <= maxT / redGreenLcm + 1; i++)
+    {
+        for (int j = 0; j < initialSolutionsCount; j++)
+        {
+            int newSol = redGreenLcm * i + solutions[j];
+            if (newSol > maxT)
+                break;
+            solutions.push_back(newSol);
+        }
+    }
+
+    // write solutions
+    fout << solutions.size() << endl;
+    for (int &solution:solutions)
+        fout << solution << " ";
+
+    return 0;
+}

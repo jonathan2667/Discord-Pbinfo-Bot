@@ -1,0 +1,13 @@
+#include <iostream>
+using namespace std;
+
+int main()
+{
+    int a,b,A,D,P;
+    cin>>a>>b;
+    P=2*(a+b);
+    A=a*b;
+    D=a*a+b*b;
+    cout<<P<<" "<<A<<" "<<D;
+    return 0;
+}

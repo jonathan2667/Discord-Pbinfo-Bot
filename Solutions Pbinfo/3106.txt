@@ -1,0 +1,40 @@
+// Pit-Rada Mihail-Cosmin
+// Sursa 100 puncte
+
+#include <stdio.h>
+#include <stdlib.h>
+
+int main() {
+    FILE      *f = fopen("points.in",  "r");
+    FILE      *g = fopen("points.out", "w");
+    long long n  = 0;
+    int       r,x0,y0,x1,y1,x;
+
+    fscanf(f, "%d", &r);
+    for (x0 = 0, y0 = r, x1 = 0, y1 = r; x0 != r; x0 = x1, y0 = y1) {
+        int circ = 0, yCirc = y0, line = 0, yLine = y0;
+        
+        // find the next point (x1, y1) on the circle, by maintaining
+        // the lower bound of the circle
+        do {
+            circ += 2*x1 + 1, x1++;
+            while (circ > 0) circ -= 2*y1 - 1, y1--;
+        } while (circ);
+
+        // add the contribution for the points (x, *) with x0 <= x < x1
+        // this can be computed easily by maintaining the lower bound
+        // for the circle and the line (x0, y0) <-> (x1, y1)
+        for (x = x0; x < x1; x++) {
+            circ += 2*x + 1;
+            while (circ > 0) circ -= 2*yCirc - 1, yCirc--;
+            line -= y1 - y0;
+            while (line > 0) line -= x1 - x0,     yLine--;
+            n += yCirc - yLine;
+        }
+    }
+    fprintf(g, "%lld", 4*n);
+    fclose(f);
+    fclose(g);
+
+    return 0;
+}

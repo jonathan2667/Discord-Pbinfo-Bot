@@ -1,0 +1,11 @@
+void sortareCrescator(nod *&prim)
+{
+    // lista are cel putin 3 elemente. :D
+    for(nod *temp1 = prim; temp1->urm; temp1 = temp1->urm)
+        for(nod *temp2 = temp1->urm; temp2; temp2 = temp2->urm)
+            if(temp1->info > temp2->info) {
+                int aux = temp1->info;
+                temp1->info = temp2->info;
+                temp2->info = aux;
+            }
+}

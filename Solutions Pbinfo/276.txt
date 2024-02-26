@@ -1,0 +1,24 @@
+#include <iostream>
+#include <fstream>
+#include <cassert>
+using namespace std;
+
+ifstream fin("pareimpare.in");
+ofstream fout("pareimpare.out");
+
+int v[100];
+
+int main(){
+    int x;
+    while(fin>>x)
+        v[x]=1;
+    for(int i=1 ; i<100 ; i += 2)
+        if(v[i])
+            fout << i << " ";
+    fout << endl;
+    for(int i=98 ; i>=0 ; i -= 2)
+        if(v[i])
+            fout << i << " ";
+    fout << endl;
+    return 0;
+}

@@ -1,0 +1,43 @@
+#include <bits/stdc++.h>
+
+#define Nmax 1005
+
+using namespace std;
+
+ifstream fin("lsq.in");
+ofstream fout("lsq.out");
+
+int N, M;
+char C[Nmax];
+int A[Nmax][Nmax];
+int LRU[Nmax][Nmax], CRU[Nmax][Nmax], LDL[Nmax][Nmax], CDL[Nmax][Nmax];
+set <int> S;
+vector <int> E[Nmax];
+int ans;
+
+int main()
+{
+    fin >> N >> M;
+    for(int i = 1; i <= N; i++)
+    {
+        fin >> (C + 1);
+        for(int j = 1; j <= M; j++)
+            A[i][j] = C[j] - '0';
+    }
+    for(int i = 1; i <= N; i++)
+        for(int j = 1; j <= M; j++)
+            if(A[i][j] == 1)
+                LDL[i][j] = 1 + LDL[i][j - 1], CDL[i][j] = 1 + CDL[i - 1][j];
+    for(int i = N; i >= 1; i--)
+        for(int j = M; j >= 1; j--)
+            if(A[i][j] == 1)
+                LRU[i][j] = 1 + LRU[i][j + 1], CRU[i][j] = 1 + CRU[i + 1][j];
+    int ans = 0;
+    for(int i = N; i >= 1; i--)
+        for(int j = M; j >= 1; j--)
+            for(int L = min(LDL[i][j], CDL[i][j]); L > ans; L--)
+                if(L <= min(LRU[i - L + 1][j - L + 1], CRU[i - L + 1][j - L + 1]))
+                    ans = L;
+    fout << ans << "\n";
+    return 0;
+}

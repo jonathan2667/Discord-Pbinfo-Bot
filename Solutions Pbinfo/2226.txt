@@ -1,0 +1,72 @@
+/*
+    *Ionut Dobricean
+    *Bistrita-Nasaud
+    * O(nlogn)- 100 pct - Dinamica + Arbori de intervale
+*/
+#include <fstream>
+#include <algorithm>
+#include <iostream>
+#define st first
+#define dr second
+using namespace std;
+ifstream fin ("chimic.in");
+ofstream fout ("chimic.out");
+const int Dim = 100001;
+int N;
+long long  D[Dim],P; // tabloul pentru Dinamica
+int A[Dim]; // puterile elementelor chimice
+long long Tree[Dim *  4 + 55]; // Arborele de intervale
+void Dynamic();
+pair < int , int> I[Dim]; // intervalul permis corespunzator elementelor
+
+int main() {
+    int i;
+    fin >> N;
+    for(i = 1 ; i <= N; i++)
+        fin >> A[i];
+    for(i = 1 ; i <= N; i++)
+        fin >> I[i].st >> I[i].dr;
+    Dynamic();  
+    for(i = 1 ; i <= N; i++) 
+        P = max(P,D[i]);
+fout << P;          
+}
+void Update(int node, int le,int ri,int pos ,long long val); // Functia de Update pentru Arbore
+void Query(int node , int le , int ri , int a , int b); // Functia de Query pentru Arbore
+long long ma;
+
+void Dynamic() {
+    int i;
+    for(i = N; i >= 1; i--) {
+        if(I[i].st == -1) D[i] = A[i];
+            else  { ma = 0; 
+                     Query(1,1 , N, I[i].st , I[i].dr);
+                    D[i] = A[i] + ma;
+                    }
+            Update(1,1,N,i,D[i]);
+            }
+}
+
+void Update(int node, int le,int ri,int pos ,long long val) {
+if(le == ri) {
+    Tree[node] = val;
+    return ;
+}
+int mj = (le + ri) / 2;
+if( pos <= mj)
+    Update(node * 2, le, mj , pos , val);
+    else
+    Update(node * 2 + 1 , mj + 1 , ri , pos , val);
+    Tree[node] = max (Tree[node * 2] , Tree[node * 2 + 1]);
+}
+void Query(int node , int le , int ri , int a , int b){
+    if(a <= le and b >= ri) {
+    ma = max (ma,Tree[node]);
+    return ;
+    }
+int mj = (le + ri) / 2;
+if(a <= mj)
+    Query(2 * node, le , mj, a , b);
+if(b > mj)
+    Query(2 * node + 1, mj + 1 , ri ,a , b);
+}

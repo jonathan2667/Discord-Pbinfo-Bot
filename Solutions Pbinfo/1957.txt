@@ -1,0 +1,91 @@
+// Popa Bogdan Ioan, clasa a 10-a, Colegiul National Aurel Vlaicu Orastie
+#include <bits/stdc++.h>
+#define nmax 100002
+using namespace std;
+ifstream fin("qmunte.in");
+ofstream fout("qmunte.out");
+vector <int>arb[4 * nmax + 55], aux;
+int num[4 * nmax + 55];
+int a[nmax];
+int cnt;
+int i;
+int n,Q;
+int t,x,y;
+int updateStack(vector<int>&st, vector<int>&a, vector <int> &b, bool ok)
+{
+    if(!ok)
+        st = a;
+    int ret = 0;
+    for(int i = 0; i < (int)b.size(); i++)
+    {
+        while(st.size() >= 2 && st[st.size() - 1] > b[i] && st[st.size() - 1] > st[st.size() - 2])
+            st.pop_back(), ++ret;
+        st.push_back(b[i]);
+    }
+    return ret;
+}
+void Build(int nod, int st, int dr)
+{
+    if(st == dr)
+    {
+        num[nod] = 0;
+        arb[nod].push_back(a[st]);
+        return;
+    }
+    int mij = (st + dr) / 2;
+    Build(2 * nod, st, mij);
+    Build(2 * nod + 1, mij + 1, dr);
+    num[nod] = num[2 * nod] + num[2 * nod + 1];
+    num[nod] += updateStack(arb[nod], arb[2 * nod], arb[2 * nod + 1], false);
+}
+void Update(int nod, int st, int dr, int poz, int val)
+{
+    if(st == dr)
+    {
+        num[nod] = 0;
+        a[st] = val;
+        arb[nod][0] = val;
+        return;
+    }
+    int mij = (st + dr) / 2;
+    if(poz <= mij)
+        Update(2 * nod, st, mij, poz, val);
+    else Update(2 * nod + 1, mij+1, dr, poz, val);
+    num[nod] = num[2 * nod] + num[2 * nod + 1];
+    num[nod] += updateStack(arb[nod], arb[2 * nod], arb[2 * nod + 1], false);
+}
+void Query(int nod, int st, int dr, int a, int b)
+{
+    if(a <=  st && dr <= b)
+    {
+        cnt += num[nod];
+        cnt += updateStack(aux, aux, arb[nod], true);
+        return;
+    }
+    int mij = (st + dr) / 2;
+    if(a <= mij)
+        Query(2 * nod, st, mij, a, b);
+    if(b > mij)
+        Query(2 * nod + 1, mij+1, dr, a, b);
+}
+int main()
+{
+    fin >> n >> Q;
+    for(i = 1; i <= n; i++)
+        fin >> a[i];
+    Build(1, 1, n);
+    while(Q--)
+    {
+        fin >> t >> x >> y;
+        if(t == 1)
+            Update(1, 1, n, x, y);
+        else
+        {
+            cnt = 0;
+            aux.clear();
+            Query(1, 1, n, x, y);
+            fout << cnt << "\n";
+        }
+    }
+    return 0;
+}

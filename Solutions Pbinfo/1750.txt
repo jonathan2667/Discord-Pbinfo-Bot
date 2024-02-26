@@ -1,0 +1,21 @@
+#include <iostream>
+#include <algorithm>
+#include <cassert>
+using namespace std;
+
+int n,a[202][202], x, r;
+
+int main()
+{
+    assert(cin >> x >> r >> n);
+    for(int j = 1 ; j <= n ; j++)
+        for(int i = 1 ; i <= n ; i ++)
+            a[i][j] = x, x += r;
+    for(int i = 1 ; i <= n ; i ++)
+    {
+        for(int j = 1 ; j <= n ; j ++)
+            cout <<a[i][j] << " ";
+        cout << "\n";
+    }
+    return 0;
+}

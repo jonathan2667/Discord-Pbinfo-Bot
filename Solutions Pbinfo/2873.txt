@@ -1,0 +1,23 @@
+#include<bits/stdc++.h>
+using namespace std;
+
+int main()
+{
+    vector<int> v;
+    int n,m,x;
+    char c;
+    cin>>n>>m>>c;
+    for(int i=1;i<=n*m;i++)
+        cin>>x,v.push_back(x);
+    if(c=='+')
+        sort(v.begin(),v.end());
+    else
+        sort(v.begin(),v.end(),greater<int>());
+    v.insert(v.begin()+0,0);
+    for(int i=1;i<=n*m;i++)
+    {
+        cout<<v[i]<<" ";
+        if(i%m==0)
+            cout<<'\n';
+    }
+}

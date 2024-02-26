@@ -1,0 +1,164 @@
+// Problema Orase - Oni clasa a 9-a
+// sursa Velea Alexandru
+// time O(n * log2(x))
+// 100 points
+
+#include <cmath>
+
+#include <iomanip>
+#include <fstream>
+#include <iostream>
+#include <queue>
+#include <vector>
+using namespace std;
+
+typedef long long int64;
+
+const int kAcceptedRemaining = 2e4;
+
+struct Road {
+    int distance;
+    int speed;
+    int id;
+
+    long double SavedTime(int bonus_time = 0) const {
+        return 1.0 * distance / (speed + bonus_time) / (speed + 1 + bonus_time);
+    }
+
+    long double Time(int bonus_time = 0) const {
+        return 1.0 * distance / (speed + bonus_time);
+    }
+
+    bool operator<(const Road& rhs) const {
+        return SavedTime() < rhs.SavedTime();
+    }
+};
+
+int64 x;
+vector<Road> roads;
+
+int Read() {
+    ifstream cin("orase2.in");
+    int test_type;
+    cin >> test_type;
+
+    int n;
+    cin >> n >> x;
+
+    roads.resize(n);
+
+    for (int i = 0; i < n; i += 1) {
+        roads[i].id = i;
+    }
+
+    for (auto& itr : roads) {
+        cin >> itr.distance;
+    }
+
+    for (auto& itr : roads) {
+        cin >> itr.speed;
+    }
+
+    return 1;
+}
+
+int is_read = Read();
+
+int64 UpgradeRoad(int index, long double saved_time) {
+    return max(0LL, int64(1.0 + -0.5 + sqrt(1.0 + 4.0 * roads[index].distance / saved_time) / 2.0 + 1e-10) -
+                        roads[index].speed);
+}
+
+vector<int64> GetUpgrades(long double saved_time) {
+    vector<int64> answer(roads.size(), 0);
+    for (int i = 0; i < (int)roads.size(); i += 1) {
+        answer[i] = UpgradeRoad(i, saved_time);
+    }
+
+    return answer;
+}
+
+int64 GetNumOperations(long double saved_time) {
+    auto upgrades = GetUpgrades(saved_time);
+
+    int64 answer = 0;
+    for (auto itr : upgrades) {
+        answer += itr;
+    }
+
+    return answer;
+}
+
+long double EstimateSolution() {
+    long double mx_save = 0;
+    for (auto& itr : roads) {
+        mx_save = max(mx_save, itr.SavedTime());
+    }
+
+    long double left = 0, right = mx_save;
+
+    int64 mx_upgrades = 0;
+    long double mx_where = 0;
+
+    int64 mn_upgrades = 1e9;
+    long double mn_where = 0;
+
+    for (int i = 0; i < 100; i += 1) {
+        long double mid = (right + left) / 2;
+        int64 num_operations = GetNumOperations(mid);
+
+        if (num_operations == x) {
+            mx_upgrades = num_operations;
+            mx_where = mid;
+            break;
+        }
+
+        if (num_operations > x) {
+            left = mid;
+
+            if (mn_upgrades >= num_operations) {
+                mn_upgrades = num_operations;
+                mn_where = mid;
+            }
+        } else {
+            right = mid;
+
+            if (mx_upgrades <= num_operations) {
+                mx_upgrades = num_operations;
+                mx_where = mid;
+            }
+        }
+    }
+
+    auto upgrades = GetUpgrades(mx_where);
+
+    int64 sum = 0;
+    for (int i = 0; i < (int)roads.size(); i += 1) {
+        roads[i].speed += upgrades[i];
+        sum += upgrades[i];
+    }
+
+    x -= sum;
+
+    double answer = 0;
+    for (auto& itr : roads) {
+        answer += itr.Time();
+    }
+
+    answer -= 1.0 * mx_where * x;
+
+    return answer;
+}
+
+long double Solve() {
+    return EstimateSolution();
+}
+
+int main() {
+    long double answer = Solve();
+    
+    ofstream cout("orase2.out");
+    cout << int64(answer) << '\n';
+
+    return 0;
+}

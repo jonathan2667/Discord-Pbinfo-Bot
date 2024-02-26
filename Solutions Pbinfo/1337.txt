@@ -1,0 +1,173 @@
+/**
+Problema Turn - Constantinescu Eduard
+Inspirata din problema Traseu - Carmen Minca
+Algoritm de rezolvare: Lee cu mici modificari
+Complexitate Timp O(n*n*n)
+*/
+
+
+#include <bits/stdc++.h>
+
+using namespace std;
+
+FILE *fin = fopen("turn.in", "r");
+FILE *fout = fopen("turn.out", "w");
+
+int n;
+
+struct
+{
+    int prop, val;
+    ///prop = 1 => scara sus
+    ///prop = 2 => scara jos
+    ///prop = 3 => groapa
+    ///prop = 0 => gol
+} cub[105][105][105];
+
+struct
+{
+    int x, y, z; ///coordonatele in cub
+} C[105*105*105], vec, poz, sf;
+
+int dx[] = {1, 0, 0, 0, 0, -1}; ///cele 4 directii
+int dy[] = {0, 0, -1, 0, 1, 0};
+int dz[] = {0, 1, 0, -1, 0, 0};
+
+/**
+
+
+dx = 1 0 0 0 0 -1
+dy = 0 0-1 0 1 0
+dz = 0 1 0-1 0 0
+
+x = sus
+y = dreapta
+z = spate
+
+*/
+
+void bordare() ///bordare simpla a matricei
+{
+    register int i, j;
+    for(i = 0; i <= n+1; i++)
+        for(j = 0; j <= n+1; j++)
+        {
+            cub[i][0][j].val = -1;
+            cub[i][n+1][j].val = -1;
+        }
+    for(i = 0; i <= n+1; i++)
+        for(j = 0; j <= n+1; j++)
+        {
+            cub[i][j][n+1].val = -1;
+            cub[i][j][0].val = -1;
+        }
+    for(i = 0; i <= n+1; i++)
+        for(j = 0; j <= n+1; j++)
+        {
+            cub[n+1][i][j].val = -1;
+            cub[0][i][j].val = -1;
+        }
+}
+
+void citire()
+{
+    int z, s, j, o;
+    fscanf(fin, "%d%d%d%d%d", &n, &z, &s, &j, &o); ///citirea valorilor
+    int a, b, c;
+    for(int i = 1; i <= z; i++) /// se citesc coord ziduri
+    {
+        fscanf(fin, "%d%d%d", &a, &b, &c);
+        cub[a][b][c].val = -1;
+    }
+    for(int i = 1; i <= s; i++)/// se citesc coord scari sus
+    {
+        fscanf(fin, "%d%d%d", &a, &b, &c);
+        cub[a][b][c].prop = 1;
+    }
+    for(int i = 1; i <= j; i++)/// se citesc coord scari jos
+    {
+        fscanf(fin, "%d%d%d", &a, &b, &c);
+        cub[a][b][c].prop = 2;
+    }
+    for(int i = 1; i <= o; i++)/// se citesc coord gropi
+    {
+        fscanf(fin, "%d%d%d", &a, &b, &c);
+        cub[a][b][c].prop = 3;
+    }
+
+    fscanf(fin, "%d%d%d", &poz.x, &poz.y, &poz.z); ///se citesc coord
+    fscanf(fin, "%d%d%d", &sf.x, &sf.y, &sf.z); /// de inceput si sf
+
+}
+
+void rezolvare() ///un lee cu mici modificari
+{
+    int prim, ultim, k, s = 1, l;
+
+    prim = ultim = 0;
+    C[0] = poz;
+    cub[poz.x][poz.y][poz.z].val = 1; ///marcam pozitia de inceput
+
+    while(prim <= ultim && cub[sf.x][sf.y][sf.z].val == 0) /// cat timp am el in coada
+    {
+        ///si nu am ajuns la sf
+        poz = C[prim];
+        ++prim; /// extrag din coada
+
+        if(cub[poz.x][poz.y][poz.z].prop == 3) ///este groapa
+        {
+            int d = 0;
+            vec = poz; /// pornim de la pozitia gropii
+            while(vec.x > 1 && cub[vec.x][vec.y][vec.z].prop == 3)
+                --vec.x, d++;///cat timp suntem in cub si suntem pe o groapa, vom cadea
+            if(cub[vec.x][vec.y][vec.z].val == 0) ///este liber
+            {
+                cub[vec.x][vec.y][vec.z].val = cub[poz.x][poz.y][poz.z].val+d;
+                ultim++;///marchez drumul si adaug in coada
+                C[ultim] = vec;
+            }
+        }
+
+        else
+        {
+            if(cub[poz.x][poz.y][poz.z].prop == 1)
+                {
+                    k = 0;
+                    l = 4;
+                }
+            else if(cub[poz.x][poz.y][poz.z].prop == 2)
+            {
+                k = 1;
+                l = 5;
+            }
+            else
+            {
+                k = 1;
+                l = 4;
+            }
+            for(k; k <= l; k++) ///parcurg in cele 4 directii posibile
+            {
+                vec.x = poz.x + dx[k];
+                vec.y = poz.y + dy[k];
+                vec.z = poz.z + dz[k];
+                if(cub[vec.x][vec.y][vec.z].val == 0)///este liber
+                {
+                    cub[vec.x][vec.y][vec.z].val = cub[poz.x][poz.y][poz.z].val + 1;
+                    ultim++; ///marchez drumul si adaug in coada
+                    C[ultim] = vec;
+                }
+            }
+
+        }
+    }
+    fprintf(fout, "%d\n", cub[sf.x][sf.y][sf.z].val);
+    ///afisez rezultatul
+}
+
+int main()
+{
+    citire();
+    bordare();
+    rezolvare();
+    return 0;
+}

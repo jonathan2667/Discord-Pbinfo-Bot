@@ -1,0 +1,23 @@
+#include <iostream>
+#include <fstream>
+using namespace std;
+
+ifstream fin("mincols.in");
+ofstream fout("mincols.out");
+
+int a[105][105],n;
+
+int main(){
+    fin >> n;
+    for(int i=1;i<=n;++i)
+        for(int j=1;j<=n;++j)
+            fin >> a[i][j];
+    for(int j=1;j<=n;++j){
+        int mmin = a[1][j];
+        for(int i=2;i<=n;++i)
+            if(a[i][j] < mmin)
+                mmin = a[i][j];
+        fout << mmin << " ";
+    }
+    return 0;
+}

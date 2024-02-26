@@ -1,0 +1,35 @@
+program numere;
+var f:text;
+    n,i,j,nr0,x:longint;
+    min,max,s,n1,nr1,m:longint;
+    v:array[0..60000]of byte;
+begin
+assign(f,'numere9.in');
+reset(f);
+s:=0;
+nr0:=0;
+readln(f,n);
+for i:=1 to n do
+ begin
+  for j:=1 to n do
+   begin
+    read(f,x);
+    if (x<>0)and(x<=60000) then v[x]:=1;
+   end;
+  readln(f);
+ end;
+close(f);
+{for i:=1 to n*n do write(v[i],' ');
+readln; }
+if n*n>=60000 then m:=60000 else m:=n*n;
+i:=1;
+while (v[i]=1)and(i<=m) do inc(i);
+min:=i;
+i:=m;
+while (v[i]=1)and(i>0) do dec(i);
+max:=i;
+assign(f,'numere9.out');
+rewrite(f);
+writeln(f,min,' ',max);
+close(f);
+end.

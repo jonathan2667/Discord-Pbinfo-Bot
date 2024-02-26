@@ -1,0 +1,51 @@
+#include<bits/stdc++.h>
+#define god dimasi5eks
+#pragma GCC optimize("O3")
+#define fi first
+#define se second
+#define pb push_back
+#define pf push_front
+ 
+// #define fisier 1
+ 
+using namespace std;
+ 
+typedef long long ll;
+ 
+const int mod = 1000000007;
+const double dancila = 3.14159265359; // PI 
+const double eps = 1e-9;
+ 
+ll n, a, b, frq[35]; 
+ 
+int main()
+{
+    #ifdef fisier
+        ifstream cin("input.in");
+        ofstream cout("output.out");
+    #endif
+    
+    ios_base::sync_with_stdio(false);
+    cin.tie(NULL);
+    
+    int t;
+    cin >> t;
+    for(; t; --t)
+    {
+        a = b = 0;
+        memset(frq, 0, sizeof(frq));
+        cin >> n;
+        for(int bit = 0; bit <= 30; ++bit)
+        {
+            ll rap = n / (1LL<<(bit+1));
+            frq[bit] = rap * (1LL<<bit) + max(0LL, n % (1LL<<(bit+1)) - (1LL<<bit) + 1);
+            if((1LL<<bit) <= n)
+                --frq[bit], a ^= (1LL<<bit);
+        }
+        for(int bit = 0; bit <= 30; ++bit)
+            if(frq[bit] & 1)
+                b ^= (1LL<<bit);
+        cout << a+b << '\n';
+    }
+    return 0;
+}

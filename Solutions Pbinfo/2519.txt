@@ -1,0 +1,43 @@
+// Solutie oficiala 100p (non-recursiva)
+// Propusa de: elev Vintila Valentin
+
+#include <fstream>
+
+using namespace std;
+
+int main()
+{
+    long long i;
+    unsigned long long n, k, S, x = 1;
+    ifstream fin("wisp.in");
+    fin >> n >> k; fin.close();
+
+    // Pentru a porni de la o matrice n x n care are primul
+    // element 1, trebuie sa il eliminam pe k din ecuatie:
+    S = n * (k - 1) + 1;
+
+    // Pas catre urmatorul element
+    i = n + n - 2;
+
+    // Simplificam calculele
+    if(n % 2 == 0) 
+    {
+        do
+        {
+            S += (x += i);
+            S += (x += i);
+        } while((i -= 4) != 2);
+        S += x + 2;
+    }
+    else
+    {
+        do
+        {
+            S += (x += i);
+            S += (x += i);
+        } while(i -= 4);
+    }
+
+    ofstream fout("wisp.out"); fout << S;
+    fout.close(); return 0;
+}

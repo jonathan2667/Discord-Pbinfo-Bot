@@ -1,0 +1,13 @@
+#include <iostream>
+using namespace std;
+int n, i;
+int main () {
+    cin>>n;
+    for (int i=2;i<=n/i;i++)
+        if (n%i == 0) {
+            cout<<i*i;
+            return 0;
+        }
+        
+    
+}

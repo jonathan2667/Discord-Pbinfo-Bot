@@ -1,0 +1,31 @@
+#include <fstream>
+#include <cstring>
+using namespace std;
+
+ifstream fin("cuvmax.in");
+ofstream fout("cuvmax.out");
+
+int nrcuv(char * s){
+    int c = 0;
+    if(s[0]!=' ')
+        c++;
+    for(int i=1 ; s[i] ; ++i)
+        if(s[i]!=' ' && s[i-1]==' ')
+            c++;
+    return c;
+}
+
+int main(){
+    int n;
+    char s[251], m[251];
+    fin >> n;
+    fin.get();
+    fin.getline(m,251);
+    for( ; n ; --n){
+        fin.getline(s,251);
+        if(nrcuv(s) > nrcuv(m))
+            strcpy(m,s);
+    }
+    fout << m << endl;
+    return 0;
+}

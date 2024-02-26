@@ -1,0 +1,21 @@
+#include <fstream>
+
+using namespace std;
+ifstream fin("numar4.in");
+ofstream fout("numar4.out");
+int main()
+{long n,nr=0;int nr_pare=0,nr_impare=0,c,i;
+fin>>n;
+while(n!=0)
+{
+    c=n%10;
+    if(c%2==0)nr_pare++;
+    else nr_impare++;
+    n/=10;
+}
+for(i=1;i<=nr_pare;i++) nr+=4;
+for(i=1;i<=nr_impare;i++)nr+=5;
+fout<<nr<<'\n';
+    fin.close();fout.close();
+    return 0;
+}

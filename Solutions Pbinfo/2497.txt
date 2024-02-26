@@ -1,0 +1,49 @@
+//stramosi - EM
+#include <iostream>
+#include <fstream>
+using namespace std;
+#define M 512
+int a[M][M],b[M][M];
+char sc[M*M][21];
+int main()
+{
+    ifstream fi("gene.in"); ofstream fo("gene.out");
+    int cer,i,j,L[26],Lg[26],k,m,n,t,gen,mx=0; char s[21],sg[21];
+    fi>>cer;
+    fi>>m>>n>>k;
+    for (t=0;t<26;t++) Lg[t]=0;
+    fi>>sg;
+    for (t=0;sg[t]!=0;t++) Lg[sg[t]-'a']++;
+    for(i=0;i<m;i++)
+        for (j=0;j<n;j++) {
+            fi>>s; gen=0;
+            for (t=0;t<26;t++) L[t]=0;
+            for (t=0;s[t]!=0;t++) L[s[t]-'a']++;
+            for (t=0;t<26;t++) gen += min(L[t],Lg[t]);
+            a[i+1][j+1]=gen;
+            for (t=0;s[t]!=0;t++) sc[i*n+j][t]=s[t];
+                }
+    if (cer==1) {
+    for (i=1;i<=m;i++)
+        for (j=1;j<=n;j++)
+            if (a[i][j]>mx) mx=a[i][j];
+    for (i=1;i<=m;i++)
+        for (j=1;j<=n;j++)
+            if (a[i][j]==mx)
+                fo<<i<<" "<<j<<" "<<sc[(i-1)*n+j-1]<<"\n";
+    }
+    else {
+    for (i=1;i<=m;i++)
+        for (j=1;j<=n;j++)
+            if (a[i][j]<=k) b[i][j]=0;
+            else b[i][j]=1+min(min(b[i][j-1],b[i-1][j]),b[i-1][j-1]);
+    for (i=1;i<=m;i++)
+        for (j=1;j<=n;j++)
+            if (b[i][j]>mx) mx=b[i][j];
+    for (i=1;i<=m;i++)
+        for (j=1;j<=n;j++)
+            if (b[i][j]==mx)
+                { fo<<i-mx+1<<" "<<j-mx+1<<" "<<mx; i=m; break;}
+    }
+    return 0;
+}

@@ -1,0 +1,19 @@
+// trecerea unui nr. din baza 16 in baza 10
+#include <iostream>
+#include <cstring>
+using namespace std;
+long long nb10,val,l;
+char s[100],i;
+int main()
+{
+    cin>>s;
+    l=strlen(s);
+    for(i=0;i<l;i++)
+    {
+        if((s[i]>='0')&&(s[i]<='9')) val=s[i]-'0';
+        if((s[i]>='A')&&(s[i]<='F')) val=10+s[i]-'A';
+        nb10=nb10*16+val;
+    }
+    cout<<nb10;
+    return 0;
+}

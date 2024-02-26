@@ -1,0 +1,122 @@
+/* Solutie 100 puncte
+   Prof. Constantin Galatan
+   Complexitate: O(n * log n)
+*/
+#include <fstream>
+#include <algorithm>
+#include <vector>
+using namespace std;
+
+ifstream fin("mts.in");
+ofstream fout("mts.out");
+
+const int Dim = 1000010;
+short a[Dim];
+int x[Dim];
+int s[Dim];
+int T, N, K, Nmax;
+int t, cnt, cnt1;
+
+void Read();
+void Solve();
+void BSL();
+void BSR();
+
+int main()
+{
+    Read();
+    Solve();
+    fout << Nmax << '\n';
+
+    fout.close();
+}
+
+void Solve()
+{
+    if ( a[K] > T ) return;
+    // merg spre dreapta
+    for ( int i = K; t <= T && i <= N; ++i )
+    {
+        if ( a[i] > T ) break;
+        t = a[K] + (x[i] - x[K]) + (s[i] - s[K]);
+        if ( t <= T )
+        {
+            cnt = i - K + 1;
+            Nmax = max(Nmax, cnt);
+            if ( t + (x[i] - x[K]) <   T ) // pot face drumul inapoi pana la T
+            {
+                t += (x[i] - x[K]);
+                cnt1 = 0;
+                if ( t < T )
+                    BSL();
+                Nmax = max(Nmax, cnt + cnt1);
+
+            }
+        }
+    }
+    t = 0;
+    // merg spre stanga
+    for ( int i = K ; t <= T && i >= 1; --i )
+    {
+        if ( a[i] > T ) break;
+        t = a[K] + (x[K] - x[i]) + (s[K - 1] - s[i - 1]);
+        if ( t <= T )
+        {
+            cnt = K - i + 1;
+            Nmax = max(Nmax, cnt);
+            if ( t + (x[K] - x[i]) <   T ) // pot face drumul inapoi pana la T
+            {
+                t += (x[K] - x[i]);
+                cnt1 = 0;
+                if ( t < T )
+                    BSR();
+                Nmax = max(Nmax, cnt + cnt1);
+            }
+        }
+    }
+}
+
+void Read()
+{
+    fin >> N >> K >> T;
+    for (int i = 1; i <= N; ++i )
+    {
+        fin >> a[i];
+        s[i] = s[i - 1] + a[i];
+    }
+    for (int i = 1; i <= N; ++i )
+        fin >> x[i];
+    fin.close();
+}
+
+void BSR()
+{
+    int lo = K + 1, hi = N, mid;
+    while ( lo <= hi )
+    {
+        mid = lo + ( hi - lo ) / 2;
+        if ( t + x[mid] - x[K] + s[mid] - s[K] <= T )
+        {
+            cnt1 = mid - K;
+            lo = mid + 1;
+        }
+        else
+            hi = mid - 1;
+    }
+}
+
+void BSL()
+{
+    int lo = 1, hi = K - 1, mid;
+    while ( lo <= hi )
+    {
+        mid = lo + ( hi - lo ) / 2;
+        if ( t + x[K] - x[mid] + s[K - 1] - s[mid - 1] <= T )
+        {
+            cnt1 = K - mid;
+            hi = mid - 1;
+        }
+        else
+            lo = mid + 1;
+    }
+}

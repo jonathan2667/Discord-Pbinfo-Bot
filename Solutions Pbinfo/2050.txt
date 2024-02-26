@@ -1,0 +1,51 @@
+/*
+    Prof. Constantin Galatan
+    Programare dinamica
+    Complexitate: O(n)
+*/
+#include <fstream>
+#include <algorithm>
+#include <cstring>
+using namespace std;
+
+
+ifstream fin("nuz.in");
+ofstream fout("nuz.out");
+
+const int MaxN = 100005, Mod = 30011;
+
+int c[MaxN];  // c[i] nr posibilitati de a construi un cuvant de lungime FIX i,
+              // a.i. in interior nici o secv formata din litere identice sa nu depaseasca lung k
+
+int sp[MaxN]; // sp[i] = c[0] + ... + c[i]
+
+int Count(int n, int k);
+
+int main()
+{
+    int n, k;
+    fin >> n >> k;
+
+    fout << ((Count(n, k) - Count(n, k - 1) + Mod) % Mod);
+
+    fin.close();
+    fout.close();
+}
+
+int Count(int n, int k)
+{
+    memset(c, 0, sizeof(c));
+    c[0] = 1; sp[0] = 1;
+    for (int i = 1; i <= n; ++i)
+    {
+        if (i > k)
+            c[i] += (25 * (sp[i - 1] - sp[i - k - 1] + Mod) % Mod);
+        else
+            c[i] += 25 * sp[i - 1];
+
+        c[i] %= Mod;
+        sp[i] = (sp[i - 1] + c[i]) % Mod;
+    }
+
+    return sp[n];
+} 

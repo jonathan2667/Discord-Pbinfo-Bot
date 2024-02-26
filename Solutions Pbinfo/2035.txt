@@ -1,0 +1,122 @@
+// implementare: Cristi Dospra
+// punctaj: 100p
+// complexitate: O(N + MlogN)
+
+#include <fstream>
+#include <algorithm>
+#include <stack>
+#include <vector>
+#include <climits>
+using namespace std;
+
+#define NMAX 50002
+
+ifstream fin("empowermage.in");
+ofstream fout("empowermage.out");
+
+int pred[NMAX], urm[NMAX];
+
+stack<int> stiva;
+vector <pair<int, int> > v;
+
+int N, M;
+int cautbin(int x) {
+
+    int st = 1, dr = N;
+    int mid;
+
+    while (st <= dr) {
+
+        mid = (st + dr) >> 1;
+
+        if (v[mid].first == x)
+            return mid;
+
+        if (v[mid].first < x)
+            st = mid + 1;
+        else
+            dr = mid - 1;
+    }
+
+    return -1;
+}
+
+
+int main() {
+
+
+    fin >> N;
+
+    v.resize(N + 2);
+
+    v[0] = make_pair(INT_MIN, INT_MAX);
+    stiva.push(0);
+
+    for (int i = 1; i <= N; ++i) {
+        fin >> v[i].first >> v[i].second;
+
+        while (!stiva.empty() && v[i].second > v[stiva.top()].second)
+            stiva.pop();
+
+        pred[i] = min(i, stiva.top());
+        stiva.push(i);
+    }
+
+    while (stiva.size() > 0)
+        stiva.pop();
+
+    v[N+1] = make_pair(INT_MAX, INT_MAX);
+    stiva.push(N + 1);
+    for (int i = N; i >= 1; --i) {
+
+        while (!stiva.empty() && v[i].second > v[stiva.top()].second)
+            stiva.pop();
+
+        urm[i] = stiva.top();
+        stiva.push(i);
+    }
+
+    fin >> M;
+
+    int x, y;
+    while (M--) {
+        fin >> x >> y;
+
+        int pozx = cautbin(x);
+        int pozy = cautbin(y);
+
+        if (pozx != -1 && pozy != -1) {
+
+            if (pred[pozy] != pozx) {
+                fout << "FALS\n";
+                continue;
+            }
+
+            if (pozy - pozx == y - x) {
+                fout << "ADEVARAT\n";
+                continue;
+            }
+
+            fout << "POATE\n";
+        }
+        else if (pozy != -1) {
+
+            if (v[pred[pozy]].first > x)
+                fout << "FALS\n";
+            else
+                fout << "POATE\n";
+        }
+        else if (pozx != -1) {
+
+            if (v[urm[pozx]].first < y)
+                fout << "FALS\n";
+            else
+                fout << "POATE\n";
+        }
+        else {
+            fout << "POATE\n";
+        }
+    }
+
+    return 0;
+}

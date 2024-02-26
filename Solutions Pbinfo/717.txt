@@ -1,0 +1,85 @@
+// sursa cu descompunere in factori primi + Legendre - Chesca Ciprian - 100 p
+
+#include <fstream>
+#define nmax 100001
+#define p 666013
+
+using namespace std;
+
+ifstream f("implementare.in");
+ofstream g("implementare.out");
+
+char v[nmax];
+long long w[nmax],nr=0,desc[nmax];
+
+
+// Ciurul lui Eratostene
+void ciur(int n) 
+{
+  int i, j;
+  for (i = 2; i <= n; ++i) {
+    if (v[i] == 0) {
+      w[++nr]=i;
+      for (j = i + i; j <= n; j += i) {
+        v[j] = 1;
+      }}}
+    
+}
+
+// descompunere in factori primi a lui x! cu Legendre
+void dsc(int x,int op) 
+{
+long long i,s,pp,ok;
+    
+for(i=1;i<=nr;i++)
+{
+    s=0;pp=w[i];ok=1;
+    while (ok)
+    {
+        s=s+x/pp;
+        if (x/pp==0) ok=0;
+        pp=pp*w[i];
+        
+    }
+    if (op==1)  desc[i]+=s;
+        else    desc[i]-=s;
+}}  
+
+
+
+int mdl(int prim)
+{
+long long i,j,pp=1,r=1;
+for(i=1;i<=nr;i++)
+{
+    pp = 1;
+    for(j=1;j<=desc[i];j++)
+        pp = (pp*w[i]) % prim;
+    
+    r = (r*pp) % prim;
+    
+}
+return r;
+}
+
+int main()
+{
+int k,n;
+
+f>>k>>n;
+
+ciur(k+n);
+
+// calculez combinari de n+k luate cate k-1
+dsc(n+k,1);
+dsc(n+1,0);
+dsc(k-1,0);
+
+// recompun numarul modulo p
+g<<mdl(p)<<"\n";
+
+f.close();
+g.close();
+
+return 0;
+}

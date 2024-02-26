@@ -1,0 +1,176 @@
+// prof. Ionel Vasile Pit-Rada && prof. Chesca Ciprian
+// solutie combinatorica
+
+#include <fstream>
+#include <bitset>
+#define fmax 1001
+#define nmax 1000001
+#define M 3000017
+#define ll long long
+
+using namespace std;
+
+ll D,P,N=0;
+ll e[fmax],K;
+char v[nmax];
+
+ll comb[201][201];
+
+
+// Ciurul lui Eratostene
+void ciur(int n)
+{
+  ll i, j;
+  for (i = 2; i <= n; ++i) {
+    if (v[i] == 0) {
+          ++N;
+      for (j = i*i; j <= n; j += i) {
+        v[j] = 1;
+      }}}
+
+}
+
+
+// descompunerea in factori primi a numarului X si determin numarul factorilor primi in k si exponentii
+void descompun(ll X, ll &k)
+{
+    ll fact=0,i;
+    k=0;
+    // extrag factorii de 2
+    while (X%2==0)
+            {X/=2;fact++;}
+
+    if (fact) e[++k]=fact;
+
+    fact=0;
+    while (X%3==0)
+            {X/=3;fact++;}
+
+    if (fact) e[++k]=fact;
+
+    fact=0;
+    while (X%5==0)
+            {X/=5;fact++;}
+
+    if (fact) e[++k]=fact;
+
+
+    // extrag ceilalti factori primi
+    i=7;
+    while (i*i<=X)
+    {
+    if (X%i==0)
+      {
+      fact=0;
+          while (X%i==0) {X/=i;fact++;}
+          if (fact) e[++k]=fact;
+          }
+
+         if (X%(i+4)==0)
+      {
+      fact=0;
+          while (X%(i+4)==0) {X/=(i+4);fact++;}
+          if (fact) e[++k]=fact;
+          }
+        i+=6;
+    }
+
+    if (X>1) e[++k]=1;
+}
+
+
+//cate solutii are ecuatia cu K necunoscute in membrul stang si un numar cu k factori primi in membrul drept.
+//x1*x2*...*xK = p1^a1*p2^a2*...*pk^ak
+ll solutii(int K, int k)
+    {
+    ll i,p=1;
+    for(i=1;i<=k;i++)
+         p=(p*comb[K-1][e[i]+K-1])%M;
+    return p;
+    }
+
+
+ll cmmdc(ll a, ll b, ll &x, ll &y) {
+    if (b == 0) {
+        x = 1;
+        y = 0;
+        return a;
+    } else {
+        ll xa, ya;
+        ll r = cmmdc(b, a%b, xa, ya);
+        x = ya;
+        y = xa - ya*(a/b);
+        return r;
+    }
+}
+
+ll invmod(ll a) {
+    ll x, y;
+    cmmdc(a, M, x, y);
+    return (x%M+M)%M;
+}
+
+ll n_choose_k(ll n, ll k)
+{
+    ll i,P = 1, P1 = 1, P2 = 1;
+
+    if (k > n) return 0;
+
+    if (k > n/2) k = n - k;
+
+    for(i = 1;i <= k; i++)
+        P1 = (P1*(n - k + i)) % M;
+
+    for(i = 1;i <= k; i++)
+        P2 = (P2*i) % M;
+
+    P = ((P1*invmod(P2)) % M);
+
+    return P;
+}
+
+
+int main()
+{
+    ifstream f("divizori.in");
+    ofstream g("divizori.out");
+
+    f >> D >> K >> P;
+    ll a,s,b,p;
+    ll semn=1,i,j,k=0;
+
+    // determin cate numere prime exista mai mici sau egale cu P
+    ciur(P);
+
+    //descompun D in factori primi
+    descompun(D,k);
+
+
+    comb[0][1]=1;
+    comb[1][1]=1;
+    for(i=2;i<=200;i++)
+        {
+        comb[0][i]=1;
+        comb[i][i]=1;
+        for(j=1;j<=i-1;j++)
+        comb[j][i]=(comb[j-1][i-1]+comb[j][i-1])%M;
+        }
+
+
+    a=n_choose_k(N,K);
+
+    s=0;
+    for(i=K;i>=1;i--)
+            {
+            b=comb[K-i][K];
+            s=(s+M+solutii(i,k)*b*semn)%M;
+            semn=-semn;
+            }
+    s=(s*a)%M;
+    g << s << "\n";
+
+    f.close();
+    g.close();
+
+    return 0;
+}

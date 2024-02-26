@@ -1,0 +1,63 @@
+// sursa de 100 p
+
+#include <fstream>
+#define pmax 1002
+#define qmax 1002
+
+using namespace std;
+
+
+int main()
+{
+    ifstream f("multimi3.in");
+    ofstream g("multimi3.out");
+
+    int p,q,n,a[pmax][qmax],i,j,k;
+    f>>p>>q;
+
+    n =(p-1)/2;
+
+    // formez multimile pentru q=3
+    for(i=1;i<=p;i++)
+        {
+        k=0;
+        if (i<=n+1)
+             {
+             a[i][++k]=i;
+             a[i][++k]=3*n+1+i;
+             a[i][++k]=6*n+5-2*i;
+             }
+        if (i>n+1)
+             {
+             a[i][++k]=i;
+             a[i][++k]=n+i;
+             a[i][++k]=8*n+6-2*i;
+             }
+
+        }
+
+
+    // formez multimile din aproape in aproape pentru valori ale lui q > 3
+    for(j=5;j<=q;j=j+2)
+        {
+         for(i=1;i<=p;i++)
+            {
+            k=j-2;
+            a[i][++k]=p*(j-2)+i;
+            a[i][++k]=p*(j-2)+2*p+1-i;
+            }
+
+        }
+
+    // afisez matricea
+    for(i=1;i<=p;i++)
+    {
+        for(j=1;j<=q;j++)
+            g<<a[i][j]<<" ";
+        g<<"\n";
+
+    }
+    f.close();
+    g.close();
+    return 0;
+}

@@ -1,0 +1,57 @@
+//prof. Lucia Miron
+#include <fstream>
+#include <cassert>
+
+using namespace std;
+ifstream fin("culori.in");
+ofstream fout("culori.out");
+int cc,n,m,c[20001], i, j, lg, lgmax,cer,a,b,x;
+int v1[20001];
+
+int main()
+{
+    fin>>cer;
+    assert(cer == 1 || cer == 2);
+    fin>>cc>>n>>m;
+    assert(cc > 0 && cc < 1000001);
+    assert(n > 0 && n < 10001);
+    assert(m > 0 && m < 200001);
+    for(i=1; i<=n; i++)
+    {
+    fin>>c[i];
+        assert(c[i] > 0 && c[i] <= cc);
+    }
+    if(cer==1)
+    {
+        lg=1;
+        for(i=2; i<=n; i++)
+            if(c[i]==c[i-1])lg++;
+            else
+            {
+                if(lg>lgmax)lgmax=lg;
+                lg=1;
+            }
+        if(lg>lgmax)lgmax=lg;
+        fout<<lgmax<<endl;
+    }
+    else
+    {
+        for(i=1; i<=m; i++)
+        {
+            fin>>a>>b>>x;
+            assert(a > 0 && a < n);
+            assert(b >= a && b <= n);
+            v1[a]+=x;
+            v1[b+1]+=-x;
+        }
+        for(i=1; i<=n; i++)
+            v1[i]=v1[i-1]+v1[i];
+        for(i=1; i<=n; i++)
+        {
+            c[i]=c[i]+v1[i];
+            assert(c[i] > 0 && c[i] <= cc);
+            fout<<c[i]<<' ';
+        }
+    }
+    return 0;
+}

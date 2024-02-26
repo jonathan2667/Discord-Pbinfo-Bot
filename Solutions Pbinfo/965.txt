@@ -1,0 +1,33 @@
+//prof Carmen Minca
+
+#include <fstream>
+using namespace std;
+
+char v[30001], w[30001];
+int x,y;
+int n,b,r,t,s=0;
+
+ifstream f("joc3.in");
+ofstream g("joc3.out");
+    
+int main()
+{  f>>n>>x>>y;
+   b=1; r=1;
+   v[1]=w[1]=1;
+   t=n-1;
+   do
+   { s++;
+     b+=x; r-=y;
+     if(r<1)r+=n;
+     if(b>n)b-=n;
+     if((v[b]==0)&&(w[b]==0))t--;
+     if((v[r]==0)&&(w[r]==0)&&(b!=r))t--;
+     v[b]++; w[r]++;
+   } while((v[b]<2) && (w[b]<2) && (b!=r));
+  if(t<0)t=0;
+  g<<t<<' '<<s<<' '<<b<<' '<<r<<endl;
+  f.close();
+  g.close();
+  return 0;
+}
+

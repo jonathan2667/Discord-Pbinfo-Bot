@@ -1,0 +1,64 @@
+/*
+* Algoritm O(N) timp si O(1) memorie:
+* Ideea este sa aflam adresa elementului din mijlocul listei si a vecinilor sai
+* Trunchiem lista la mijloc si rasturnam una din cele 2 liste rezultate
+* Daca sunt egale inseamna ca lista initiala forma un palindrom
+* La final avem grija sa refacem legaturile in lista
+*/
+void _reverse(node *&l) { // procedura de rasturnare a listei
+  node *ptr, *next, *prev;
+  prev = NULL;
+  ptr = l;
+  while (ptr != NULL) {
+    next = ptr->next;
+    ptr->next = prev;
+    prev = ptr;
+    ptr = next;
+  }
+  l = prev;
+}
+
+bool _equal(node *a, node *b) { // functie care verifica daca 2 liste sunt egale ca lungime si contin aceleasi valori
+  while ((a != NULL) && (b != NULL) && (a->key == b->key)) {
+    a = a->next;
+    b = b->next;
+  }
+  return (a == NULL) && (b == NULL);
+}
+
+bool palindrom(node *l) {
+  node *ptr_fast; // folosit pentru determinarea elementului din mijloc
+  node *ptr;      // adresa elementului aflat dupa mijlocul listei
+  node *q;        // adresa elementului aflat inaintea mijlocului listei
+  node *mid;      // adresa mijlocului listei
+  bool ans;
+
+  ptr_fast = l;
+  ptr = l;
+  q = NULL;
+
+  // ptr_fast itereaza din 2 in 2
+  // cand va ajunge la final, ptr, care itereaza din 1 in 1, va fi pe pozitia din mijloc
+  // iar q il va precede
+  while ((ptr_fast != NULL) && (ptr_fast->next != NULL)) {
+    ptr_fast = ptr_fast->next->next;
+    q = ptr;
+    ptr = ptr->next;
+  }
+  mid = NULL;
+  if (ptr_fast != NULL) {  // in caz ca lungimea listei este impara
+    mid = ptr;             // nu ne intereseaza elementul din mijloc
+    ptr = ptr->next;
+  }
+  q->next = NULL;          // trunchiem lista
+  _reverse(ptr);           // rasturnam o jumatate
+  ans = _equal(l, ptr);    // in ans vom retine daca lista formeaza un palindrom
+                           // acest rezultat nu poate fi returnat inca pentru ca am stricat lista
+  _reverse(ptr);           // readucem jumatatea rasturnata la forma initiala
+  if (mid != NULL) {       // refacem legatura la mijloc
+    q->next = mid;
+  } else {
+    q->next = ptr;
+  }
+  return ans;
+}

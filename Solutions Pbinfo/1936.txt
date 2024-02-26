@@ -1,0 +1,53 @@
+#include <fstream>
+
+#define NMax 100001
+using namespace std;
+ifstream fin("codsecret.in");
+ofstream fout("codsecret.out");
+int n, _count;
+
+int a[NMax];
+int v[NMax];
+
+void Remove()
+{
+    if( _count < 3 )
+        return;
+
+    int act = _count -1;
+    if( (v[act] % v[act-1] == 0 || v[act-1] % v[act] == 0) &&
+        (v[act] % v[act+1] == 0 || v[act+1] % v[act] == 0))
+        _count -=3;
+}
+
+int main()
+{
+    fin>>n;
+
+    for(int i=1; i<=n; i++)
+    {
+        fin>>a[i];
+
+    }
+
+    v[++ _count ] = a[1];
+    v[++ _count ] = a[2];
+    v[++ _count ] = a[3];
+
+    Remove();
+    for(int i=4; i<=n; i++)
+    {
+        v[++ _count] = a[i];
+        Remove();
+    }
+
+
+    for(int i=1; i<= _count; i++)
+        fout<<v[i]<<' ';
+
+    if(! _count)
+        fout<<"Merry Christmas\n";
+
+    return 0;
+}
+

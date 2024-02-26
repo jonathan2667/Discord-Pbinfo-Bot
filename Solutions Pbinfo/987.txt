@@ -1,0 +1,30 @@
+#include <iostream>
+#include <fstream>
+using namespace std;
+
+ifstream fin ("matrice4.in");
+ofstream fout("matrice4.out");
+
+int n , x[105][105];
+
+int suma(int x[][105], int n , int p)
+{
+    int s = 0;
+    for(int j = 1 ; j <= n ; j ++)
+        s += x[p][j];
+    return s;
+        
+}
+
+int main()
+{
+    fin >> n;
+    for(int i = 1 ; i <= n ; i ++)
+        for(int j = 1 ; j <= n ; j ++)
+            fin >> x[i][j];
+    for(int i = 1 ; i <= n ; i ++)
+        if(suma(x , n , i) % 2 == 0)
+            fout << i << " ";
+    return 0;
+}
+

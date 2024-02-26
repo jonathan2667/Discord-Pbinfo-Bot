@@ -1,0 +1,94 @@
+#include <bits/stdc++.h>
+#define oo 10000000
+using namespace std;
+
+char s[1005][1005];
+int cerinta,S[1005][1005],di[]={-1,0,1,0},dj[]={0,1,0,-1};
+long long n,a[1005][1005];
+
+
+void solve1(){
+  int i,j,c;
+  long long k=0,kp;
+  for(i=0;i<n;++i)
+  for(j=n-1;j>=0;--j)
+   if(s[i][j]!='A'){ if(j!=n-1)a[i][j]+=a[i][j+1];
+                     a[i][j]++;
+                   }
+  for(j=0;j<n;++j){
+    stack<pair<int,int>> ST;
+    kp=0;
+    for(i=n-1;i>=0;--i){c=0;
+        while (ST.size()!=0 && ST.top().first> a[i][j]){
+            kp-=(ST.top().first-a[i][j])*(ST.top().second+1);
+            c+=ST.top().second+1;
+            ST.pop();
+            }
+        kp+=a[i][j];
+        k+=kp;
+        ST.push({a[i][j],c});
+        }
+    }
+    cout<<(n*n*(n + 1)*(n + 1))/4-k;
+}
+
+bool inside(int i, int j){return (i>0 && i<=n && j>0 && j<=n);}
+
+int sumaCost(int i,int j,int L) {return a[i][j]-a[i-L][j]-a[i][j-L]+a[i-L][j-L];}
+
+
+void solve2(){
+
+queue< pair<int,int> > q;
+pair<int ,int> prim;
+int i,j,inou,jnou,ij,jj,latMax;
+
+for (i=0; i<n;++i)
+   for (j=0; j<n;++j)
+      if (s[i][j] == 'A')
+            { a[i+1][j+1] = 0;
+              q.push(make_pair(i+1, j+1));
+            }
+        else a[i+1][j+1] = oo;
+
+ while (!q.empty())
+    {  prim = q.front();
+       q.pop();
+       i = prim.first; j = prim.second;
+        for (int k=0; k<4; k++)
+        { inou = i + di[k];
+          jnou = j + dj[k];
+          if (inside(inou,jnou) && a[inou][jnou] > a[i][j] + 1)
+            { a[inou][jnou] = a[i][j] + 1;
+               q.push({inou,jnou});
+            }
+        }
+    }
+
+     for(i=1;i<=n;i++)
+        for(j=1;j<=n;j++)
+        { a[i][j]+=a[i-1][j]+a[i][j-1]-a[i-1][j-1];
+          if(s[i-1][j-1] == 'V')
+              S[i][j] = min(min(S[i][j-1], S[i-1][j]), S[i-1][j-1]) + 1;
+          else S[i][j] = 0;
+        }
+
+latMax = S[1][1]; ij = 1; jj = 1;
+
+for(i = 1; i<=n; i++)
+ for(j = 1;j<=n; j++)
+    if(latMax < S[i][j] || latMax==S[i][j] && sumaCost(i,j,latMax)<sumaCost(ij,jj,latMax))
+      {latMax = S[i][j];ij = i;jj = j;}
+
+cout<<latMax*latMax<<' '<<sumaCost(ij,jj,latMax)<<'\n';
+}
+
+
+int main()
+{
+    cin>>cerinta>>n;
+    for(int i=0;i<n;cin>>s[i],++i);
+    if(cerinta==1)solve1();
+    else solve2();
+    return 0;
+}

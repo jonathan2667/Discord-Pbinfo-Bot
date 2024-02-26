@@ -1,0 +1,137 @@
+#include <fstream>
+#include <iostream>
+#include <algorithm>
+#define UMAX 100010
+#define QMAX 100010
+#define NMAX 1010
+
+using namespace std;
+
+ifstream f("rox.in");
+ofstream g("rox.out");
+
+struct update
+{
+    short lin, st, dr;
+    char T;
+}a[UMAX+UMAX];
+
+struct query
+{
+    short lin, col, raspuns;
+    int o;
+}b[QMAX];
+
+int N, M, U, Q, nr;
+int number[NMAX], aux[NMAX];
+
+void Citeste()
+{
+    int L1, C1, L2, C2;
+    char T;
+
+    f>>N>>M>>U;
+
+    for (int i=1; i<=U; ++i)
+    {
+        f>>L1>>C1>>L2>>C2>>T;
+        a[nr].lin=L1; a[nr].st=C1; a[nr].dr=C2+1; a[nr].T=T; ++nr;
+        a[nr].lin=L2+1; a[nr].st=C1; a[nr].dr=C2+1; a[nr].T=T; ++nr;
+    }
+
+    f>>Q;
+    for (int i=0; i<Q; ++i)
+    {
+        f>>b[i].lin>>b[i].col;
+        b[i].o=i;
+    }
+}
+
+bool sortLinieA(update A, update B)
+{
+    return A.lin<B.lin;
+}
+
+bool sortQuery(query A, query B)
+{
+    return (A.lin<B.lin || (A.lin==B.lin && A.col<B.col));
+}
+
+inline int litera(char a)
+{
+    if (a>='a' && a<='z') return a-'a';
+    return a-'A';
+}
+
+inline int numaraBiti1(int x)
+{
+    int rez=0;
+    for (int k=0; k<='z'-'a'; ++k)
+        if ((x&(1<<k))!=0) rez++;
+    return rez;
+}
+
+void Rezolva()
+{
+    int j=0, k, ind=0, var, varAux;
+
+    sort(a, a+nr, sortLinieA);
+    sort(b, b+Q, sortQuery);
+
+    for (int i=1; i<=N; ++i)
+    {
+        while (a[j].lin==i && j<nr)
+        {
+            if (a[j].T>='a' && a[j].T<='z')
+            {
+                number[a[j].st]^=1<<litera(a[j].T);
+                number[a[j].dr]^=1<<litera(a[j].T);
+            }
+            else
+            {
+                aux[a[j].st]^=1<<litera(a[j].T);
+                aux[a[j].dr]^=1<<litera(a[j].T);
+            }
+            ++j;
+        }
+
+        if (b[ind].lin==i)
+        {
+            var=0; varAux=0;
+            for (k=1; k<=M; ++k)
+            {
+                var^=number[k]; varAux^=aux[k];
+                while (b[ind].lin==i && b[ind].col==k)
+                {
+                    b[ind++].raspuns=numaraBiti1(var)+numaraBiti1(varAux);
+                    //cout<<ind-1<<" "<<b[ind-1].raspuns<<"\n";
+                }
+            }
+        }
+    }
+}
+
+bool sortQueryOrdine(query A, query B)
+{
+    return A.o<B.o;
+}
+
+void Scrie()
+{
+    sort(b, b+Q, sortQueryOrdine);
+
+    for (int i=0; i<Q; ++i) g<<b[i].raspuns<<"\n";
+}
+
+int main()
+{
+    Citeste();
+
+    Rezolva();
+
+    Scrie();
+
+    f.close();
+    g.close();
+    return 0;
+}

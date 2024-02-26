@@ -1,0 +1,37 @@
+#include <iostream>
+#include <cstring>
+using namespace std;
+
+bool palindrom(char *p)
+{
+    for(int i = 0 , j = strlen(p) - 1 ; i < j ; i ++, j --)
+        if(p[i] != p[j])
+            return false;
+    return true;
+}
+
+int main()
+{
+    char s[256], cmin[11];
+    cin.getline(s, 256);
+    char * p = strtok(s , " .,");
+    int cnt = 0;
+    while(p)
+    {
+        if(palindrom(p))
+        {
+            cnt ++;
+            if(cnt == 1)
+                strcpy(cmin , p);
+            else
+                if(strcmp(p , cmin) < 0)
+                    strcpy(cmin , p);
+        }
+        p = strtok(NULL , " .,");
+    }
+    if(cnt > 0)
+        cout << cmin;
+    else
+        cout << "IMPOSIBIL";
+    return 0;
+}

@@ -1,0 +1,251 @@
+//Popa Bogdan Ioan, clasa a 10-a, Colegiul National Aurel Vlaicu Orastie
+#include <bits/stdc++.h>
+
+#define Vmax 1000001
+#define logVmax 19
+#define dz(x) ((x ^ (x - 1)) & x)
+
+using namespace std;
+
+class InParser {
+private:
+    FILE *fin;
+    char *buff;
+    int sp;
+
+    char read_ch() {
+        ++sp;
+        if (sp == 4096) {
+            sp = 0;
+            fread(buff, 1, 4096, fin);
+        }
+        return buff[sp];
+    }
+
+public:
+    InParser(const char* nume) {
+        fin = fopen(nume, "r");
+        buff = new char[4096]();
+        sp = 4095;
+    }
+
+    InParser& operator >> (int &n) {
+        char c;
+        while (!isdigit(c = read_ch()) && c != '-');
+        int sgn = 1;
+        if (c == '-') {
+            n = 0;
+            sgn = -1;
+        } else {
+            n = c - '0';
+        }
+        while (isdigit(c = read_ch())) {
+            n = 10 * n + c - '0';
+        }
+        n *= sgn;
+        return *this;
+    }
+
+    InParser& operator >> (long long &n) {
+        char c;
+        n = 0;
+        while (!isdigit(c = read_ch()) && c != '-');
+        long long sgn = 1;
+        if (c == '-') {
+            n = 0;
+            sgn = -1;
+        } else {
+            n = c - '0';
+        }
+        while (isdigit(c = read_ch())) {
+            n = 10 * n + c - '0';
+        }
+        n *= sgn;
+        return *this;
+    }
+};
+
+class OutParser {
+private:
+    FILE *fout;
+    char *buff;
+    int sp;
+
+    void write_ch(char ch) {
+        if (sp == 50000) {
+            fwrite(buff, 1, 50000, fout);
+            sp = 0;
+            buff[sp++] = ch;
+        } else {
+            buff[sp++] = ch;
+        }
+    }
+
+
+public:
+    OutParser(const char* name) {
+        fout = fopen(name, "w");
+        buff = new char[50000]();
+        sp = 0;
+    }
+    ~OutParser() {
+        fwrite(buff, 1, sp, fout);
+        fclose(fout);
+    }
+
+    OutParser& operator << (int vu32) {
+        if (vu32 <= 9) {
+            write_ch(vu32 + '0');
+        } else {
+            (*this) << (vu32 / 10);
+            write_ch(vu32 % 10 + '0');
+        }
+        return *this;
+    }
+
+    OutParser& operator << (long long vu64) {
+        if (vu64 <= 9) {
+            write_ch(vu64 + '0');
+        } else {
+            (*this) << (vu64 / 10);
+            write_ch(vu64 % 10 + '0');
+        }
+        return *this;
+    }
+
+    OutParser& operator << (char ch) {
+        write_ch(ch);
+        return *this;
+    }
+    OutParser& operator << (const char *ch) {
+        while (*ch) {
+            write_ch(*ch);
+            ++ch;
+        }
+        return *this;
+    }
+};
+
+class Heap
+{
+    vector<int> H;
+    public:
+        Heap()
+        {
+            H.push_back(0);
+        }
+        void push(int x)
+        {
+            H.push_back(x);
+            precolate();
+        }
+        bool empty()
+        {
+            return (int)H.size() == 1;
+        }
+        int top()
+        {
+            return ((int)H.size() == 1 ? 0 : H[1]);
+        }
+        void pop()
+        {
+            if((int)H.size() == 1)
+                return;
+            swap(H[1], H[H.size() - 1]);
+            H.pop_back();
+            sift();
+        }
+    private:
+        void precolate()
+        {
+            int T = H.size() - 1;
+            while(T > 1 && H[T] < H[T / 2])
+                swap(H[T], H[T / 2]), T /= 2;
+        }
+        void sift()
+        {
+            int T = 1;
+            int son;
+            do
+            {
+                son = 0;
+                if(2 * T < (int)H.size())
+                {
+                    son = 2 * T;
+                    if(2 * T + 1 < (int)H.size() && H[2 * T + 1] < H[2 * T])
+                        son = 2 * T + 1;
+                    if(H[T] <= H[son])
+                        son = 0;
+                }
+                if(son)
+                    swap(H[T], H[son]), T = son;
+
+            }while(son);
+        }
+};
+
+InParser fin("tsm.in");
+OutParser fout("tsm.out");
+
+int M;
+int aib[Vmax];
+int Freq[Vmax], T[Vmax];
+int t, x, currentMin, currentMax;
+int target;
+Heap H;
+
+void update(int x, int val)
+{
+    for(; x < Vmax; x += dz(x))
+        aib[x] += val;
+}
+
+int query(int K)
+{
+    int ret = 0, sum = 0;
+    for(int i = logVmax; i >= 0; i--)
+        if(ret + (1 << i) < Vmax && sum + aib[ret + (1 << i)] <= K)
+            ret += (1 << i), sum += aib[ret];
+    return ret + 1;
+}
+
+int main()
+{
+    for(fin >> M; M; M--)
+    {
+        fin >> t;
+        if(t == 1)
+        {
+            fin >> x;
+            Freq[x]++;
+            if(Freq[x] == 1)
+                update(x, 1), H.push(x);
+            continue;
+        }
+        else
+        if(t == 2)
+        {
+            fin >> x;
+            target = query(x - 1);
+            fout << target << "\n";
+            continue;
+        }
+        else
+        if(t == 3)
+        {
+            while(!Freq[H.top()])
+                H.pop();
+            fout << H.top() << "\n";
+            continue;
+        }
+        else
+        if(t == 4)
+        {
+            Freq[target]--;
+            if(Freq[target] == 0)
+                update(target, -1);
+            continue;
+        }
+    }
+    return 0;
+}

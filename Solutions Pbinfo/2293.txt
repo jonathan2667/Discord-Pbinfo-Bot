@@ -1,0 +1,37 @@
+#include <bits/stdc++.h>
+#define nmax 2002
+using namespace std;
+
+int a[nmax], n;
+int dp[nmax][nmax];
+/**
+  Programare dinamica metoda mixta
+  dp[i,j] = costul maxim al eliminarii secventei a[i..j]
+
+  Date initiale
+  dp(i,i) = n * a[i] , i=1,n
+  Recurente:
+  dp(i,j)=max((n-(j-i))*a[i] + dp(i+1,j), dp(i,j-1) + (n-(j-i))*a[j]
+  Solutia este în dp(1,n)
+*/
+
+int main()
+{
+    int i, j, pas;
+    cin >> n;
+    for (i = 1; i <= n; i++)
+        cin >> a[i];
+
+    for (i = 1; i <= n; i++)
+        dp[i][i] = n * a[i];
+
+    for (pas = 1; pas < n; pas++)
+        for (i = 1; i <= n - pas; i++)
+        {
+            j = i + pas;
+            dp[i][j] = max( (n - (j - i)) * a[i] + dp[i + 1][j],
+                           dp[i][j - 1] + (n - (j - i)) * a[j]);
+        }
+    cout << dp[1][n];
+    return 0;
+}

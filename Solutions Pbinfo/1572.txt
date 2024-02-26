@@ -1,0 +1,147 @@
+#include <fstream>
+#include <vector>
+#include <algorithm>
+#include <cstring>
+#include <stack>
+#include <ctime>
+#include <cstdlib>
+
+using namespace std;
+
+ifstream fin("componentebiconexe.in");
+ofstream fout("componentebiconexe.out");
+
+const int dim = 100005;
+
+vector<int> graph[dim];
+vector< pair<int, int> > critEdges;
+vector< vector<int> > biconex;
+int biconexCount;
+
+bool critical[dim];
+
+int level[dim], low[dim];
+
+bool vis[dim];
+
+stack<int> st;
+
+void dfs(int node, int parent, int root) {
+
+    vis[node] = true;
+    level[node] = low[node] = level[parent] + 1;
+
+    st.push(node);
+
+    int sonCount = 0;
+
+    for (vector<int>::iterator adj = graph[node].begin(); adj != graph[node].end(); ++adj) {
+
+        if (*adj == parent)
+            continue;
+
+        if (vis[*adj]) {
+            low[node] = min(low[node], level[*adj]);
+            continue;
+        }
+
+        ++sonCount;
+
+        dfs(*adj, node, root);
+        low[node] = min(low[node], low[*adj]);
+
+        if (level[node] < low[*adj])
+            critEdges.push_back((make_pair(node, *adj)));
+
+        if (level[node] <= low[*adj]) {
+
+            ++biconexCount;
+            biconex.push_back(vector<int>(0));
+
+            int x;
+            do {
+
+                x = st.top();
+                st.pop();
+                biconex[biconexCount - 1].push_back(x);
+
+
+            } while (x != *adj);
+
+            biconex[biconexCount - 1].push_back(node);
+
+            if (node != root)
+                critical[node] = true;
+
+        }
+
+    }
+
+    if (node == root && sonCount > 1)
+        critical[node] = true;
+
+}
+
+int main() {
+
+    int p;
+    fin >> p;
+
+    int n, m;
+    fin >> n >> m;
+
+    for (int i = 1; i <= m; ++i) {
+
+        int x, y;
+        fin >> x >> y;
+
+        graph[x].push_back(y);
+        graph[y].push_back(x);
+
+    }
+
+    for (int i = 1; i <= n; ++i)
+        if (!vis[i])
+            dfs(i, 0, i);
+
+    if (p == 1) {
+
+        fout << biconexCount << '\n';
+
+        for (int i = 0; i < biconexCount; ++i) {
+            fout << biconex[i].size() << ' ';
+            for (unsigned int j = 0; j < biconex[i].size(); ++j) {
+                fout << biconex[i][j] << ' ';
+            }
+            fout << '\n';
+        }
+
+    }
+    else if (p == 2) {
+
+        int cnt = 0;
+        for (int i = 1; i <= n; ++i)
+            if (critical[i])
+                ++cnt;
+
+        fout << cnt << '\n';
+        for (int i = 1; i <= n; ++i)
+            if (critical[i])
+                fout << i << ' ';
+        fout << '\n';
+
+    }
+    else {
+
+        fout << critEdges.size() << '\n';
+        for (unsigned int i = 0; i < critEdges.size(); ++i)
+            fout << critEdges[i].first << ' ' << critEdges[i].second << '\n';
+
+    }
+
+    return 0;
+
+}
+
+//Trust me, I'm the Doctor!
+

@@ -1,0 +1,124 @@
+#include<fstream>
+using namespace std;
+
+ifstream  fin("sam.in");
+ofstream fout("sam.out");
+
+int n,a[100009],x[100009],r,i,sens;
+int b[2][100009],c[100009];
+int m=1000003;
+
+void cobor_sau_urc(int sens,int p)
+{
+    int i,j,k;
+    //sens=0;coborare
+    //sens=1; urcare
+    //etapa (a) i din (x[p-1]];x[p]] si j din (x[p];x[p+1]]
+    for(k=x[p-1];k<=x[p];k++)c[k]=b[1-sens][k];
+    i=x[p];
+    j=x[p]+1;
+    while((x[p-1]<i) && (j<=x[p+1]))
+    {
+        if((x[p-1]<i-1) &&
+           ((a[i-1]>a[j] && sens==0)||
+            (a[i-1]<a[j] && sens==1)))
+        {
+            //i-1 preia si misiunea lui i
+            c[i-1]=(c[i-1]+c[i])%m;
+            i--;
+        }
+        else
+        {
+            //j isi inchide misiunea
+            b[sens][j]=(b[sens][j]+c[i])%m;
+            j++;
+        }
+    }
+    //etapa (b) i din (x[p-1]];x[p]] si j din (x[p+1];x[p+2])
+    for(k=x[p-1];k<=x[p];k++)c[k]=b[1-sens][k];
+    i=x[p];
+    j=x[p+2]-1; while((a[i]<a[j]&&sens==0)||(a[i]>a[j]&&sens==1))j--;
+    while((x[p-1]<i) && (x[p+1]<j))
+    {
+        if((x[p-1]<i-1) && ((a[i-1]>a[j] && sens==0)||(a[i-1]<a[j] && sens==1)))
+        {
+            //i-1 preia si misiunea lui i
+            c[i-1]=(c[i-1]+c[i])%m;
+            i--;
+        }
+        else
+        {
+            //j isi inchide misiunea
+            b[sens][j]=(b[sens][j]+c[i])%m;
+            j--;
+        }
+    }
+    //etapa (c) i din (x[p]];x[p+1]) si j din (x[p];x[p+2])
+    //partea cu j din (x[p];x[p+1]) va fi rezolvata din mers cu ajutorul lui i
+    for(k=x[p];k<=x[p+1];k++)c[k]=b[1-sens][k];
+    i=x[p]+1;
+    j=x[p+2]-1; while((a[i]<a[j]&&sens==0)||(a[i]>a[j]&&sens==1))j--;
+    while((i<x[p+1]) && (x[p+1]<=j))
+    {
+        if((i+1<x[p+1]) && ((a[i+1]>a[j] && sens==0)||(a[i+1]<a[j] && sens==1)))
+        {
+            //i+1 preia si misiunea lui i
+            c[i+1]=(c[i+1]+c[i])%m;
+            //i+1 se actualizeaza cu valoarea de coborare a lui i
+            //acum se va rezolva partea din misiunea lui j preluata de i
+            b[sens][i+1]=(b[sens][i+1]+c[i])%m;
+            i++;
+        }
+        else
+        {
+            //j isi incheie misiunea
+            b[sens][j]=(b[sens][j]+c[i])%m;
+            j--;
+        }
+    }
+}
+
+int main()
+{
+    fin>>n;
+    for (i=1;i<=n;i++){
+        fin>>a[i];
+    }
+    //prelungesc cu a[0]
+    if(a[1]<a[2])a[0]=n+1;
+    else a[0]=0;
+    //prelungesc cu a[n+1]
+    if(a[n-1]<a[n])a[n+1]=-1;
+    else a[n+1]=n+2;
+    //determin pozitiile punctelor de extrem local
+    //si prelungesc cu x[0] si x[p+1] si x[p+2]
+    x[0]=-1;
+    x[1]=0;
+    r=1;
+    for(i=1;i<=n;i++)
+    {
+        if((a[i-1]<a[i] && a[i]>a[i+1])||
+           (a[i-1]>a[i] && a[i]<a[i+1]))
+           {
+               r++;
+               x[r]=i;
+           }
+    }
+    x[r+1]=n+1;
+    x[r+2]=n+2;
+
+    if(a[0]>a[1])sens=1;
+    else sens=0;
+
+    b[sens][0]=1;
+    for(i=1;i<=r;i++)
+    {
+        sens=1-sens;
+        cobor_sau_urc(sens,i);
+    }
+    fout<<b[sens][n+1]<<"\n";
+    fout.close();
+    fin.close();
+    return 0;
+}
+

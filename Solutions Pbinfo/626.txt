@@ -1,0 +1,91 @@
+#include <fstream>
+#include <iostream>
+#include<string.h>
+#include<stdlib.h>
+#define nmax 100001
+using namespace std;
+
+char s1[nmax],s[nmax];
+int n,i,nr,m,p,a[26],A[26],c[26],C[26];
+int anagrama(){
+    int i;
+    for(i=0;i<26;i++)
+        if(a[i]!=c[i]||A[i]!=C[i])
+            return 0;
+    return 1;
+}
+int main()
+{
+    ifstream fin("anagrame2.in");
+    ofstream fout("anagrame2.out");
+    fin>>p;
+    fin.get();
+    fin.get(s,nmax,'\n');
+    fin.get();
+    fin.get(s1,nmax,'\n');
+    fin.close();
+    n=strlen(s1);
+    m=strlen(s);
+    nr=0;
+    for(i=0;i<n;i++)
+        if(s1[i]>='a'&&s1[i]<='z')
+            a[s1[i]-'a']++;
+        else
+            A[s1[i]-'A']++;
+    if(p==1){
+        for(i=0;i<n;i++)
+            if(s[i]>='a'&&s[i]<='z')
+                c[s[i]-'a']++;
+            else
+                C[s[i]-'A']++;
+        if(anagrama()){
+            for(int j=0;j<n;j++)
+                fout<<s[j];
+            fout<<"\n";
+            fout.close();
+            return 0;
+        }
+        for(i=1;i<=m-n;i++){
+            if(s[i-1]>='a'&&s[i-1]<='z')
+                c[s[i-1]-'a']--;
+            else
+                C[s[i-1]-'A']--;
+            if(s[i+n-1]>='a'&&s[i+n-1]<='z')
+                c[s[i+n-1]-'a']++;
+            else
+                C[s[i+n-1]-'A']++;
+            if(anagrama()){
+                for(int j=i;j<=i+n-1;j++)
+                    fout<<s[j];
+                fout<<"\n";
+                fout.close();
+                return 0;
+            }
+        }
+    }else{
+        for(i=0;i<n;i++)
+            if(s[i]>='a'&&s[i]<='z')
+                c[s[i]-'a']++;
+            else
+                C[s[i]-'A']++;
+        if(anagrama())
+            nr++;
+        for(i=1;i<=m-n;i++){
+            if(s[i-1]>='a'&&s[i-1]<='z')
+                c[s[i-1]-'a']--;
+            else
+                C[s[i-1]-'A']--;
+            if(s[i+n-1]>='a'&&s[i+n-1]<='z')
+                c[s[i+n-1]-'a']++;
+            else
+                C[s[i+n-1]-'A']++;
+            if(anagrama())
+                nr++;
+        }
+        fout<<nr<<'\n';
+
+    }
+    fout.close();
+    return 0;
+}
+

@@ -1,0 +1,23 @@
+#include <iostream>
+#include <cstring>
+
+using namespace std;
+
+int main()
+{
+    int n , k;
+    char s[21][21], rez[501];
+    cin >> n;
+    for(int i = 1 ; i <= n ; i ++)
+        cin >> s[i];
+    cin >> k;
+    strcpy(rez, "");
+    for(int i = 1 ; i <= n ; i ++)
+        if(strlen(s[i]) == k)
+            strcat(rez, s[i]), strcat(rez, " ");
+    for(int i = 1 ; i <= n ; i ++)
+        if(strlen(s[i]) != k)
+            strcat(rez, s[i]), strcat(rez, " ");
+    cout << rez;
+    return 0;
+}

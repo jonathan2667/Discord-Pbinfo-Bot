@@ -1,0 +1,86 @@
+#define TuTTy "Cosmin-Mihai Tutunaru"
+#include <cstdio>
+#include <vector>
+#include <algorithm>
+#define infile "bilute1.in"
+#define outfile "bilute1.out"
+#define vMax 13
+#define nMax 1013
+#define sMax 10013
+#define modulo 666013
+#define ll long long
+
+using namespace std;
+
+int dp[nMax][sMax];
+int v[nMax];
+int n, s, sol;
+
+bool usedSums[nMax][sMax];
+vector <int> sums[nMax];
+
+void read() {
+    scanf("%d\n", &n);
+    for (int i = 1; i < n+1; ++i) {
+        scanf("%d", &v[i]);
+        s += v[i];
+    }
+}
+
+void solve() {
+    dp[0][0] = 1;
+    int crtSum = 0;
+
+    sums[0].push_back(0);
+    sort(v+1, v+n+1);
+
+    for (int k = 1; k < n+1; ++k) {
+        crtSum += v[k];
+
+        for (int i = min(n/2 + 1, k); i > 0; --i) {
+            for (size_t j = 0; j < sums[i-1].size(); ++j) {
+                int val = sums[i-1][j] + v[k];
+
+                if (val > crtSum) {
+                    continue;
+                }
+
+                dp[i][val] += dp[i-1][sums[i-1][j]];
+                if (dp[i][val] >= modulo) {
+                    dp[i][val] -= modulo;
+                }
+
+                if (val <= s/2 + 1 && !usedSums[i][val]) {
+                    usedSums[i][val] = true;
+                    sums[i].push_back(val);
+                }
+            }
+        }
+    }
+
+    for (int i = 1; i < n+1; ++i) {
+        for (int j = 1; j < s+1; ++j) {
+            if (i != n && j * n == s * i) {
+                sol += dp[min(i, n-i)][min(j, s-j)];
+                sol %= modulo;
+            }
+        }
+    }
+}
+
+void write() {
+    printf("%d\n", sol % modulo);
+}
+
+int main() {
+    freopen(infile, "r", stdin);
+    freopen(outfile, "w", stdout);
+
+    read();
+    solve();
+    write();
+
+    fclose(stdin);
+    fclose(stdout);
+    return 0;
+}

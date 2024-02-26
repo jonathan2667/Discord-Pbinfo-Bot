@@ -1,0 +1,20 @@
+#include <iostream>
+using namespace std;
+
+int v[10];
+
+int main(){
+    char c;
+    while(cin>>c)
+        if(c>='0' && c<='9')
+            v[c-'0']++;
+    int pmax = 0;
+    for(int i=1; i <10;++i)
+        if(v[i]>v[pmax])
+            pmax = i;
+    if(v[pmax])
+        cout << pmax;
+    else
+        cout << "NU";
+    return 0;
+}

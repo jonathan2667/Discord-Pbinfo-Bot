@@ -1,0 +1,63 @@
+#include <fstream>
+
+using namespace std;
+
+#define INF 1000000000
+
+
+int Price[300], Count[300];
+int Cost[30][30], CostMatch[30][30];
+string cuvant;
+int Sigma, Q, N, StackSize;
+
+int main()
+{
+    ifstream in("kpal.in");
+    ofstream out("kpal.out");
+
+    in >> Sigma;
+    for (int i = 0; i < Sigma; ++i)
+        for (int j = 0; j < Sigma; ++j)
+            in >> Cost[i][j];
+    in >> cuvant;
+    in >> Q;
+
+    for (int i = 0; i < Sigma; ++i)
+        for (int j = 0; j < Sigma; ++j) {
+            CostMatch[i][j] = INF;
+            for (int k = 0; k < Sigma; ++k)
+                CostMatch[i][j] = min(CostMatch[i][j], Cost[i][k] + Cost[j][k]);
+        }
+
+    N = cuvant.size();
+    for (int lung = 1; lung <= N; ++lung) {
+        if (N % lung != 0)
+            continue;
+
+        int current_price = 0;
+        for (int i = 0; i < N / lung; ++i) {
+            int left = i * lung;
+            int right = left + lung - 1;
+            while (left < right) {
+                current_price += CostMatch[cuvant[left] - 'a'][cuvant[right] - 'a'];
+                --right;
+                ++left;
+            }
+        }
+
+        while (StackSize > 0 && Price[StackSize - 1] >= current_price)
+            --StackSize;
+        Count[StackSize] = N / lung;
+        Price[StackSize] = current_price;
+        ++StackSize;
+    }
+    while (StackSize > 0 && Price[StackSize - 1] > Q)
+        --StackSize;
+    Price[StackSize] = Q + 1;
+
+    long long answer = 0LL;
+    for (int i = 0; i < StackSize; ++i)
+        answer += 1LL * (Price[i + 1] - Price[i]) * Count[i];
+
+    out << answer << endl;
+} 

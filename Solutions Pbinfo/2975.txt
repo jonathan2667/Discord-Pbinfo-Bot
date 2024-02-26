@@ -1,0 +1,22 @@
+void FRadical(int n, int &x, int &y)
+{
+    int i, e;
+    x = y = 1;
+    for (i = 2; i * i <= n && n > 1; i++)
+    {
+        e = 0;
+        while (n % i == 0)
+        {
+            n /= i;
+            e++;
+        }
+        if (e % 2 == 1) y *= i;
+        e /= 2;
+        while (e > 0)
+        {
+            x *= i;
+            e--;
+        }
+    }
+    if (n > 1) y *= n;
+}

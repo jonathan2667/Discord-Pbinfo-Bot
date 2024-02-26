@@ -1,0 +1,99 @@
+#include <vector>
+#include <string>
+#include <fstream>
+#include <numeric>
+#include <algorithm>
+using namespace std;
+
+bool isGoodFrequency(vector<int> C, int K, int P)
+{
+    sort(C.begin(), C.end(), greater<int>());
+    if (C[P - 1] == 0) return false;
+    return (accumulate(C.begin(), C.begin() + P - 1, 0) < K);
+}
+
+bool isGood(string &S, int K, int P)
+{
+    vector<int>  C(10);
+    for (char d : S) C[d - '0']++;
+    return isGoodFrequency(C, K, P);
+}
+
+bool canFill(vector<int> C, int K, int P, int N)
+{
+    while (N--) (*min_element(C.begin(), C.end()))++;
+    return isGoodFrequency(C, K, P);
+}
+
+string findNext(string S, int K, int P)
+{
+    if (isGood(S, K, P)) return S;
+
+    vector<int> C(10);
+    for (char d : S) C[d - '0']++;
+
+    int     i       = S.length() - 1;
+    bool    found   = false;
+    for (; i >= 0; i--)
+    {
+        C[S[i] - '0']--;
+        for (char d = S[i] + 1; d <= '9'; d++)
+        {
+            C[d - '0']++;
+            if (canFill(C, K, P, S.length() - i - 1)) { found = true; S[i] = d; break; }
+            C[d - '0']--;
+        }
+        if (found) break;
+    }
+
+    if (i < 0)
+    {
+        S       = string(S.length() + 1, '0');
+        S[0]    = '1';
+        i       = 0;
+        C[1]++;
+        if (!canFill(C, K, P, S.length() - 1)) return "-1";
+    }
+
+    for (i++; i < S.length(); i++)
+        for (char d = '0'; d <= '9'; d++)
+        {
+            C[d - '0']++;
+            if (canFill(C, K, P, S.length() - i - 1)) { S[i] = d; break; }
+            C[d - '0']--;
+        }
+
+    return S;
+}
+
+int main()
+{
+    ifstream    f("okcpp.in");
+    ofstream    g("okcpp.out");
+    int         C, K, P, ns;
+    long long   A, B, X;
+    string      S;
+
+    f >> C ;
+    if(C == 1)
+    {
+        f >> K >> P >> A >> B;
+        ns = 0;
+        for( X = A; X <= B ; X ++)
+        {
+            S = to_string(X);
+            if(isGood(S, K, P))
+            {
+                ns ++;
+            }
+        }
+        g << ns << endl;
+    }
+    else
+    {
+        f >> K >> P >> S;
+        g << findNext(S, K, P) << endl;
+    }
+
+    return 0;
+}

@@ -1,0 +1,9 @@
+void F(int n, int a[], int &k){
+    int gasit = 0;
+    k=0;
+    for(int i=0;i<n;++i)
+        if(a[i]%2==0)
+            gasit = 1, k = 10*k + a[i];
+    if(!gasit)
+        k = -1;
+}

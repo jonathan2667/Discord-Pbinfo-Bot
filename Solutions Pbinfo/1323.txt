@@ -1,0 +1,43 @@
+//varianta de 20p
+#include <fstream>
+
+using namespace std ;
+
+ifstream f ("matrice_rara.in") ;
+ofstream g ("matrice_rara.out") ;
+
+int c[2005][2005] ;
+int n , m , p , q , N1 , N2 , N3 , c_linie , c_coloana ;
+
+int main ()
+{
+ f >> n >> m >> N1 >> N2 ;
+ for ( int cnt = 1 ; cnt <= N1 ; ++cnt )
+    {
+     int x , y , v ;
+     f >> x >> y >> v ;
+     c[x][y] = c[x][y] + v ;
+     ++N3 ;
+    }
+ for ( int cnt = 1 ; cnt <= N2 ; ++cnt )
+    {
+     int x , y , v ;
+     f >> x >> y >> v ;
+     if ( c[x][y] == 0 )
+        ++N3 ;
+     c[x][y] = c[x][y] + v ;
+     if ( c[x][y] == 0 )
+        --N3 ;
+    }
+ c_linie = max ( n , p ) ;
+ c_coloana = max ( m , q ) ;
+ g << N3 << "\n" ;
+ for ( int i = 1 ; i <= c_linie ; ++i )
+    {
+     for ( int j = 1 ; j <= c_coloana ; ++j )
+        if ( c[i][j] != 0 )
+            g << i << " " << j << " " << c[i][j] << "\n" ;
+    }
+}
+
+

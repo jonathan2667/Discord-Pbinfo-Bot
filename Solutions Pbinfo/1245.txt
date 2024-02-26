@@ -1,0 +1,110 @@
+/* prof. Pit-Rada Ionel-Vasile
+ * O(n*m)
+ */
+#include<fstream>
+using namespace std;
+ifstream  fin("birot.in");
+ofstream fout("birot.out");
+int best1[2][130],best2[2][130];
+char s1[102], s2[102], t[100003];
+int q1[130], q2[130];
+int p1,p2,infinit=100000000;
+int m, n;
+int e(int i, int j){
+    int d1,d2;
+    if(i<j){
+        d1=j-i;
+        d2=m-d1;
+    }
+    else{
+        d1=i-j;
+        d2=m-d1;
+    }
+    return (d1<d2)?d1:d2;
+}
+int main(){
+    int i,p1,p2,x1,x2,y1,y2,valmin,k1,k2,k,r1,r2,v;
+    fin.get(s1+1,101,'\n');
+    fin.get();
+    fin.get(s2+1,101,'\n');
+    fin.get();
+    fin.get(t+1,100001,'\n');
+    fin.get();
+    m=1;while(s1[m]!=0){
+        q1[(int)s1[m]]=m;
+        q2[(int)s2[m]]=m;
+        m++;
+    }
+    m--;
+    n=1;while(t[n]!=0)n++;
+    n--;
+    //best1[k][i]=costul optim de a obtine t[k] cu rotita1 si cealalta rotita la pozitia i
+    //best2[k][i]=costul optim de a obtine t[k] cu rotita2 si cealalta rotita la pozitia i
+    for(i=1;i<=m;i++){
+        best1[1][i]=infinit;
+        best2[1][i]=infinit;
+    }
+    p1=1;
+    p2=1;
+    r1=q1[(int)t[1]];
+    r2=q2[(int)t[1]];
+    x1=e(p1,r1);
+    x2=e(p2,r2);
+    best1[1][p2]=x1;
+    best2[1][p1]=x2;
+    for(k=2;k<=n;k++){
+        //initializez bn cu zero
+        k2=k%2;
+        k1=1-k2;
+        for(i=1;i<=m;i++){
+            best1[k2][i]=infinit;
+            best2[k2][i]=infinit;
+        }
+
+        r1=q1[(int)t[k]];
+        r2=q2[(int)t[k]];
+        p1=q1[(int)t[k-1]];
+        p2=q2[(int)t[k-1]];
+        x1=e(p1,r1);
+        y2=e(p2,r2);
+        for(i=1;i<=m;i++){
+            v=best1[k1][i];
+            if(v<infinit){
+                //sunt cu rotita2 la pozitia i si cu rotita1 la pozitia p1
+                x2=e(i,r2);
+                if(v+x1<best1[k2][i]){
+                    best1[k2][i]=v+x1;
+                }
+                if(v+x2<best2[k2][p1]){
+                    best2[k2][p1]=v+x2;
+                }
+            }
+            v=best2[k1][i];
+            if(v<infinit){
+                //sunt cu rotita1 la pozitia i si cu rotita2 la pozitia p2
+                y1=e(i,r1);
+                if(v+y1<best1[k2][p2]){
+                    best1[k2][p2]=v+y1;
+                }
+                if(v+y2<best2[k2][i]){
+                    best2[k2][i]=v+y2;
+                }
+            }
+        }
+    }
+    k2=n%2;
+    valmin=infinit;
+    for(i=1;i<=m;i++){
+        if(best1[k2][i]<valmin){
+            valmin=best1[k2][i];
+        }
+        if(best2[k2][i]<valmin){
+            valmin=best2[k2][i];
+        }
+    }
+    fout<<valmin<<"\n";
+    fout.close();
+    fin.close();
+    return 0;
+}
+

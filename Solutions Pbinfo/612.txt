@@ -1,0 +1,65 @@
+#include <stdio.h>
+#include <vector>
+#define NMax 1100
+
+using namespace std;
+
+int N, M;
+char s[NMax];
+int L[NMax];
+vector<int> c[NMax];
+
+long lg[NMax];
+
+char getCharRecursive(int q, int k) {
+
+    if (k == 0) {
+        return s[q];
+    }
+    k--;
+
+    for (int i = 0; i < L[q]; i++) {
+        if (k < lg[c[q][i]]) {
+            return getCharRecursive(c[q][i], k);
+        }
+        k -= lg[c[q][i]];
+        if (k == 0) {
+            return s[q];
+        }
+        k--;
+    }
+}
+
+int main() {
+    freopen("birocratie.in", "rt", stdin);
+    freopen("birocratie.out", "wt", stdout);
+
+    scanf("%d %d\n", &N, &M);
+
+    for (int i = 1; i <= N; i++) {
+        scanf("%c %d", &s[i], &L[i]);
+        for (int j = 0; j < L[i]; j++) {
+            int tmp;
+            scanf("%d", &tmp);
+            c[i].push_back(tmp);
+        }
+        scanf("\n");
+    }
+
+    for (int i = N; i >= 1; i--) {
+        lg[i] = 1;
+
+        for (int j = 0; j < L[i]; j++) {
+            lg[i] += (lg[c[i][j]] + 1);
+        }
+    }
+    
+    for (int query = 1; query <= M; query++) {
+        int q, k;
+        scanf("%d %d", &q, &k);
+        printf("%c\n", getCharRecursive(q, k - 1));
+    }
+
+    fclose(stdout);
+    return 0;
+}

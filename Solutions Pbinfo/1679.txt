@@ -1,0 +1,76 @@
+#include <bits/stdc++.h>
+
+using namespace std;
+
+ifstream f("euro.in");
+ofstream g("euro.out");
+
+#define pb push_back
+#define ll long long
+#define mp make_pair
+
+const int NMAX = 5005;
+const int PMAX = 10005;
+const int INF = (1 << 29);
+const int nmax = 4000;
+const int pmax = 8000;
+int n, p, dp[2][PMAX];
+int a[NMAX];
+int ans[PMAX];
+//set<int> mySet;
+
+int main() {
+    int t;
+    f >> t;
+    assert(t >= 1 && t <= 2);
+    for (; t; --t) {
+        f >> n >> p;
+        assert(n >= 1 && n <= nmax);
+        assert(p >= 1 && p <= pmax);
+        for (int i = 1; i <= n; ++i) {
+            f >> a[i];
+
+            assert(a[i] <= p);
+            assert(a[i] > 0);
+            //assert(a[i] != 1);
+        }
+
+        sort(a + 1, a + n + 1);
+
+        for (int i = 1; i <= p; ++i) {
+            ans[i] = INF;
+        }
+
+        int prevLine = 0;
+        for (int i = 0; i <= p; ++i) {
+            dp[prevLine][i] = 0;
+        }
+
+
+        for (int i = 1; i <= n; ++i) {
+            int currentLine = prevLine ^ 1;
+            for (int j = 0; j <= p; ++j) {
+                dp[currentLine][j] = dp[prevLine][j];
+                if (j - a[i] >= 0) {
+                    dp[currentLine][j] = max(dp[currentLine][j], dp[prevLine][j - a[i]]);
+                }
+            }
+            dp[currentLine][a[i]] = a[i];
+            for (int j = 1; j <= p; ++j) {
+                if (dp[currentLine][j] != 0) {
+                    ans[j] = min(ans[j], a[i] - dp[currentLine][j]);
+                }
+            }
+            //cerr << i << " " << ans << " " << a[i] << " " << dp[i][p] << "\n";
+            prevLine = currentLine;
+        }
+        for (int i = 1; i <= p; ++i) {
+            if (ans[i] == INF) {
+                ans[i] = -1;
+            }
+            g << ans[i] << " ";
+        }
+        g << "\n";
+    }
+    return 0;
+}

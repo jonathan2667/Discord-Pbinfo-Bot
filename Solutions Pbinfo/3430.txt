@@ -1,0 +1,159 @@
+#include <fstream>
+
+using namespace std;
+bool v[8][8];
+bool v2[8][8];
+int main()
+{
+    ifstream cin ("bpj2020.in");
+    ofstream cout ("bpj2020.out");
+    int n,a,l,c,s=0;
+    cin>>n;
+    for(int nrpiesa=1;nrpiesa<=n;nrpiesa++)
+    {
+        cin>>a>>l>>c;
+        if(a<=5)
+        {
+            s=s+a;
+            for(int j=c;j<=c+a-1;j++)
+                v[l][j]=1;
+        }
+        else if(a==6)
+        {
+            s=s+4;
+            v[l][c]=1;
+            v[l][c+1]=1;
+            v[l+1][c]=1;
+            v[l+1][c+1]=1;
+        }
+        else if(a==7)
+        {
+            s=s+9;
+            v[l][c]=1;
+            v[l][c+1]=1;
+            v[l][c+2]=1;
+            v[l+1][c]=1;
+            v[l+1][c+1]=1;
+            v[l+1][c+2]=1;
+            v[l+2][c]=1;
+            v[l+2][c+1]=1;
+            v[l+2][c+2]=1;
+        }
+        else if(a<=11)
+        {
+            s=s+a-7+1;
+            for(int j=l;j<=l+a-7;j++)
+                v[j][c]=1;
+        }
+        else if(a==12)
+        {
+            s=s+3;
+            v[l][c]=1;
+            v[l+1][c]=1;
+            v[l][c+1]=1;
+        }
+        else if(a==13)
+        {
+            s=s+4;
+            v[l][c]=1;
+            v[l+1][c-1]=1;
+            v[l+1][c]=1;
+            v[l+1][c+1]=1;
+        }
+        else if(a==14)
+        {
+            s=s+4;
+            v[l][c]=1;
+            v[l+1][c]=1;
+            v[l+1][c+1]=1;
+            v[l+2][c+1]=1;
+        }
+        else if(a==15)
+        {
+            s=s+4;
+            v[l][c]=1;
+            v[l][c+1]=1;
+            v[l+1][c-1]=1;
+            v[l+1][c]=1;
+        }
+        else if(a==16)
+        {
+            s=s+5;
+            v[l][c]=1;
+            v[l][c+1]=1;
+            v[l][c+2]=1;
+            v[l+1][c+2]=1;
+            v[l+2][c+2]=1;
+        }
+        else if(a==17)
+        {
+            s=s+4;
+            v[l][c]=1;
+            v[l+1][c]=1;
+            v[l+1][c+1]=1;
+            v[l+1][c+2]=1;
+        }
+        int rand_elim=0;
+        for(int i=1;i<=8;i++)
+        {
+            for(int j=1;j<=8;j++)
+                v2[i][j]=v[i][j];
+        }
+        for(int i=1;i<=8;i++)
+        {
+            int cnt=0;
+            for(int j=1;j<=8;j++)
+            {
+                if(v[i][j]==1)
+                    cnt++;
+            }
+            if(cnt>=8)
+            {
+                rand_elim++;
+                for(int j=1;j<=8;j++)
+                {
+                    v2[i][j]=0;
+                }
+            }
+        }
+        for(int j=1;j<=8;j++)
+        {
+            int cnt=0;
+            for(int i=1;i<=8;i++)
+            {
+                if(v[i][j]==1)
+                    cnt++;
+            }
+            if(cnt>=8)
+            {
+                rand_elim++;
+                for(int i=1;i<=8;i++)
+                {
+                    v2[i][j]=0;
+                }
+            }
+        }
+        if(rand_elim==1)
+            s+=10;
+        else if(rand_elim==2)
+            s+=30;
+        else if(rand_elim==3)
+            s+=60;
+        else if(rand_elim==4)
+            s+=100;
+        else if(rand_elim==5)
+            s+=150;
+        else if(rand_elim==6)
+            s+=500;
+        for(int i=1;i<=8;i++)
+        {
+            for(int j=1;j<=8;j++)
+            {
+                if(v2[i][j]==0)
+                v[i][j]=0;
+            }
+        }
+    }
+    cout<<s;
+    return 0;
+}

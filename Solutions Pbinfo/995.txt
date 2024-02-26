@@ -1,0 +1,31 @@
+#include <iostream>
+#include <fstream>
+using namespace std;
+
+ifstream fin ("numere6.in");
+ofstream fout("numere6.out");
+
+int v[10];
+
+int main(){
+    int n , m;
+    fin  >> n >> m; 
+    do
+    {
+        v[n % 10] ++;
+        n /= 10;
+    }
+    while(n != 0);
+    do
+    {
+        v[m % 10] ++;
+        m /= 10;
+    }
+    while(m != 0);
+    
+    for(int i = 9 ; i >= 0 ; i--)
+        for(int j = 1 ; j <= v[i] ; j++)
+            fout << i;
+    
+    return 0;
+}

@@ -1,0 +1,41 @@
+//maria
+
+#include <iostream>
+#include <fstream>
+using namespace std;
+
+ifstream fin("maria.in");
+ofstream fout("maria.out");
+
+int a[1005][1005], n, m , p , q, s[1005][1005];
+
+int main(){
+    int k;
+    fin  >> n >> m >> p >> q >> k;
+    for(int pp = 1 ; pp <= k ; ++pp)
+    {
+        int i ,j ;
+        fin >> i >> j;
+        a[i][j] = 1;
+
+    }
+    for(int i =1 ; i <= n ;++ i)
+        for(int j =1  ; j <= m ; ++j)
+            s[i][j] = s[i-1][j] + s[i][j-1] - s[i-1][j-1] + a[i][j];
+    int Z = 0;
+    for(int i =1 ; i <= n ;++ i)
+        for(int j =1  ; j <= m ; ++j)
+        {
+            int x,y;
+            x = i + p - 1, y = j + q - 1;
+            if(x <= n && y <= m)
+                if(s[x][y] - s[x][j-1] - s[i-1][y] + s[i-1][j-1] == 0)
+                    Z ++; // cout << i << " " << j << " p q\n";
+            x = i + q - 1, y = j + p - 1;
+            if(x <= n && y <= m)
+                if(s[x][y] - s[x][j-1] - s[i-1][y] + s[i-1][j-1] == 0)
+                    Z ++; // cout << i << " " << j << " q p\n";
+        }
+    fout << Z;
+    return 0;
+}

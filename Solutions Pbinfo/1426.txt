@@ -1,0 +1,65 @@
+#include <fstream>
+
+using namespace std;
+
+ifstream fin("pozne.in");
+ofstream fout("pozne.out");
+
+int main()
+{
+    int p, n, s, c, x;
+    fin >> p >> n >> s >> c;
+    if(p == 1)
+        for(int i =1 ; i <= n ; i++)
+        {
+            fin >> x;
+            int este_prieten = 0;
+            int cx = x;
+            while(cx != 0)
+            {
+                if(cx % 10 == c)
+                    este_prieten = 1;
+                cx /= 10;
+            }
+            if(este_prieten)
+                fout << x << " ";
+        }
+    else
+    {
+        int cnt = 0, nr_creduli = 0;
+        for(int i =1 ; i <= n ; i++)
+        {
+            fin >> x;
+            int este_prieten = 0;
+            int cx = x, ogl = 0;
+            while(cx != 0)
+            {
+                ogl = 10 * ogl + cx % 10;
+                if(cx % 10 == c)
+                    este_prieten = 1;
+                cx /= 10;
+            }
+            int este_credul = 1;
+            for(int d = 2 ; d * d <= ogl && este_credul ; d ++)
+                if(ogl % d == 0)
+                    este_credul = 0;
+            if(este_credul)
+            {
+                nr_creduli ++;
+                if(este_prieten)
+                    cnt --;
+                else
+                    cnt ++;
+            }       
+        }
+        fout << nr_creduli << " ";
+        if(cnt == 0)
+            fout << 0;
+        else
+            if(cnt < 0)
+                fout << -1;
+            else
+                fout << 1;
+    }
+    return 0;
+}

@@ -1,0 +1,30 @@
+#include <bits/stdc++.h>
+#define nmax 15000001
+using namespace std;
+
+int t[105], n, m;
+bitset<nmax> a;
+
+int main()
+{
+    int i, MAX, j, x;
+    ifstream fin("numar6.in");
+    ofstream fout("numar6.out");
+    fin >> n >> m;
+    for (i = 1; i <= n; ++i)
+        fin >> t[i];
+    MAX = m * t[1];
+    for (i = 1; i <= n; ++i)
+    {
+        x = t[i];
+        for (j = t[i]; j < MAX; j += x)
+            a[j] = 1;
+    }
+    for (i = 1; i <= MAX && m > 0; i++)
+        if (a[i] == 1)
+            m--;
+    fout << (i-1) << "\n";
+    fin.close();
+    fout.close();
+    return 0;
+}

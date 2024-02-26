@@ -1,0 +1,58 @@
+#include<cstdio>
+
+const int N=30;
+const int M=10000;
+
+int n,k,nr,d[N];
+
+void desc(int n)
+{
+    for(int i=2;i*i<=n;++i)
+        if(n%i==0)
+        {
+            d[++nr]=0;
+            while(n%i==0)
+            {
+                n/=i;
+                ++d[nr];
+            }
+        }
+    if(n!=1)
+        d[++nr]=1;
+}
+
+int pow(int a,int n)
+{
+    int p=1;
+    while(n)
+    {
+        if(n&1)
+            p=p*a%M;
+        a=(a*a)%M;
+        n>>=1;
+    }
+    return p;
+}
+
+int calcul()
+{
+    int p=1,t;
+    desc(n);
+    for(int i=1;i<=nr;++i)
+    {
+        t=pow(1+d[i],k)-pow(d[i],k);
+        if(t<0)
+            t+=M;
+        p=p*t%M;
+    }
+    return p;
+}
+
+int main()
+{
+    freopen("multiplu1.in","r",stdin);
+    freopen("multiplu1.out","w",stdout);
+    scanf("%d%d",&n,&k);
+    printf("%d\n",calcul());
+    return 0;
+}

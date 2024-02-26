@@ -1,0 +1,93 @@
+#include<cstdio>
+#include<ctime>
+
+using namespace std;
+
+const int N=1000000;
+const int MAX=10001;
+const long long oo=(long long)1<<40;
+
+long long q[N],r[N];
+int pq,pr=0,uq,ur=0;
+
+void citire()
+{
+    int x,n;
+    scanf("%d",&n);
+    while(scanf("%d",&x)!=EOF)
+        q[uq++]=(long long)x;
+}
+
+inline long long minim(long long a,long long b,long long c,long long d)
+{
+    long long m=a+b;
+    if(a+c<m)
+        m=a+c;
+    if(c+d<m)
+        m=c+d;
+    return m;
+}
+
+long long suma()
+{
+    long long s=0,aq,bq,ar,br,m;
+    while(uq-pq+ur-pr>1)
+    {
+        if(pq<uq)
+            aq=q[pq];
+        else
+            aq=oo;
+        if(pq+1<uq)
+            bq=q[pq+1];
+        else
+            bq=oo;
+        if(pr<ur)
+            ar=r[pr];
+        else
+            ar=oo;
+        if(pr+1<ur)
+            br=r[pr+1];
+        else
+            br=oo;
+        m=minim(aq,bq,ar,br);
+        s+=m;
+        r[ur++]=m;
+        if(m==aq+bq)
+        {
+            pq+=2;
+            continue;
+        }
+        if(m==aq+ar)
+        {
+            ++pq;
+            ++pr;
+            continue;
+        }
+        if(m==ar+br)
+        {
+            pr+=2;
+            continue;
+        }
+    }
+    return s;
+}
+
+void sortare()
+{
+    int nr[MAX]={0},i;
+    for(i=0;i<uq;++i)
+        ++nr[q[i]];
+    for(i=1,uq=0 ; i<MAX ; ++i)
+        while(nr[i]--)
+            q[uq++]=i;
+}
+
+int main()
+{
+    freopen("k1.in","r",stdin);
+    freopen("k1.out","w",stdout);
+    citire();
+    sortare();
+    printf("%lld\n",suma());
+    return 0;
+}

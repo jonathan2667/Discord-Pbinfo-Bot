@@ -1,0 +1,18 @@
+#include <fstream>
+using namespace std;
+///Implementare proprie - 100 puncte.
+///Fara triunghiul lui Pascal.
+ifstream fin("pm.in");
+ofstream fout("pm.out");
+int m,n,k,t,y,a[1000];
+int main(){
+ fin>>n>>k;a[++m]=1;
+ for(int i=k+1;i<=n+1;i++){
+  for(int j=1;j<=m;j++){y=a[j]*i+t;t=y/10;a[j]=y%10;}
+  while(t){a[++m]=t%10;t/=10;}
+ }
+ for(int i=2;i<=n+1-k;i++){int j=m;t=0;
+  while(j){t=t*10+a[j];a[j]=t/i;t%=i;j--;}
+  while(!a[m]){m--;}
+ }for(int i=m;i>=1;i--){fout<<a[i];}
+}

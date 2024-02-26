@@ -1,0 +1,13 @@
+#include<bits/stdc++.h>
+using namespace std;
+
+ifstream in("tort.in");
+ofstream out("tort.out");
+
+int main()
+{
+    int n,m,g,a;
+    in>>n>>m;
+    g=__gcd(n,m);
+    out<<n/g*m/g<<" "<<g;
+}

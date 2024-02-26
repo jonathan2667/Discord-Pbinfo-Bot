@@ -1,0 +1,29 @@
+//Em. Cerchez 100 puncte
+#include <fstream>
+#define LMAX 100
+#define NMAX 500002
+
+using namespace std;
+ifstream fin("robot.in");
+ofstream fout("robot.out");
+int cerinta, n, nrtip, nrcutii=NMAX;
+int nr[LMAX*LMAX];
+
+int main()
+{int i, lg1, lg2, aux;
+ fin>>cerinta>>n;
+ for (i=0; i<n; i++)
+     {
+     fin>>lg1>>lg2;
+     if (lg1>lg2) {aux=lg1; lg1=lg2; lg2=aux;}
+     nr[lg1*100+lg2]++;
+     }
+ for (i=1; i<LMAX*LMAX; i++)
+     if (nr[i])
+        {nrtip++;
+         if (nr[i]<nrcutii) nrcutii=nr[i];}
+ if (cerinta==1) fout<<nrtip<<'\n';
+    else fout<<nrcutii<<'\n';
+ fout.close();
+ return 0;
+}

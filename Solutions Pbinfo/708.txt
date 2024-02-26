@@ -1,0 +1,109 @@
+//Marius Nicoli O(N^2)
+#include <stdio.h>
+#include <algorithm>
+#include <vector>
+#define DIM 1011
+
+using namespace std;
+
+struct pereche {
+    int d;
+    char v;
+};
+
+vector<int> F[8*DIM*DIM];
+
+pereche B[DIM*DIM], P;
+
+char A[DIM][DIM];
+int L, C, X, Y, i, j, dx, dy, k, maxim, R, M, sum,pozMin, pozMax;
+
+inline int modul(int X) {
+    return X > 0 ? X : -X;
+}
+
+int cmp(const pereche &a, const pereche &b) {
+    return a.d < b.d;
+}
+
+void sort(pereche *B, int k) {
+    pozMin = 2*DIM*DIM;
+    pozMax = 0;
+    
+    for (int i = 1;i<=k; i++) {
+        P = B[i];
+        F[B[i].d].push_back(B[i].v);
+        if (P.d < pozMin)
+            pozMin = P.d;
+        if (P.d > pozMax)
+            pozMax = P.d;
+    }
+    
+    vector<int>::iterator it;
+    k = 0;
+    for (i=pozMin;i<=pozMax;i++) {
+        for (it = F[i].begin();it!=F[i].end();it++) {
+            B[++k].v = *it;
+            B[k].d = i;
+        }
+    }
+    int q = 1;
+}
+
+int main() {
+    FILE *f = fopen("cerc1.in","r");
+    FILE *g = fopen("cerc1.out","w");
+    fscanf(f,"%d %d %d %d\n",&L, &C, &X, &Y);
+    for (i=1;i<=L;i++)
+        fscanf(f,"%s",A[i]+1);
+    fclose(f);
+    for (i=1;i<=L;i++)
+        for (j=1;j<=C;j++) {
+            P.v = A[i][j] - '0';
+            if (i == X && j == Y) {
+                P.d = 0;
+                B[++k] = P;
+                continue;
+            }
+            if (i == X) {
+                P.d = (modul (j - Y) << 1) - 1;
+                P.d *= P.d;
+                B[++k] = P;
+                continue;
+            }
+            if (j == Y) {
+                P.d = (modul (i - X) << 1)- 1;
+                P.d *= P.d;
+                B[++k] = P;
+                continue;
+            }
+            dx = (modul(i - X) << 1) - 1;
+            dy = (modul(j - Y) << 1) - 1;
+            P.d = dx * dx + dy * dy;
+            B[++k] = P;
+        }
+        
+    sort(B, k);
+    R = 1;
+    
+    M = 4 * ((L > C ? L : C) + 1);
+    M *= M;
+    i = 1;
+    maxim = -3000000;
+    B[k+1].d = 3000000;
+    while (R*R <= M) {
+        if (B[i].d <= R*R) {
+            sum += (B[i].v == 1 ? 1 : -1);
+            i++;
+        }
+        if (B[i].d > R*R) {
+            if (sum > maxim)
+                maxim = sum;
+            R++;
+        }
+        if (i > k)
+            break;
+    }
+    fprintf(g,"%d\n",maxim);
+    return 0;
+}

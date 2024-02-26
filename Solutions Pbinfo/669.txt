@@ -1,0 +1,36 @@
+#include <fstream>
+using namespace std;
+
+ifstream fin("lincol.in");
+ofstream fout("lincol.out");
+
+int n,m,A[105][105];
+
+int  main()
+{
+    fin >> n >> m;
+    for(int i =1 ; i <= n ; ++i)
+        for(int j = 1 ; j <= m ; ++j)
+            fin >> A[i][j];
+    int p, I;
+    char Q;
+    fin >> p;
+    for( ; p ; --p)
+    {
+        fin >> Q >> I;
+        int s = 0;
+        if(Q == 'L')
+        {
+            for(int j = 1 ; j <= m ; ++j)
+                s += A[I][j];
+        }
+        else
+        {
+            for(int i = 1 ; i <= n ; ++i)
+                s += A[i][I];
+        }
+        fout << s << "\n";
+    }
+    return 0;
+}
+

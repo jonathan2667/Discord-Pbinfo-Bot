@@ -1,0 +1,90 @@
+//Marius Nicoli O(n*m)
+#include <cstdio>
+using namespace std;
+#define DIM 1002
+#define INF 1<<30
+
+int A[DIM][DIM];
+int S[DIM][DIM];
+int Prev[DIM][DIM];
+int Next[DIM][DIM];
+int Z[DIM][DIM];
+int N, M, i, j, n1, max, min, k, cm;
+
+int modul(int a) {
+    if (a >= 0)
+        return a;
+    return -a;
+}
+
+int main(){
+    FILE *f = fopen("albine.in","r");
+    FILE *g = fopen("albine.out","w");
+    fscanf(f,"%d %d", &N, &M);
+    for (i=1;i<=N;i++)
+        for (j=1;j<=M;j++)
+            fscanf(f,"%d",&A[i][j]);
+    fclose(f);
+    
+    for (j = 1, min = N+3;j <= M;j++) {
+        for (i = 1, n1 = 0, max = 0;i<=N;i++) {
+            if (A[i][j] == 1) {
+                if (A[i-1][j])
+                    A[i][j] = A[i-1][j] + 1;
+                else
+                    A[i][j] = 0;
+                Z[i][j] = Z[i-1][j] + 1;
+                n1++;
+            } else {
+                A[i][j] = n1+1;
+                n1 = 0;
+                Z[i][j] = 0;
+            }
+            if (A[i][j]>max)
+                max = A[i][j];
+        }
+        if (max<min)
+            min = max;
+    }
+        
+    for (i=1;i<=N;i++)
+        if (A[i][1] >= min && (Z[i][j] <= min - 1))
+            S[i][1] = 0;
+        else
+            S[i][1] = INF;
+    for (j=2;j<=M;j++) {
+        for (i=min;i<=N;i++){
+            if (A[i][j-1] >= min && (Z[i][j-1] <= min - 1))
+                Prev[i][j] = i;
+            else
+                Prev[i][j] = Prev[i-1][j];
+        }
+        for (i=N;i>=min;i--){
+            if (A[i][j-1] >= min && (Z[i][j-1] <= min - 1))
+                Next[i][j] = i;
+            else
+                Next[i][j] = Next[i+1][j];
+        }
+    }
+    
+    for (j=2;j<=M;j++) {
+        for (i=min;i<=N;i++)
+            if (A[i][j] >= min && (Z[i][j] <= min - 1)) {
+                cm = INF;
+                if (Prev[i][j]!=0)
+                    cm = S[Prev[i][j]][j-1] + modul(i-Prev[i][j]);
+                if (Next[i][j]!=0 && cm > S[Next[i][j]][j-1] + modul(i-Next[i][j]))
+                    cm = S[Next[i][j]][j-1] + modul(i-Next[i][j]);
+                S[i][j] = cm;
+            } else S[i][j] = INF;
+    }
+    
+    for (k=min, cm = INF; k<=N; k++)
+        if (S[k][M] < cm)
+            cm = S[k][M];
+    
+    fprintf(g,"%d %d", min, cm);
+    fclose(g);
+        
+    return 0;
+}

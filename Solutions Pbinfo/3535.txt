@@ -1,0 +1,90 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+ifstream in("dictionar.in");
+ofstream out("dictionar.out");
+
+#define MAX 50
+#define SMAX 301
+
+vector<int>solutie;
+vector<string>termeni;
+vector<string>definitii[MAX];
+vector<int>adj[MAX];
+int pred[MAX];
+int N;
+
+vector<string> tokens(string rand)
+{
+    vector<string>tokens;
+    string token;
+    while (token != rand) {
+        token = rand.substr(0, rand.find_first_of(" "));
+        rand = rand.substr(rand.find_first_of(" ") + 1);
+        tokens.push_back(token);
+    }
+    return tokens;
+}
+
+void citire()
+{
+    char s[SMAX];
+    in.getline(s, SMAX, '\n');
+    termeni = tokens(s);
+    N = termeni.size();
+    for (int i = 0; i < N; i++)
+    {
+        in.getline(s, SMAX, '\n');
+        definitii[i] = tokens(s);
+    }
+}
+
+void initializare()
+{
+    for (int i = 0; i < N; i++)
+        for (string s : definitii[i])
+            if (s != termeni[i])
+            {
+                vector<string>::iterator it = find(termeni.begin(), termeni.end(), s);
+                if (it != termeni.end())
+                {
+                    adj[it - termeni.begin()].push_back(i);
+                    pred[i]++;
+                }
+            }
+}
+
+int st()
+{
+    for(int p = 0 ; p < N; p++)
+    {
+        int i = 0;
+        while (i < N && pred[i]) i++;
+        if (i < N)
+        {
+            solutie.push_back(i);
+            //actualizare date dupa extragere element i
+            pred[i] = -1;
+            for(int j : adj[i])
+                pred[j]--;
+        }
+        else
+            return 0;//nu avem solutie
+    } 
+    return 1;
+}
+
+int main()
+{
+    citire();
+
+    initializare();
+
+    if (st())
+        for (int i : solutie)
+            out << termeni[i] << " ";
+    else
+        out << "IMPOSIBIL";
+
+    return 0;
+}

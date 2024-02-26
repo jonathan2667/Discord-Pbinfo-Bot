@@ -1,0 +1,117 @@
+#include <iostream>
+#include <fstream>
+#include <cmath>
+using namespace std;
+
+ifstream f("soricel.in");
+ofstream g("soricel.out");
+
+int a[202][202],v[50001],dif[50001],c,n,m,k,i,j,x,t,maxim,r, lungime, zi,nr,smax,s;
+
+int main()
+{
+    f>>c;
+    f>>n>>m>>k;
+    for(i=1; i<=n; i++)
+        for(j=1; j<=m; j++)
+            f>>a[i][j];
+    maxim=1;
+    for(i=1; i<=n; i++)
+    {
+        if(i%2==1)
+            for(j=1; j<=m; j++)
+            {
+                x++;
+                if(a[i][j]!=0)
+                {
+                    if(a[i][j]==1)
+                        {
+                            dif[x]=0;
+                            v[x]=0;
+                        }
+                    else if(sqrt(a[i][j])==int(sqrt(a[i][j])))
+                        {
+                            dif[x]=a[i][j]-(sqrt(a[i][j])-1)*(sqrt(a[i][j])-1);
+                            v[x]=(sqrt(a[i][j])-1)*(sqrt(a[i][j])-1);
+                        }
+                    else
+                        {
+                            dif[x]=a[i][j]-(int(sqrt(a[i][j])))*(int(sqrt(a[i][j])));
+                            v[x]=(int(sqrt(a[i][j])))*(int(sqrt(a[i][j])));
+                        }
+                }
+                if(dif[x]==k) t++;
+                if(dif[x]>maxim)
+                    maxim=dif[x];
+            }
+        else
+            for(j=m; j>=1; j--)
+            {
+                x++;
+                if(a[i][j]!=0)
+                {
+                    if(a[i][j]==1)
+                        {
+                            dif[x]=0;
+                            v[x]=0;
+                        }
+                    else if(sqrt(a[i][j])==int(sqrt(a[i][j])))
+                        {
+                            dif[x]=a[i][j]-(sqrt(a[i][j])-1)*(sqrt(a[i][j])-1);
+                            v[x]=(sqrt(a[i][j])-1)*(sqrt(a[i][j])-1);
+                        }
+                    else
+                        {
+                            dif[x]=a[i][j]-(int(sqrt(a[i][j])))*(int(sqrt(a[i][j])));
+                            v[x]=(int(sqrt(a[i][j])))*(int(sqrt(a[i][j])));
+                        }
+                }
+                if(dif[x]==k) t++;
+                if(dif[x]>maxim)
+                    maxim=dif[x];
+            }
+    }
+    nr=1;
+    smax=s=v[1];
+    zi=1;
+    for(i=1; i<=n*m; i++)
+        if(dif[i]==dif[i+1])
+            {
+                nr++;
+                s+=v[i+1];
+            }
+        else
+        {
+            if(dif[i]!=0)
+            if(nr>lungime)
+            {
+                lungime=nr;
+                zi=dif[i];
+                smax=s;
+            }
+           else if(nr==lungime)
+            {
+                if(s>smax)
+                {
+                    lungime=nr;
+                    zi=dif[i];
+                    smax=s;
+                }
+                else if(s==smax && dif[i]>zi)
+                    {
+                    lungime=nr;
+                    zi=dif[i];
+                    smax=s;
+                    }
+
+            }
+            nr=1;
+            s=v[i+1];
+        }
+    if(c==1)
+        g<<maxim<<" "<<t;
+    else
+        g<<lungime<<" "<<zi;
+    return 0;
+}
+

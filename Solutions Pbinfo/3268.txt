@@ -1,0 +1,19 @@
+#include <iostream>
+
+using namespace std;
+
+int main()
+{
+    int a , b , ca , cb;
+    cin >> a >> b;
+    ca = a , cb = b;
+    while(cb != 0)
+    {
+        int r = ca % cb;
+        ca = cb;
+        cb = r;
+    }
+    cout << ca << " " << 1LL * a / ca * b;
+    
+    return 0;
+}

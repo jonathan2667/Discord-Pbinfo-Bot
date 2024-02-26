@@ -1,0 +1,28 @@
+#include <bits/stdc++.h>
+
+using namespace std;
+
+typedef long long LL;
+
+int main() {
+    LL n, k, v[32], m, cmin, cost, sum = 0;
+    cin >> n >> k;
+
+    cin >> v[0];
+    for(LL i = 1; i < n; ++i) {
+        cin >> v[i];
+        if(v[i] > 2 * v[i-1])
+            v[i] = 2 * v[i-1];
+    }
+
+    cmin = 4e18;
+    for(LL i = n-1; i >= 0; --i) {
+        LL need = (k >> i);
+        sum += need * v[i];
+        k -= (need << i);
+        cmin = min(cmin, sum + (k > 0) * v[i]);
+    }
+
+    cout << cmin;
+    return 0;
+}

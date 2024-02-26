@@ -1,0 +1,149 @@
+//Em. Cerchez
+#include <fstream>
+#include <cstring>
+#define LGMAX 1004
+#define INF 1000000000
+
+using namespace std;
+ifstream fin("farma.in");
+ofstream fout("farma.out");
+struct med
+      {
+        char nume[31];
+        int pret;
+      };
+int suma, smin=INF;
+int sol[10];
+int solmin[10];
+med a[10][10];
+int n, cerinta;
+int lg[10];
+char s[LGMAX];
+bool d[100][100];
+
+void  citire();
+void  sortare();
+void  generare();
+int verif(int vf);
+int nr(char *s);
+int cauta(char * s);
+int main()
+{ int i;
+  citire();
+  if (cerinta==1)
+     for (i=1; i<=n; i++) fout<<lg[i]<<'\n';
+     else
+     {
+      generare();
+      fout<<smin<<'\n';
+      //for (i=1; i<=n; i++)  fout<<a[i][solmin[i]].nume<<' '<<a[i][solmin[i]].pret<<'\n';
+     }
+  fout.close();
+  return 0;
+}
+
+void  citire()
+{char c, *p;
+ int i, poz1, poz2, m;
+ fin>>cerinta>>n; fin.get(c);
+ for (i=1; i<=n; i++)
+     {
+      fin.getline(s,LGMAX);
+      p=strtok(s,":");
+      do
+      {
+         p=strtok(NULL,", ");
+         if (!p) break;
+         strcpy(a[i][++lg[i]].nume,p);
+         p=strtok(NULL,", ");
+         a[i][lg[i]].pret=nr(p);
+      }
+      while (1);
+     }
+ sortare();
+ fin>>m; fin.get(c);
+ for (i=1; i<=m; i++)
+      {fin.getline(s,LGMAX);
+       p=strchr(s,'/');
+       *p=NULL;
+       poz1=cauta(s);
+       poz2=cauta(p+1);
+       d[poz1][poz2]=d[poz2][poz1]=1;
+      }
+ }
+
+
+void  sortare()
+//sortez medicamentele de pe fiecare linie crescator dupa pret
+{int i, j, sch;
+ med aux;
+ for (i=1; i<=n; i++)
+     {
+       do
+       {
+           sch=0;
+           for (j=1; j<lg[i]; j++)
+               if (a[i][j].pret>a[i][j+1].pret)
+                  {
+                    aux=a[i][j]; a[i][j]=a[i][j+1]; a[i][j+1]=aux;
+                    sch=1;
+                  }
+       }
+       while (sch);
+     }
+}
+void  generare()
+{int vf=1, i;
+ sol[1]=0;
+ while (vf>0)
+       {
+         if (vf>n) //solutie completa
+            { if (suma<smin)
+                 {smin=suma;
+                  for (i=1; i<=n; i++) solmin[i]=sol[i];
+                 }
+              vf--;
+            }
+            else
+            {sol[vf]++; //incrementez pozitia curenta
+             if (sol[vf]>lg[vf]) {suma=suma-a[vf][sol[vf]-1].pret; sol[vf--]=0;}
+                else
+                if (sol[vf]>1)
+                   {suma=suma-a[vf][sol[vf]-1].pret+a[vf][sol[vf]].pret;
+                    if (suma>=smin)
+                       {suma-= a[vf][sol[vf]].pret;  sol[vf--]=0; }
+                       else
+                       if (verif(vf)) sol[++vf]=0;
+                   }
+                   else
+                   {suma+=a[vf][1].pret;
+                    if (suma>=smin)
+                      {suma-= a[vf][1].pret;  sol[vf--]=0; }
+                      else
+                      if (verif(vf)) sol[++vf]=0;
+                   }
+            }
+       }
+}
+
+int verif(int vf)
+{ int i, pvf=vf*10+sol[vf];
+  for (i=1; i<vf; i++)
+       if (d[pvf][i*10+sol[i]]) return 0;
+  return 1;
+}
+
+int nr(char *s)
+{int i, rez;
+ for (rez=i=0; s[i]; i++)
+      rez=rez*10+s[i]-'0';
+ return rez;
+}
+
+int cauta(char * s)
+{int i, j;
+  for (i=1; i<=n; i++)
+       for (j=1; j<=lg[i]; j++)
+           if (!strcmp(s,a[i][j].nume)) return i*10+j;
+  return 0;
+}

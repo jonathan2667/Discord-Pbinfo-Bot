@@ -1,0 +1,109 @@
+{Serban Marinel}
+{Stiva}
+{100 puncte}
+{$M 65520,0,655360}
+
+Program Molecule;
+Const DimMAX = 15000;
+Type SUBST = Record              {substanta retinuta prin main si max}
+              min, max: Word;
+             End;
+     Stiva = Array[1..DimMAX] Of SUBST;
+Var f, g: Text;
+    VfStiva: Word;
+    S: Stiva;
+    x, i, j, Config, Substanta: Word;
+    Rang, Rangx, SUBST0: SUBST;
+    n, m: Word;
+
+Function OK(R, Rx: SUBST): Boolean;   {verifica daca se pot combina}
+Var Aux: SUBST;
+    SR, SRx, i: Word;
+Begin
+  OK := TRUE;
+  If (R.max+1<>Rx.min) AND (Rx.max+1<>R.min) Then
+       OK := FALSE
+End;
+
+Procedure Push(Var VfStiva: Word; Rang: SUBST);
+Begin
+  Inc(VfStiva);
+  S[VfStiva] := Rang;
+End;
+
+Procedure Pop(Var VfStiva: Word; Var Rang: SUBST);
+Begin
+  Rang := S[VfStiva];
+  S[VfStiva] := SUBST0;
+  Dec(VfStiva);
+End;
+
+Function Minim(x, y: Word): Word;
+Begin
+  If x<y Then
+    Minim := x
+  Else
+    Minim := y
+End;
+
+Function Maxim(x, y: Word): Word;
+Begin
+  If x>y Then
+    Maxim := x
+  Else
+    Maxim := y
+End;
+
+
+Procedure Reuniune(R: SUBST; Var Rx: SUBST);   {combina cele doua substante}
+Begin
+  Rx.min := Minim(Rx.min, R.min);
+  Rx.max := Maxim(Rx.max, R.max)
+End;
+
+Procedure GolesteStiva(Var V: Word);
+Var vs: Word;
+Begin
+  For vs := V DownTo 1 Do
+    S[vs] := SUBST0;
+  V := 0
+End;
+
+Begin
+  Assign(f, 'reactii.in'); Reset(f);
+  Assign(g, 'reactii.out'); ReWrite(g);
+  ReadLn(f, n); ReadLn(f, m);
+  SUBST0.min := 0; SUBST0.max := 0;
+  For Config := 1 To m Do       {ia pe rand fiecare configuratie}
+    Begin
+      GolesteStiva(VfStiva);    {pentru a trece la urmatoarea combinatie}
+      For Substanta := 1 To n Do      {parcurge cele n substante}
+        Begin
+          Rangx.min := 0; Rangx.max := 0;
+          Read(f, x);
+          Rangx.min := x; Rangx.max := x;{citesc o substanta si marchez  :-)}
+          If VfStiva>0 Then       {daca am elemente in stiva}
+            Begin
+              Rang := S[VfStiva]; {iau substanta din varful stivei}
+              While OK(Rang, Rangx) Do  {verific daca impreuna cu rangx este o noua substanta}
+                Begin                {daca DA}
+                  Pop(VfStiva, Rang);   {extrag substanta din varful stivei}
+                  Reuniune(Rang, Rangx);{formez o noua substanta}
+                  If VfStiva>0 Then      {apoi repet operatiile cat se poate}
+                    Rang := S[VfStiva]
+                  Else
+                    Break
+                End;
+              Push(VfStiva, Rangx); {ultima substanta formata o pun inapoi in stiva }
+            End
+          Else             {este prima substanta}
+              Push(VfStiva, Rangx);         {o pun in stiva}
+        End;
+      If VfStiva=1 Then {cand s-au terminat de citit substantele}
+                        {daca in stiva exista un singur element - o singura substanta}
+          WriteLn(g, 1)        {este OK}
+      Else
+          WriteLn(g, 0);
+    End;
+  Close(f); Close(g);
+End.

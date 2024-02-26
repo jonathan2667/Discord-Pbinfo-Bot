@@ -1,0 +1,190 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+#define NMAX 129
+#define MAXCUV 15001
+#define LMAX 30010
+
+char linie[LMAX], l0[LMAX];
+char *m0[MAXCUV], *mi[MAXCUV];
+int o[MAXCUV], oaux[MAXCUV];
+unsigned long long vset2[MAXCUV][2];
+int i, j, l, q, better, K, M, N;
+
+void msort(int li, int ls)
+{
+    int mid;
+
+    if (li < ls)
+    {
+        mid = (li + ls) >> 1;
+        msort(li, mid);
+        msort(mid + 1, ls);
+
+        i = li;
+        j = mid + 1;
+        l = li - 1;
+
+        while (i <= mid && j <= ls)
+        {
+            better = 0;
+            for (q = 0; q < 2; q++)
+                if (vset2[o[i]][q] > vset2[o[j]][q])
+                {
+                    better = 1;
+                    break;
+                }
+                else
+                if (vset2[o[i]][q] < vset2[o[j]][q])
+                {
+                    better = - 1;
+                    break;
+                }
+
+            l++;
+
+            if (better >= 0)
+            {
+                oaux[l] = o[i];
+                i++;
+            }
+            else
+            {
+                oaux[l] = o[j];
+                j++;
+            }
+        }
+
+        while (i <= mid)
+        {
+            l++;
+            oaux[l] = o[i];
+            i++;
+        }
+
+        while (j <= ls)
+        {
+            l++;
+            oaux[l] = o[j];
+            j++;
+        }
+
+        for (i = li; i <= ls; i++)
+            o[i] = oaux[i];
+    }
+}
+
+void solve(void)
+{
+    int i, j, L, imax = 0;
+
+    freopen("mesaje.in", "r", stdin);
+
+    for (j = 0; j < MAXCUV; j++)
+        vset2[j][0] = vset2[j][1] = 0;
+
+    for (i = 0; 1; i++)
+    {
+        memset(&linie, 0, sizeof(linie));
+        fgets((char*)&linie, LMAX, stdin);
+
+        L = strlen(linie);
+        while (L > 0 && (linie[L] < 'a' || linie[L] > 'z'))
+        {
+            linie[L] = 0;
+            L--;
+        }
+
+        if (L == 0)
+        {
+            M = i;
+            break;
+        }
+
+        N = 1;
+        for (j = 1; j < L; j++)
+            if (linie[j] == ' ')
+                N++;
+
+        N = 1;
+        mi[0] = &linie[0];
+
+        for (j = 1; j < L; j++)
+            if (linie[j] == ' ')
+            {
+                linie[j] = 0;
+                mi[N] = &linie[j + 1];
+                N++;
+            }
+
+        if (i == 0)
+        {
+            memcpy(l0, linie, L + 1);
+            for (j = 0; j < N; j++)
+                m0[j] = l0 + (mi[j] - linie);
+        }
+        else
+        {
+            for (j = 0; j < N; j++)
+            {
+                if (!strcmp(mi[j], m0[j]))
+                {
+                    imax = i;
+
+                    if (i >= 64)
+                        vset2[j][0] |= (1ULL << (i - 64));
+                    else
+                        vset2[j][1] |= (1ULL << i);
+                }
+            }
+        }
+    }
+
+    if (imax == 0)
+    {
+        K = N;
+        for (j = 0; j < N; j++)
+            o[j] = j;
+    }
+    else
+    {
+        K = 0;
+        for (j = 0; j < N; j++)
+        {
+            if ((imax >= 64 && (vset2[j][0] & (1ULL << (imax - 64)))) ||
+                (imax < 64 && (vset2[j][1] & (1ULL << (imax)))))
+            {
+                o[K] = j;
+                K++;
+            }
+        }
+    }
+
+    msort(0, K - 1);
+}
+
+void writeOutputData(void)
+{
+    freopen("mesaje.out", "w", stdout);
+
+    printf("%d\n", K);
+    for (i = 0; i < K; i++)
+    {
+        if (i > 0)
+            printf(" ");
+
+        for (j = strlen(m0[o[i]]) - 1; j >= 0; j--)
+            printf("%c", m0[o[i]][j]);
+    }
+
+    printf("\n");
+}
+
+int main()
+{
+    int tstart = clock();
+    solve();
+    writeOutputData();
+
+    return 0;
+}

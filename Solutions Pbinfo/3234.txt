@@ -1,0 +1,72 @@
+#include <iostream>
+#include <fstream>
+using namespace std;
+
+ifstream fin("pavare.in");
+ofstream fout("pavare.out");
+int a[1000], b[1000], c[1000], d[1000], na, nb, nc, nd, n;
+
+/// c = d - a,unde d = 4*b
+void Scade()
+{
+    int i, t = 0, x;
+    nc = nd;
+    for (i = 1; i <= nd; i++)
+    {
+        x = d[i] - a[i] + t;
+        if (x < 0) {c[i] = x + 10; t = -1;}
+        else {c[i] = x; t = 0;}
+    }
+    while (c[nc] == 0) nc--;
+}
+
+void Produs(int x)
+{
+    int i, t = 0, y;
+    nd = nb;
+    for (i = 1; i <= nb; i++)
+    {
+        y = b[i] * x + t;
+        d[i] = y % 10;
+        t = y / 10;
+    }
+    while (t > 0)
+    {
+        d[++nd] = t % 10;
+        t /= 10;
+    }
+}
+
+/// a = b;
+void Copie(int a[], int &na, int b[], int nb)
+{
+    int i;
+    na = nb;
+    for (i = 1; i <= na; i++)
+        a[i] = b[i];
+}
+
+void Afisare()
+{
+    for (int i = nb; i >= 1; i--)
+        fout << b[i];
+    fout << "\n";
+    fout.close();
+}
+
+int main()
+{
+    int i;
+    fin >> n;
+    a[1] = na = 1;
+    b[1] = 3; nb = 1;
+    for (i = 2; i <= n; i++)
+    {
+        Produs(4);
+        Scade();
+        Copie(a, na, b, nb);
+        Copie(b, nb, c, nc);
+    }
+    Afisare();
+    return 0;
+}

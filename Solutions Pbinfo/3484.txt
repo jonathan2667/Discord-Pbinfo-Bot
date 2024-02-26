@@ -1,0 +1,13 @@
+#include <fstream>
+
+using namespace std;
+ifstream f("3lan.in");
+ofstream g("3lan.out");
+int n;
+
+int main()
+{
+    f >> n;
+    g << 7 * n * (n-1) /2;
+    return 0;
+}

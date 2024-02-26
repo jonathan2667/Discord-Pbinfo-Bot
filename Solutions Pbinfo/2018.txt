@@ -1,0 +1,32 @@
+#include <fstream>
+#include <cstring>
+
+using namespace std;
+ifstream f("rogvaiv.in");
+ofstream g("rogvaiv.out");
+char a[1000002] ;
+long long n,s,i,p,j,c[50] ;
+
+int main()
+{
+    f >> a ;
+    n = strlen(a) ;
+    s = 0 ;
+    for ( i=0 ; i<n ; i++)
+    {
+        s = (s * 10 + a[i]-'0') % 1000000006 ;
+    }
+    i = 0 ;
+    while ( s!=0 )
+    {
+        i++ ;
+        c[i] = s % 2 ;
+        s = s / 2 ;
+    }
+    p = 1 ;
+    for ( j=i ; j>=1 ; j-- )
+       if ( c[j]==1 ) p = (( p * p ) * 7 ) % 1000000007 ;
+       else p = ( p * p ) % 1000000007 ;
+    g << p ;
+    return 0;
+}

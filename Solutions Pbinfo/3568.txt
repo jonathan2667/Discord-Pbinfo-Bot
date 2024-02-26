@@ -1,0 +1,21 @@
+#include <fstream>
+using namespace std;
+ifstream f("maxcadou.in");
+ofstream g("maxcadou.out");
+long long i,n,n2,c;
+int main()
+{
+    f>>n;
+    for(i=9;i>=0;i--) // luam fiecare cifra si o verificam de cate ori apare in numarul nostru, de la cea mai mare la cea mai mica pt a obtine numarul maxim
+    {
+        n2=n; // ii facem o copie pentru a putea folosi numarul original si pentru celelalte cifre
+        while(n2!=0)
+        {
+            c=n2%10;
+            if(c==i)
+                g<<i; //daca cifra la care suntem cu indicele i apare in numar o afisam
+            n2=n2/10;
+        }
+    }
+    return 0;
+}

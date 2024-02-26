@@ -1,0 +1,49 @@
+#include <iostream>
+
+using namespace std;
+
+#define mod 666013
+
+int ans[ 1010 ][ 1010 ], use[ 1010 ][ 1010 ], n, k;
+
+int solve( int a, int b )
+{
+    if( use[ a ][ b ] )
+        return ans[ a ][ b ];
+    use[ a ][ b ] = 1;
+    if( a >= k and b == 0 )
+    {
+        ans[ a ][ b ] = solve( a , k );
+        return ans[ a ][ b ];
+    }
+    if( a < k and b == 0 )
+    {
+        ans[ a ][ b ] = 1;
+        return ans[ a ][ b ];
+    }
+    if( a < b )
+    {
+        ans[ a ][ b ] = 0;
+        return ans[ a ][ b ];
+    }
+
+    if( b % 2 == 1 )
+    {
+        for( int i = 0 ; i < a ; i++ )
+            ans[ a ][ b ] = ( ans[ a ][ b ] + 1ll * solve( i , b / 2 ) * solve( a - i - 1 , b / 2 ) ) % mod;
+        return ans[ a ][ b ];
+    }
+    else
+    {
+        for( int i = 0 ; i < a ; i++ )
+            ans[ a ][ b ] = ( ans[ a ][ b ] + 1ll * solve( i , 0 ) * solve( a - i - 1 , b - 1 ) ) % mod;
+        return ans[ a ][ b ];
+    }
+}
+
+int main()
+{
+    cin >> n >> k;
+    cout << solve( n , k );
+return 0;
+}

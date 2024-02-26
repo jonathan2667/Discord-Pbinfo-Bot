@@ -1,0 +1,18 @@
+#include <fstream>
+
+using namespace std;
+ifstream f("cowboysandaliens.in");
+ofstream g("cowboysandaliens.out");
+long long i , m , n , p ;
+
+int main()
+{
+    f >> m >> n ;
+    p = 1 ;
+    for ( i = 1 ; i <= m ; i++ )
+        p = ( p * i ) % 555557 ;
+    for ( i = m - n ; i <= m - 1 ; i++ )
+        p = ( p * i ) % 555557 ;
+    g << p ;
+    return 0;
+}

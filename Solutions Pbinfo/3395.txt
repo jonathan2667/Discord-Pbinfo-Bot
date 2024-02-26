@@ -1,0 +1,70 @@
+#include <cstdio>
+
+#define NMax 1200008
+
+using namespace std;
+
+char s[NMax];
+bool isInSet[NMax];
+int nextState[NMax], opType[NMax], lenAfterOp[NMax], sol[NMax];
+
+void read_ops(int &T, char *s, int &N)
+{
+    scanf("%d %d\n", &N, &T);
+    scanf("%s\n", s);
+
+    for (int i = 0; i < T; ++i) {
+        scanf("%d", opType + i);
+
+        if (opType[i] == 1) {
+            scanf(" %c\n", &s[N++]);
+        } else if (opType[i] == 2) {
+            isInSet[N] = true;
+        }
+
+        lenAfterOp[i] = N;
+    }
+}
+
+void build_finite_automata(char *s, int n)
+{
+    nextState[0] = nextState[1] = 0;
+
+    for (int i = 1, state = 0; i < n; ++i) {
+        while (0 < state && s[state] != s[i]) {
+            state = nextState[state];
+        }
+
+        if (s[state] == s[i]) {
+            state++;
+        }
+
+        nextState[i+1] = state;
+    }
+}
+
+void resolve_ops(int T)
+{
+    for (int i = 0; i < T; i++) {
+        int len = lenAfterOp[i];
+        int ans = sol[len] = isInSet[len] + sol[nextState[len]];
+
+        if (opType[i] == 3) {
+            printf("%d\n", ans);
+        }
+    }
+}
+
+int main()
+{
+    int N, T;
+
+    freopen("sufixe.in", "r", stdin);
+    freopen("sufixe.out", "w", stdout);
+
+    read_ops(T, s, N);
+    build_finite_automata(s, N);
+    resolve_ops(T);
+
+    return 0;
+}

@@ -1,0 +1,17 @@
+#include <bits/stdc++.h>
+using namespace std;
+ 
+double C, K, Q, P = 1.0;
+ 
+int main() {
+    ifstream f("albume.in");
+    ofstream g("albume.out");
+ 
+    f>>C>>K>>Q;
+ 
+    for(int i=0; i<Q; i++)
+        P *= (K * (C-1.0) - i) / (K * C - i);
+ 
+    g<<fixed<<setprecision(9)<<((1.0-P) * C)<<"\n";
+    return 0;
+}

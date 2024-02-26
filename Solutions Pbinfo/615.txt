@@ -1,0 +1,104 @@
+#include <cstdio>
+#include <algorithm>
+#include <set>
+#include <string>
+#include <cassert>
+
+using namespace std;
+
+struct Segment {
+public:
+    int poz, rune, lg;
+};
+
+Segment THESEG;
+
+bool operator< (const Segment A, const Segment B) {
+    return A.poz > B.poz;
+}
+
+int N, L, M;
+set <Segment> segs;
+
+void solve1();
+void solve2();
+void solve3();
+
+int main() {
+    freopen("gate.in", "r", stdin);
+    freopen("gate.out", "w", stdout);
+    int i, t;
+    scanf("%d %d %d", &N, &L, &M);
+    THESEG.poz = 1; THESEG.rune = 0; THESEG.lg = N;
+    segs.insert(THESEG);
+    for (i = 0; i < M; ++i) {
+        scanf("%d", &t);
+        switch (t) {
+            case 1: {
+                solve1(); break;
+            }
+            case 2: {
+                solve2(); break;
+            }
+            default:{
+                solve3(); break;
+            }
+        }
+    }
+    return 0;
+}
+
+int getChar(Segment S, int poz) {
+    return (S.rune + (poz - S.poz)) % L;
+}
+
+void solve1() {
+    set <Segment> ::iterator it;
+    Segment nw, old;
+    int poz;
+    scanf("%d", &poz);
+    THESEG.poz = poz;
+    it = segs.lower_bound(THESEG);
+    nw = old = *it;
+    segs.erase(it);
+    if (poz < old.poz + old.lg - 1) {
+        nw.poz = poz + 1;
+        nw.lg = old.poz + old.lg - 1 - poz;
+        nw.rune = (getChar(old, poz) + 1) % L;
+        segs.insert(nw);
+        old.lg = poz - old.poz + 1;
+    }
+    segs.insert(old);
+}
+
+void solve2() {
+    set <Segment> ::iterator it;
+    Segment old;
+    int poz, p;
+
+    scanf("%d %d", &poz, &p);
+    THESEG.poz = poz;
+    it = segs.lower_bound(THESEG);
+    old = *it;
+    segs.erase(it);
+    if (p < 0) {
+        p = abs(p);
+        p %= L;
+        p = -p;
+    }
+    old.rune += p + L;
+    old.rune %= L;
+    segs.insert(old);
+}
+
+void solve3() {
+    set <Segment> ::iterator it;
+    Segment old;
+    int poz;
+
+    scanf("%d", &poz);
+    THESEG.poz = poz;
+    it = segs.lower_bound(THESEG);
+    old = *it;
+    printf("%c\n", 'a' + getChar(old, poz));
+}

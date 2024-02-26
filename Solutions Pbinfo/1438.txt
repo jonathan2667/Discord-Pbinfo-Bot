@@ -1,0 +1,49 @@
+#include <fstream>
+
+using namespace std;
+
+ifstream f("razboi.in");
+ofstream g("razboi.out");
+
+int n,x,d,sp,si,nrp,nri,i,p,s;
+int main(){
+    f>>n>>p;
+    for (i=1;i<=n;i++){
+        f>>x;
+        if (p==1){
+            if (x%2==0){
+                nrp++;
+            }
+            else {
+                nri++;
+            }
+        }
+        else {
+            s=1;
+            for (d=2;d*d<x;d++){
+                if (x%d==0){
+                    s+=d+x/d;
+                }
+            }
+            if (x>1){
+                s+=x;
+            }
+            if (d*d==x){
+                s+=d;
+            }
+            if (s%2==0){
+                sp++;
+            }
+            else {
+                si++;
+            }
+        }
+    }
+    if (p==1){
+        g<<nrp<<' '<<nri;
+    }
+    else {
+        g<<sp<<' '<<si;
+    }
+    return 0;
+}

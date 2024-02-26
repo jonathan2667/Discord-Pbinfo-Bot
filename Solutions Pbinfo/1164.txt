@@ -1,0 +1,111 @@
+// Autor: Stefan Negrus
+// Complexitate: O(N * logN)
+// Punctaj: 100p
+
+#include <iostream>
+#include <cstdio>
+
+#define NMAX 300001
+#define DISTMAX 20
+
+using namespace std;
+
+int N, Q, K;
+int inside[NMAX], coef[NMAX];
+int from[NMAX][DISTMAX];
+
+void event1();
+void event2();
+void compute_from(int id);
+void compute_final_coef();
+int get_nrth_elem(int id, int nr);
+
+int main() {
+    freopen("inception.in", "r", stdin);
+    freopen("inception.out", "w", stdout);
+    
+    int i, t, id;
+    
+    scanf("%d %d %d", &N, &Q, &K);
+    N = 1;
+
+    for (i = 0; i < Q; ++i) {
+        scanf("%d", &t);
+        if (t == 1) {
+            event1();
+        }
+        else {
+            event2();
+        }
+    }
+    compute_final_coef();
+    
+    for (i = 0; i < K; ++i) {
+        scanf("%d", &id);
+        printf("%d ", coef[id]);
+    }
+    printf("\n");
+    
+    return 0;
+}
+
+void event1() {
+    int id, i, j;
+    scanf("%d %d %d", &id, &i, &j);
+    ++inside[id];
+    ++N;
+    from[N][0] = id;
+    compute_from(N);
+}
+
+void event2() {
+    int id, nr, val;
+    scanf("%d %d %d", &id, &nr, &val);
+    coef[id] += val;
+    nr = get_nrth_elem(id, nr);
+    coef[nr] -= val;
+}
+
+void compute_from(int id) {
+    int i;
+    for (i = 1; i < DISTMAX; ++i) {
+        from[id][i] = from[from[id][i - 1]][i - 1];
+    }
+}
+
+int get_nrth_elem(int id, int nr) {
+    int p;
+    while(nr) {
+        p = 0;
+        while ((1 << p) <= nr) {
+            ++p;
+        }
+        --p;
+        nr -= (1 << p);
+        id = from[id][p];
+    }
+    return id;
+}
+
+void compute_final_coef() {
+    int queue[NMAX], st, en, i, id, back;
+    st = en = 1;
+    for (i = 1; i <= N; ++i) {
+        if (inside[i] == 0) {
+            queue[en] = i;
+            ++en;
+        }
+    }
+    
+    while (st < en) {
+        id = queue[st];
+        ++st;
+        back = from[id][0];
+        coef[back] += coef[id];
+        --inside[back];
+        if (inside[back] == 0) {
+            queue[en] = back;
+            ++en;
+        }
+    }
+}

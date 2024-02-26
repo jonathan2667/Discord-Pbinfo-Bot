@@ -1,0 +1,35 @@
+#include <iostream>
+
+using namespace std;
+long long n, k, x, nrcifre, sumacifre, rest1, rest2, rest;
+
+int main()
+{
+    cin >> n >> k;
+    if(k == 1) rest = n % 72;
+    else
+    {
+        x = n;
+        nrcifre = 0;
+        sumacifre = 0;
+        while(x != 0)
+        {
+            nrcifre++;
+            sumacifre += x % 10;
+            x = x / 10;
+        }
+        sumacifre = sumacifre * k;
+        rest1 = sumacifre % 9;
+        if(nrcifre >= 3) rest2 = (n % 1000) % 8;
+        else if(nrcifre == 2) rest2 = ((n % 10) * 100 + n % 100) % 8;
+             else
+             {
+                 if(k == 2) rest2 = (11 * n) % 8;
+                 else rest2 = (111 * n) % 8;
+             }
+        if(9 * rest2 - 8 * rest1 >= 0) rest = (9 * rest2 - 8 * rest1) % 72;
+        else rest = (9 * rest2 - 8 * rest1 + 72) % 72;
+    }
+    cout << rest;
+    return 0;
+}

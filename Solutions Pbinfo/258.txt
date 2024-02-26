@@ -1,0 +1,45 @@
+#include <iostream>
+#include <cassert>
+
+using namespace std;
+
+int main(){
+    int a=1, b=1;
+    cin >> a >> b;
+    int n,m;
+    if(a%2==b%2)
+        n = (a+b)/2, m = (a+b)/2;
+    else
+        n = (a+b)/2, m = (a+b)/2+1;
+    int x = 0;
+    while(n>=a && m<=b && x==0){
+        int prim = 1;
+        if(n<2)
+            prim = 0;
+        if(n%2==0 && n>2)
+            prim = 0;
+        for(int d=3;d*d<=n;d+=2)
+            if(n%d==0)
+                prim = 0;
+        if(prim==1)
+            x = n;
+        else{
+            int prim = 1;
+            if(m<2)
+                prim = 0;
+            if(m%2==0 && m>2)
+                prim = 0;
+            for(int d=3;d*d<=m;d+=2)
+                if(m%d==0)
+                    prim = 0;
+            if(prim==1)
+                x = m;
+        }
+        n--, m++;
+    }
+    if(x)
+        cout << x;
+    else
+        cout << "NU EXISTA";
+    return 0;
+}

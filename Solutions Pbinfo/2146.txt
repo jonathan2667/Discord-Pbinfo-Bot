@@ -1,0 +1,46 @@
+# include <fstream>
+using namespace std;
+int y[103],x[103],n;
+
+ifstream f("doilan.in");
+ofstream g("doilan.out");
+
+
+void imparte_la_2(int k)
+{
+    int t=0,i;
+    for(i=1; i<=k; i++)
+    {
+        t=y[i]+t*10;
+        y[i]=t/2;
+        t=t%2;
+    }
+}
+
+int paritate_cat_impartirea_lui_x_la_2lan(int k)
+{
+    int i;
+    for(i=1; i<=k; i++)
+        imparte_la_2(k);
+    return y[k]%2;
+}
+
+int main()
+{
+    y[1]=x[1]=2;
+    f>>n;
+    int k,i,c;
+    for(k=1; k<n; k++)
+    {
+        if(paritate_cat_impartirea_lui_x_la_2lan(k)==1)c=1;
+        else c=2;
+        for(i=k; i>=1; i--)
+            y[i+1]=x[i+1]=x[i];
+        y[1]=x[1]=c;
+
+    }
+    for(int i=1; i<=n; i++)g<<x[i];
+    g<<endl;
+    return 0;
+}
+

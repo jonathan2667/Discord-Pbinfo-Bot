@@ -1,0 +1,62 @@
+// prof. Constantin Galatan
+// O(n^2)
+#include <fstream>
+#include <algorithm>
+using namespace std;
+
+ifstream fin("berze.in");
+ofstream fout("berze.out");
+
+const int Dim = 1001, Mod = 700001;
+int n, m, x, y;
+int nr[Dim][Dim];
+int t[Dim];
+
+int main()
+{
+    fin >> n >> m;
+
+    for (int i = 0; i < m; ++i)
+    {
+        fin >> x >> y;
+        t[x] = max(t[x], y + 1);
+    }
+    
+    for (int i = 1; i < n; ++i)
+        t[i] = max(t[i], t[i - 1]);
+
+    nr[0][0] = 1;
+    for (int i = 1; i <= n; ++i)
+        for (int j = 0; j <= n; ++j)
+        {
+            if (!nr[i - 1][j]) continue;
+            nr[i][j] += nr[i - 1][j];
+            if (nr[i][j] >= Mod)
+                nr[i][j] -= Mod;
+
+            if (j <= i)
+            {
+                nr[i][t[i - 1]] += nr[i - 1][j];
+                if (nr[i][t[i - 1]] >= Mod)
+                    nr[i][t[i - 1]] -= Mod;
+            }
+            else
+            {
+                nr[j][t[i - 1]] += nr[i - 1][j];
+                if (nr[j][t[i - 1]] >= Mod)
+                    nr[j][t[i - 1]] -= Mod;
+            }
+        }
+
+    int res = 0;
+    for (int i = 0; i <= n; ++i)
+    {
+        res += nr[n][i];
+        if (res > Mod)
+            res -= Mod;
+    }
+
+    fout << res;
+    fout.close();
+    return 0;
+}

@@ -1,0 +1,237 @@
+// implementare: Cristi Dospra
+// punctaj: 100p
+// complexitate: O( Etape * Nr Mari)
+
+#include <fstream>
+#include <vector>
+#include <algorithm>
+using namespace std;
+
+#define Mod 666013
+
+ifstream fin ( "morum.in" );
+ofstream fout ( "morum.out" );
+
+#define DigitMax 70
+class Huge
+{
+    public: long long V[DigitMax];
+
+    inline Huge ()
+    {
+        for(long long i = 0;i < DigitMax; ++i)
+            V[i] = 0;
+    }
+
+    inline Huge (long long X)
+    {
+        *this = X;
+    }
+
+    inline Huge operator= (long long X)
+    {
+        for(long long i = 0;i < DigitMax; ++i)
+            V[i] = 0;
+        for(; X; X /= 10)
+            V[++V[0]] = X % 10;
+        return *this;
+    }
+
+    inline Huge operator= (Huge X)
+    {
+        for(long long i = 0;i < DigitMax; ++i)
+            V[i] = X.V[i];
+        return *this;
+    }
+
+    friend Huge operator+ (Huge V,Huge X)
+    {
+        long long i, T = 0;
+        Huge Now;
+        for(i = 1; i <= V.V[0] || i <= X.V[0] || T; i++, T /= 10)
+            Now.V[i] = (T += V.V[i] + X.V[i]) % 10;
+        Now.V[0] = i - 1;
+        return Now;
+    }
+    friend Huge operator+ (Huge A,long long  X)
+    {
+        return A + Huge(X);
+    }
+
+    friend Huge operator* (Huge V,Huge X)
+    {
+        Huge Now;
+        long long i, j, T = 0;
+        for(i = 1; i <= V.V[0]; i ++)
+        {
+            for(j = 1, T = 0; j <= X.V[0] || T; j ++, T /= 10)
+                Now.V[i + j - 1] = (T += Now.V[i + j - 1] + V.V[i] * X.V[j]) % 10;
+            if(i + j - 2 >= Now.V[0]) Now.V[0] = i + j - 2;
+        }
+        return Now;
+    }
+
+    friend Huge operator* (Huge A,long long  X)
+    {
+        return A * Huge(X);
+    }
+
+    friend bool operator<= (Huge X,Huge Y)
+    {
+        long long i,n = X.V[0],m = Y.V[0];
+        if(n < m)   return true;
+        if(m > n)   return false;
+        for(i = n; i && X.V[i] == Y.V[i]; --i);
+        if(i==0)    return true;
+        if(X.V[i] < Y.V[i])   return true;
+        return false;
+    }
+    friend ostream & operator<<(ostream &out, Huge X)
+    {
+        for(long long i = X.V[0]; i>0; i--)
+            out<<X.V[i];
+        return out;
+    }
+};
+
+struct Fractie{
+    Huge Numarator;
+    Huge Numitor;
+};
+
+vector < Huge > Power[3];
+
+Fractie GetArea ( int L, int Model, int Etapa ){
+
+    Fractie Arie;
+
+    if ( Etapa == 0 ){
+        for ( int i = 0; i < 3; ++i )
+            Power[i].push_back(Huge(1));
+    }
+
+    if ( Model == 1 ){
+
+        if ( Etapa > 0 ){
+            Power[0].push_back( Power[0][Etapa-1] * 3LL );
+            Power[1].push_back( Power[1][Etapa-1] * 4LL );
+            Power[2].push_back( Power[2][Etapa-1] * 2LL );
+        }
+
+        Arie.Numarator = Power[0][Etapa] * Huge(1LL*L * L * 173LL);
+        Arie.Numitor = Power[1][Etapa] * 400LL;
+    }
+
+    if ( Model == 2 ){
+
+        if ( Etapa > 0 ){
+            Power[0].push_back( Power[0][Etapa-1] * 8LL );
+            Power[1].push_back( Power[1][Etapa-1] * 9LL );
+            Power[2].push_back( Power[2][Etapa-1] * 3LL );
+        }
+
+        Arie.Numarator = Power[0][Etapa] * Huge(1LL*L*L);
+        Arie.Numitor = Power[1][Etapa];
+    }
+
+    if ( Model == 3 ){
+
+        if ( Etapa > 0 ){
+            Power[0].push_back( Power[0][Etapa-1] * 2LL );
+            Power[1].push_back( Power[1][Etapa-1] * 3LL );
+        }
+
+        Arie.Numarator = Power[0][Etapa];
+        Arie.Numarator = Arie.Numarator * 3LL*173;
+        Arie.Numarator = Arie.Numarator * L;
+        Arie.Numarator = Arie.Numarator * L;
+        Arie.Numitor = Power[1][Etapa] * 200LL;
+    }
+
+    return Arie;
+}
+
+vector < Fractie > Rec;
+Fractie GetPerim( int L, int Model, int Etapa ){
+
+    Fractie Perim;
+
+    if ( Model == 1 ){
+
+        Perim.Numarator = Power[0][Etapa+1] * L;
+        Perim.Numitor = Power[2][Etapa];
+    }
+
+    if ( Model == 2 ){
+
+        Fractie aux;
+
+        aux.Numarator = Huge(4LL * L);
+        aux.Numitor = Huge(1);
+
+        Rec.push_back( aux );
+
+        for ( int i = 1; i <= Etapa; ++i ){
+            aux = Rec[i-1];
+            aux.Numarator = aux.Numarator * 3;
+            aux.Numarator = aux.Numarator + ( Power[0][i-1] * 4LL * L );
+            aux.Numitor = Power[2][i];
+
+            Rec.push_back(aux);
+        }
+
+        Perim = Rec.back();
+    }
+
+    if ( Model == 3 ){
+
+        Perim.Numarator = Huge(6LL * L) * Power[0][Etapa];
+        Perim.Numitor = Huge(1);
+    }
+
+    return Perim;
+}
+
+bool CmpFrac ( Fractie A, Fractie B ){
+
+    Huge X, Y;
+
+    X = A.Numarator * B.Numitor;
+    Y = B.Numarator * A.Numitor;
+
+    return X <= Y;
+}
+
+int main(){
+
+    int N;
+    int Model, procent;
+
+    fin >> N >> Model >> procent;
+
+    procent = 100 - procent;
+
+    Fractie Arie, Perim, Limita;
+
+    Arie = GetArea( N, Model, 0 );
+    Limita.Numarator = Arie.Numarator * procent;
+    Limita.Numitor = Arie.Numitor * 100LL;
+
+    int Sol;
+    for ( int Etapa = 1; ; ++Etapa ){
+        Arie = GetArea( N, Model, Etapa );
+        if ( CmpFrac( Arie, Limita ) ){
+            Sol = Etapa-1;
+            break;
+        }
+    }
+
+    Arie = GetArea ( N, Model, Sol );
+    Perim = GetPerim( N, Model, Sol );
+
+    fout << Sol << "\n";
+    fout << Arie.Numarator << "\n" << Arie.Numitor << "\n";
+    fout << Perim.Numarator << "\n" << Perim.Numitor << "\n";
+
+    return 0;
+}

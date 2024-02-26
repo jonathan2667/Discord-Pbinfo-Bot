@@ -1,0 +1,67 @@
+#include <cstdio>
+#define M 1001
+using namespace std;
+
+int main()
+{
+    int n,i,j,k,xs[M],ys[M],xd[M],yd[M],x0,y0,x1,y1;
+    int np=0;
+    FILE *fi, *fo;
+    for(i=0;i<M;i++)
+    {
+        xs[i] = ys[i] = M + 1;
+        xd[i] = yd[i] = -1;
+    }
+    fi = fopen("puncte3.in","rt");
+    fscanf(fi, "%d", &n);
+    for(i=0;i<n;i++)
+    {
+        fscanf(fi,"%d %d",&j,&k);
+        if(j<xs[k]) xs[k]=j;
+        if(j>xd[k])xd[k]=j;
+        if(k<ys[j])ys[j]=k;
+        if(k>yd[j])yd[j]=k;
+    }
+    i=0;
+    while(xd[i]<0)
+        i++;
+    y0=i;
+    i=M-1;
+    while(xd[i]<0)
+        i--;
+    y1=i;
+    i=0;
+    while(yd[i]<0)
+        i++;
+    x0=i;
+    i=M-1;
+    while(yd[i]<0)
+        i--;
+    x1=i;
+    fclose(fi);
+    do
+    {
+        k=0;
+        for(i=x0;i<=x1;i++)
+            for(j=ys[i];j<=yd[i];j++)
+            {
+                if(i<xs[j]) {xs[j]=i; k=1;}
+                if(i>xd[j]) {xd[j]=i; k=1;}
+            }
+        for(j=y0;j<=y1;j++)
+            for(i=xs[j];i<=xd[j];i++)
+            {
+                if(j<ys[i]) {ys[i]=j; k=1;}
+                if(j>yd[i]) {yd[i]=j; k=1;}
+            }
+    }
+    while(k);
+
+    for(j=y0;j<=y1;j++)
+        if(xd[j]>=0)
+        np += (xd[j]-xs[j]+1);
+    fo = fopen("puncte3.out","wt");
+    fprintf(fo,"%d\n",np);
+    fclose(fo);
+    return 0;
+}

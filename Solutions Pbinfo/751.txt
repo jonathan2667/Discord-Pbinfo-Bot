@@ -1,0 +1,32 @@
+#include <iostream>
+using namespace std;
+
+int n, m, a[105][105], k , x;
+
+int main()
+{
+    cin >> n >> m;
+    for(int i = 1 ; i <= n ; ++i)
+        for(int j = 1 ; j <= m ; ++j)
+            cin >> a[i][j];
+    cin >> k;
+    for(int p = 1 ; p <= k ; p ++)
+    {
+        cin >> x;
+        int pp = 1;
+        for(int i = 1 ; i <= n && pp ; i ++)
+        {
+            int apare = 0;
+            for(int j = 1 ; j <= m && ! apare ; ++j)
+                if(a[i][j] == x)
+                    apare = 1;
+            if(!apare)
+                pp = 0;
+        }
+        if(pp)
+            cout <<"DA\n";
+        else
+            cout <<"NU\n";
+    }
+    return 0;
+}

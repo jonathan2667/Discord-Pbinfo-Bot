@@ -1,0 +1,62 @@
+#include <fstream>
+#include <climits>
+using namespace std;
+
+#define Nmax 502
+
+ifstream fin ( "ciocolata.in" );
+ofstream fout  ( "ciocolata.out" );
+
+int v[Nmax][Nmax];
+long long sum[Nmax][Nmax];
+
+int main(){
+    int N, M, solx1, soly1, solx2, soly2;
+
+    long long maxx = LLONG_MIN , sol;
+    
+    fin >> N >> M;
+
+    for ( int i = 1; i <= N; ++i )
+        for ( int j = 1; j <= M; ++j )
+            fin >> v[i][j];
+
+    for ( int i = 1; i <= M; ++i )
+        for ( int j = 1; j <= N; ++j )
+            sum[j][i] = sum[j-1][i] + v[j][i];
+
+    int x1, y1, x2, y2;
+    for ( int i = 1; i <= N; ++i ){
+        x1 = i;
+        for ( int j = i; j <= N; ++j ){
+            sol = 0;
+            x2 = j;
+            y1 = 1;
+            y2 = 0;
+            for ( int k = 1; k <= M; ++k ){
+                long long x = sum[j][k] - sum[i-1][k];
+
+                if ( x > sol + x ){
+                    y1 = y2 = k;
+                    sol = x;
+                }
+                else{
+                    sol = sol + x;
+                    y2++;
+                }
+
+                if ( sol > maxx ){
+                    maxx = sol;
+                    solx1 = x1;  solx2 = x2;
+                    soly1 = y1;  soly2 = y2;
+                }
+            }
+        }
+    }
+    
+    fout << maxx << "\n";
+    fout << solx1 << " " << soly1 << " " << solx1 << " " << soly2 << "\n";
+    fout << solx2 << " " << soly1 << " " << solx2 << " " << soly2;
+  
+    return 0;
+}

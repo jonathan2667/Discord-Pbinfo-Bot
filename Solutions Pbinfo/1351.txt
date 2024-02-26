@@ -1,0 +1,229 @@
+{$H}
+program patrat;
+uses sysutils;
+const dx:qword=1000000000;
+      kdx=9;// nr. de 0 din dx
+      nmax=1000;
+type nr_mare=record
+       c:array[0..nmax] of qword;
+       k:integer;
+     end;
+var a,b,c,d,e:nr_mare;
+    i,n,l:integer;
+    fi,fo:text;
+    s:ansistring;
+
+procedure pune_sir_in_nr(var x:nr_mare;s:ansistring);
+var i,k,c,l:longint;n:qword;
+begin
+ k:=kdx;
+ i:=0;{poz. la care pun cifrele}
+ l:=length(s);
+ while l>=k do
+  begin
+    val(copy(s,l-k+1,k),n,c);{extragem din sir ultimele caractere si le transf. in nr}
+    x.c[i]:=n;
+    delete(s,l-k+1,k);
+    dec(l,k);
+    inc(i);
+  end;
+ if l>0 then
+  begin
+    val(copy(s,l-k+1,k),n,c);{extragem din sir ultimele caractere si le transf. in nr}
+    x.c[i]:=n;
+    x.k:=i;
+  end
+   else x.k:=i-1;
+end;
+
+procedure pune_nr_in_sir(var s:ansistring;x:nr_mare);
+var i:longint;
+    t:ansistring;
+begin
+ str(x.c[x.k],s);
+ i:=x.k-1;
+ while i>=0 do
+  begin
+   str(x.c[i],t);// transforman nr. in sir
+   while length(t)<kdx do t:='0'+t; // cat timp nu are nr. necesar de cifre punem un 0 la inceput
+   s:=s+t;// adaugam sirul la sirul ce va forma nr.
+   i:=i-1;
+  end;
+end;
+
+
+procedure add(var x,y,z:nr_mare); {adun pe y cu z si pun in x}
+var i,km:longint;t:qword;
+begin
+ t:=0;
+ if y.k>z.k then km:=y.k else km:=z.k; // determinam cel mai lung nr.
+ x.k:=km;
+ for i:= 0 to km do
+  begin
+    x.c[i]:=y.c[i]+z.c[i]+t;
+    t:=x.c[i] div dx;
+    x.c[i]:=x.c[i] mod dx;
+  end;
+ if t>0 then // inseamna ce nr. de cifre a crescut prin adunare
+  begin
+   inc(x.k);
+   x.c[x.k]:=t;
+  end;
+end;
+
+procedure inmul(var x,y,z:nr_mare);
+var i,j,k:longint;t:qword;
+begin
+ fillchar(x,sizeof(x),0);// punem numai 0 in x
+ x.k:=y.k+z.k;
+ // facem inmultirea
+ for i:=0 to y.k do
+  for j:=0 to z.k do
+    x.c[i+j]:=x.c[i+j]+y.c[i]*z.c[j];
+ // "normalizam" numarul
+ t:=0;
+ for i:=0 to x.k do
+  begin
+   x.c[i]:=x.c[i]+t;
+   t:=x.c[i] div dx;
+   x.c[i]:=x.c[i] mod dx;
+  end;
+ if t>0 then begin inc(x.k);x.c[x.k]:=t;end;
+end;
+
+{compara 2 numere mari si return 1 daca primul e mai mare, 0 daca-s egale, -1 daca al doilea e mai mare}
+function comp(var x,y:nr_mare):integer;
+var r,i:integer;
+begin
+ if x.k>y.k then r:=1
+  else if x.k<y.k then r:=-1
+   else
+    begin
+      i:=x.k;
+      while (i>=0)and(x.c[i]=y.c[i]) do dec(i);
+      if i < 0 then r:=0
+       else if x.c[i]>y.c[i] then r:=1
+               else r:=-1;
+    end;
+ comp:=r;
+end;
+
+
+function gen10(n:integer):ansistring;
+var s:ansistring;
+begin
+ s:='1';
+ while(n>1)do begin s:=s+'0';dec(n);end;
+ gen10:=s;
+end;
+
+function gen99(n:integer):ansistring;
+var s:ansistring;
+begin
+ s:='9';
+ while(n>1)do begin s:=s+'9';dec(n);end;
+ gen99:=s;
+end;
+
+
+procedure div2(var x:nr_mare);{imparte un numar mare la 2}
+var t:longint;
+    i:integer;
+begin
+  t:=0;{transportul e 0 la inceput}
+  for i:=x.k downto 0 do
+   begin
+    x.c[i]:=x.c[i]+t*dx;
+    t:=x.c[i] mod 2;
+    x.c[i]:=x.c[i] div 2;
+   end;
+  while(x.c[x.k]=0)do dec(x.k);
+end;
+
+procedure dec_mare( var x:nr_mare);
+var i:longint;
+begin
+ dec(x.c[0]);i:=0;
+ while(x.c[i]<0)do begin
+  dec(x.c[i+1]);inc(x.c[i],dx);i:=i+1;
+ end;
+  while(x.c[x.k]=0)do dec(x.k);
+end;
+
+procedure inc_mare(var x:nr_mare);
+var i:longint;
+begin
+ i:=0;
+ inc(x.c[0]);
+ while(x.c[i]=dx)do
+  begin
+   x.c[i]:=0;inc(x.c[i+1]);
+   inc(i);
+  end;
+  if i>x.k then inc(x.k);
+end;
+
+
+function e_patrat(s:ansistring):boolean;
+var x:qword;er,l,i:integer;
+  g:ansistring;f:boolean;
+begin
+ if length(s)<2 then  {daca nr. e mic il convertim in nr. "normal"}
+   begin
+    val(s,x,er);
+    e_patrat:=frac(sqrt(x))=0;
+   end
+  else {daca e nr. mare incepem sa cautam binar radicalul sau}
+   begin
+    l:=length(s); {determinam lungimea}
+    l:=l+l mod 2; {il aducem la cel mai apropiat nr. par}
+    l:=l div 2;   {determinam lungimea posibilului radical}
+    g:=gen10(l);
+    pune_sir_in_nr(a,g);
+    g:=gen99(l);
+    pune_sir_in_nr(b,g);
+    f:=false;{inca nu l-am gasit}
+    pune_sir_in_nr(e,s);{punem in e nr. de testat}
+
+    repeat
+     add(c,a,b);
+     div2(c); {calculam mijlocul}
+     inmul(d,c,c);{ridic pe c la patrat}
+     case comp(d,e) of
+      0:f:=true;
+      1:begin  {d e mai mare ca e, trebuie cautat in stanga}
+         b:=c;
+         dec_mare(b);
+        end;
+     -1:begin
+         a:=c;
+         inc_mare(a);
+        end;
+     end;
+    until f or (comp(a,b)>0); {pana cand gasim sau stanga e mai mare ca dreapta}
+    e_patrat:=f;
+   end;
+end;
+
+
+
+
+BEGIN
+
+
+ assign(fi,'nano.in');reset(fi);
+ assign(fo,'nano.out');rewrite(fo);
+ readln(fi,n);
+ for i:=1 to n do
+  begin
+   readln(fi,l);
+
+   readln(fi,s);
+   if l<>length(s) then writeln('NU bate lungimea')
+      else if e_patrat(s) then writeln(fo,s);
+
+  end;
+ close(fi);
+ close(fo);
+
+END.

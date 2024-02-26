@@ -1,0 +1,19 @@
+#include <fstream>
+
+using namespace std;
+int n, i, x, maxim, sol;
+int main () {
+    ifstream fin ("sirmaxim.in");
+    ofstream fout("sirmaxim.out");
+    fin>>n;
+    for (i=1;i<=n;i++) {
+        fin>>x;
+        if (i <= n/2)
+            if (x > maxim)
+                maxim = x;
+        if (i>n/2 && x == maxim)
+            sol++;
+    }
+    fout<<sol;
+    return 0;
+}

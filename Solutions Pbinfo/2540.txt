@@ -1,0 +1,134 @@
+#include <iostream>
+#define DIM 102
+#define MOD 666013
+using namespace std;
+
+char A[DIM][DIM];
+int v[DIM], w[DIM];
+int D[65][DIM][DIM], P[DIM][DIM], M[DIM][DIM], d[DIM][DIM];
+int L, K, X, mic = 1, mare = 2;
+long long C;
+
+inline int get(int i, int j, int K) {
+    if (j%K == 0)
+        return A[i][K] - '0';
+    else
+        return A[i][ j%K ] - '0';
+}
+
+void dinamica(int i, int v[], int tip) {
+    int aux = K;
+    if (tip == mic)
+        K = C;
+
+    for (int k=0;k<=L+1;k++)
+        v[k] = 0;
+    w[0] = w[L+1] = 0;
+    if (A[i][1] == '0') {
+        return;
+    }
+
+    v[i] = 1;
+    for (int j=2;j<=K;j++) {
+        for (i=1;i<=L;i++) {
+            if (get(i, j, aux) == 1)
+                w[i] = (v[i-1] + v[i] + v[i+1]) % MOD;
+            else
+                w[i] = 0;
+        }
+        for (i=1;i<=L;i++)
+            v[i] = w[i];
+    }
+
+}
+
+void produs(int A[DIM][DIM], int B[DIM][DIM], int C[DIM][DIM]) {
+    for (int i=1;i<=L;i++)
+        for (int j=1;j<=L;j++) {
+            C[i][j] = 0;
+            for (int k=1;k<=L;k++) {
+                C[i][j] += (A[i][k-1] + A[i][k] + A[i][k+1]) % MOD * 1LL * B[k][j] % MOD;
+                if (C[i][j] >= MOD)
+                    C[i][j] -= MOD;
+            }
+        }
+}
+
+void copiere(int A[DIM][DIM], int B[DIM][DIM]) {
+    for (int i=1;i<=L;i++)
+        for (int j=1; j<=L;j++)
+            A[i][j] = B[i][j];
+}
+
+void af(char *msg, int a[DIM][DIM]) {
+    cout<<msg<<"\n";
+    for (int i=1;i<=L;i++) {
+        for (int j=1;j<=L;j++)
+            cout<<a[i][j]<<" ";
+        cout<<"\n";
+    }
+    cout<<"\n";
+}
+
+int main () {
+
+    cin>>L>>K;
+    for (int i=1; i<=L; i++)
+        cin>>(A[i]+1);
+    cin>>X>>C;
+    if (C <= 3*K) {
+        dinamica(1, v, mic);
+        cout<<v[X];
+        return 0;
+    }
+
+    for (int i=1;i<=L;i++) {
+        dinamica(i, v, mare);
+        for (int j=1;j<=L;j++)
+            D[0][i][j] = v[j];
+    }
+
+    ///af("D[0]",D[0]);
+
+    int log = 0;
+    long long t = K;
+
+    while (t < C) {
+        log++;
+        t *= 2;
+    }
+
+    for (int p = 1; p <= log; p++) {
+        produs(D[p-1], D[p-1], D[p]);
+    }
+    ///af("D[1]", D[1]);
+    long long dim = (C - K - C % K)/K;
+
+    dinamica(1, v, mare);
+    for (int j=1;j<=L;j++)
+        P[1][j] = v[j];
+
+    int bit = 0;
+    while (dim != 0) {
+        if (dim % 2 == 1) {
+            produs(P, D[bit], M);
+            copiere(P, M);
+        }
+        bit++;
+        dim /= 2;
+    }
+
+    for (int i=1;i<=L;i++)
+        d[i][0] = P[1][i];
+
+    for (int j=1;j<=C%K;j++)
+        for (int i=1;i<=L;i++)
+            if (A[i][j] == '0')
+                d[i][j] = 0;
+            else
+                d[i][j] = (d[i-1][j-1] + d[i][j-1] + d[i+1][j-1]) % MOD;
+
+    cout<<d[X][C%K];
+
+    return 0;
+}

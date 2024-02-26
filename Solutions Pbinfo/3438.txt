@@ -1,0 +1,121 @@
+//Alin Burta 100 puncte
+#include <fstream>
+#define Nmax 1002
+#define FIN "triunghi.in"
+#define FOU "triunghi.out"
+
+using namespace std;
+
+ifstream citeste(FIN);
+ofstream scrie(FOU);
+int A[Nmax][Nmax]={0}, sum[Nmax][Nmax]={0}, slin[Nmax][Nmax]={0}, diag[Nmax][Nmax]={0};
+int N;
+int nQ;
+int lin, col, k;
+int linMax, colMax, kMax;
+int SumCrt;
+int SumMax;
+
+int aflaSuma(int, int, int);
+void afis(int A[Nmax][Nmax], int N);
+
+
+
+int main()
+{
+    int i,j;
+    //citire date de intrare
+    citeste >> N;
+    for(i = 1; i <= N; ++i)
+        for(j = 1; j <= N; ++j)
+            citeste >> A[i][j];
+
+    //precalculez matricea de sume parțiale
+    sum[1][1] = A[1][1];
+    for(i = 2; i <= N; ++i)
+        sum[1][i] = sum[1][i-1] + A[1][i],
+        sum[i][1] = sum[i-1][1] + A[i][1];
+    for(i = 2; i <= N; ++i)
+        for(j = 2; j <= N; ++j)
+            sum[i][j] = sum[i][j-1] + sum[i-1][j] - sum[i-1][j-1] + A[i][j];
+
+    //precalculez matricea sumelor pe linii
+    for(i = 1; i <= N; ++i)
+        slin[i][1] = A[i][1];
+    for(i = 1; i <= N; ++i)
+        for(j = 2; j <= N; ++j)
+            slin[i][j]  = slin[i][j-1] + A[i][j];
+
+    //precalculez matricea de sume partiale pe diagonale
+    for(i = 1; i <= N; ++i)
+        diag[1][i] = slin[1][i];
+    for(i = 2; i <= N; ++i)
+    {
+        for(j = 1; j < N; ++j)
+            diag[i][j] = diag[i-1][j+1] + slin[i][j];
+        diag[i][N] = sum[i][N];
+    }
+/*
+    afis(A, N);
+    afis(sum, N);
+    afis(diag, N);
+*/
+    SumMax = -1;
+    citeste >> nQ;
+    for( i = 1; i <= nQ; ++i)
+    {
+        citeste >> lin >> col >> k;
+        if(k > 0)
+            SumCrt = aflaSuma(lin, col, k);
+        else
+        {
+            k = -k;
+            SumCrt = sum[lin][col] - sum[lin][col - k] - sum[lin-k][col] + sum[lin-k][col-k] - aflaSuma(lin - k + 1, col - k + 1, k - 1);
+            k = -k;
+        }
+        //scrie << SumCrt<<' '<<lin <<' '<<col<<' '<<k<<'\n';
+        if( SumMax < SumCrt )
+            SumMax = SumCrt, linMax = lin, colMax = col, kMax = k;
+        else
+            if( SumMax == SumCrt )
+                if( lin < linMax || lin == linMax && col < colMax)
+                    SumMax = SumCrt, linMax = lin, colMax = col, kMax = k;
+
+    }
+
+    scrie << SumMax << "\n" ; //<< linMax << " " << colMax << " " << kMax << "\n";
+    citeste.close();
+    scrie.close();
+    return 0;
+}
+
+
+int aflaSuma(int lin, int col, int k)
+{
+    int SumCrt;
+    if( lin == 1)                       // cazul 1 si 2
+            SumCrt = diag[k][col] - sum[lin + k - 1][ col - 1 ];
+        else                                 //cazul 3
+            if(col == 1)
+                SumCrt = diag[lin + k - 1][1] - diag[lin-1][col+k];
+            else
+                if(col + k -1 == N)          //cazul 4
+                    SumCrt = diag[lin + k - 1][col] - sum[lin + k -1][col - 1] - sum[lin - 1][col + k - 1] + sum[lin-1][col-1];
+                else                         // czaul 5
+                    SumCrt = diag[lin + k - 1][col] - sum[lin + k -1][col - 1] - diag[lin - 1][col + k] + sum[lin-1][col-1];
+
+    return SumCrt;
+}
+
+
+void afis(int A[Nmax][Nmax], int N)
+{
+    int i, j;
+    for(i = 1; i <= N; ++i)
+    {
+        for(j = 1; j <= N; ++j)
+            scrie<<A[i][j]<<'\t';
+        scrie << '\n';
+    }
+    scrie << '\n';
+}

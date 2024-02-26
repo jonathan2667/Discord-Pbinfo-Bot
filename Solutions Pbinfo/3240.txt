@@ -1,0 +1,35 @@
+#include <iostream>
+using namespace std;
+
+const int N=101;
+long long int dp[N][N];
+long long int sum[N][N];
+
+int n,m,k;
+
+int main()
+{
+  cin >> n >> m >> k;
+
+ for (int i = 1; i < n + 1; i++)
+    {
+        dp[0][i] = 0;
+        sum[0][i] = 1;
+    }
+
+ for (int i = 0; i < m + 1; i++) sum[i][0] = dp[i][0] = 1;
+
+ for (int i = 1; i < m + 1; i++)
+ {
+   for (int j = 1; j < n + 1; j++)
+    {
+      dp[i][j] = sum[i - 1][j];
+      if (j > k) dp[i][j] -= sum[i - 1][j - k - 1];
+
+    }
+    for (int j = 1; j < n + 1; j++)
+      sum[i][j] = dp[i][j] + sum[i][j - 1];
+ }
+ cout << dp[m][n] << endl;
+}
+

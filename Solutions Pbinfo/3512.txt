@@ -1,0 +1,45 @@
+/// Solutie - Moca Andrei - 100p
+#include <bits/stdc++.h>
+namespace FastRead {
+    const int Dim(10000);
+    char buff[Dim];
+    int pos, len;
+    inline char nc() {
+        if (pos == len) {
+            pos = 0;
+            len = fread(buff, 1, Dim, stdin);
+            if (!len) return EOF;
+        }
+        return buff[pos++];
+    }
+    template<class T> inline void Read(T& x) {
+        char ch;
+        int sgn(1);
+        while (!isdigit(ch = nc()))
+            if (ch == '-')
+                sgn = -1;
+        x = ch - '0';
+        while (isdigit(ch = nc()))
+            x = x * 10 + (ch - '0');
+        x *= sgn;
+    }
+}
+using namespace FastRead;
+using namespace std;
+const int mod(1e9 + 7);
+vector<int> query;
+int n, fact(1), res(1), curr(1);
+int main() {
+    Read(n);
+    query = vector<int>(n + 1);
+    for (int i = 1; i <= n; ++i)
+        Read(query[i]);
+    sort(query.begin(), query.end());
+    for (int i = 1; i <= n; ++i) {
+        while (curr <= query[i])
+            fact = (1LL * fact * curr++) % mod;
+        res = (1LL * res * fact) % mod;
+    }
+    cout << res;
+    return 0;
+}

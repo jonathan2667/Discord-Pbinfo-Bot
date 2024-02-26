@@ -1,0 +1,76 @@
+//Serban Marinel - martie 2013
+//Gasiti numere prime cu proprietatea ca prin stergerea oricarei cifre
+//ramane tot un numar prim
+//se citesc a, b
+//se cere:
+//-a. cate numere prim_de_tot se gasesc in [a, b]
+//-b. cel mai mic numar din prim_de_tot din [a, b]
+//-c. cel mai mare numar prim_de_tot din [a, b]
+//0,1 NU sunt prime
+//2 <= a <= b <= 10^7
+Program ExtraPrime;
+
+CONST MAX = 10000000;
+
+Var ciur: Array[1..MAX] Of Boolean;
+    P: Array[0..8] Of LongInt = (1, 10, 100, 1000, 10000, 100000, 1000000, 10000000, 100000000);
+    nr, nrmin, nrmax, nrcifre: LongInt;
+    Fin, Fout: Text;
+    i, j, a, b: LongInt;
+
+Function Verifica(i: LongInt): Boolean;
+Var j, t: LongInt;
+    v: Boolean;
+Begin
+    {elimina pe rand cate o cifra si testeaza rezultatul}
+    t := 1; v := TRUE;
+
+    While (t < i) AND v Do
+    Begin
+      { sterge cifra a log_10(t)}
+      j := i DIV 10 DIV t * t + i MOD t;
+      If NOT ciur[j] Then
+        v := FALSE;
+      t := t * 10;
+    End;
+    Verifica := v;
+End;
+
+Begin
+    Assign(Fin, 'extraprime.in'); Reset(Fin);
+    Assign(Fout, 'extraprime.out'); ReWrite(Fout);
+    ReadLn(Fin, a, b);
+    nrcifre := 1;
+    While P[nrcifre] < b Do Inc(nrcifre);
+    ciur[1] := FALSE;                 {1 nu este prim}
+    For i := 2 To P[nrcifre] Do ciur[i] := TRUE;
+
+    {ciur}
+    i := 2;
+    While i * i < P[nrcifre] Do
+      Begin
+        While NOT ciur[i] Do i := i + 1;
+        j := i * i;
+        While j < P[nrcifre] Do
+          Begin
+            ciur[j] := FALSE;
+            j := j + i
+          End;
+        i := i + 1
+      End;
+
+    nr := 0;
+    For i := a To b Do
+        If (ciur[i]) AND (verifica(i)) Then
+            Begin
+                Inc(nr);
+                If nr = 1 Then nrmin := i ;
+                nrmax := i;
+            End;
+    WriteLn(fout, nr);
+    WriteLn(fout, nrmin);
+    WriteLn(fout, nrmax);
+    Close(Fout);
+End.
+
+

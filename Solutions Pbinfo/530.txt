@@ -1,0 +1,46 @@
+#include <iostream>
+using namespace std;
+
+int a[100005], b[100005], c[200005], n ,m , p;
+
+int main(){
+    cin  >> n;  
+    for(int i = 1 ; i <= n ;  ++i)
+        cin >> a[i];
+    cin >> m;
+    for(int i = 1 ; i <= m ;  ++i)
+        cin >> b[i];
+    //determinam reuniunea, prin interclasare
+    p = 0;
+    int i = 1 , j = 1;
+    while(i <= n && j <= m)
+        if(a[i]<b[j])
+            c[++p] = a[i++];
+        else
+            if(a[i] > b[j])
+                c[++p] = b[j++];
+            else
+                i ++;
+    while(i <= n)
+        c[++p] = a[i++];
+    while(j <= m)
+        c[++p] = b[j++];
+    for(i = 1 ; i <= p ; i ++)
+        cout << c[i] << " ";
+    cout << "\n";
+    //determinam intersectia,  interclasare
+    p = 0;
+    i = 1 , j = 1;
+    while(i <= n && j <= m)
+        if(a[i] < b[j])
+            i++;
+        else
+            if(a[i] > b[j])
+                j++;
+            else
+                c[++p] = a[i], i++, j++;
+    for(i = 1 ; i <= p ; i ++)
+        cout << c[i] << " ";
+    
+    return 0;
+}

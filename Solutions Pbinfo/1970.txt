@@ -1,0 +1,59 @@
+/*
+    Scor: 100p
+    Autor:
+        Ovidiu-Horatiu Ilie
+        Student, University College London
+    Data:
+        11/02/2017
+*/
+
+#include <bits/stdc++.h>
+#define MOD 1000000007
+
+using namespace std;
+
+ifstream f("secventa.in");
+ofstream g("secventa.out");
+
+unsigned long long k;
+
+/*Ridicam la putere in timp logaritmic, folosind:
+    2^n = 2^(n/2) * 2^(n/2), n%2==0   OR   2^(n-1)*2, n%2==1
+*/
+unsigned long long raiseToPowerLog(int base, unsigned long long n)
+{
+    //Calculam puterea cu modulo
+    if(n == 0)
+        return 1;
+
+    if(n % 2 == 0)
+    {
+        unsigned long long result = raiseToPowerLog(base, n / 2);
+        return (result * result) % MOD;
+    }
+    else
+    {
+        return (raiseToPowerLog(base, n - 1) * base) % MOD;
+    }
+}
+
+int main()
+{
+    f >> k;
+
+    //Aflam puterea maxima a lui 2 care divide k
+    unsigned long long power = 1;
+    while(k % power == 0 && k != power)
+    {
+        power *= 2;
+    }
+    //Dupa ce terminam, impartim la 2 ca sa gasim ultimul rezultat convenabil
+    if(power != k)
+        power /= 2;
+
+    //Afisam 2^n - 1 unde n este puterea maxima a lui 2 care divide k
+    g << raiseToPowerLog(2, power) - 1 << '\n';
+    return 0;
+}
+
+

@@ -1,0 +1,70 @@
+#include <fstream>
+
+using namespace std;
+ifstream fin("evip.in");
+ofstream fout("evip.out");
+unsigned long long S;
+int c,i,L,impar,par,p,k,kmax,imax,u;
+char s[10005];
+bool cif[10];
+
+bool maiMare(int p1, int p2)
+{
+    int i=0;
+    while(s[i] && s[p1+i]==s[p2+i])i++;
+    return (s[p1+i]>s[p2+i]);
+}
+int main()
+{
+    fin>>c>>s;
+    while(s[i]%2==0)i++;
+    while(s[i])
+    {
+        while(s[i]%2)
+        {
+            impar++;
+            i++;
+        }
+        while(s[i] && s[i]%2==0)
+        {
+            par++;
+            i++;
+        }
+        S+=impar*par;
+        L=impar+par;
+        if(impar*par && L>kmax)
+        {
+            kmax=L;
+            imax=i-L;
+        }
+        else if(L==kmax && maiMare(i-L,imax)) imax=i-L;
+        impar=par=0;
+    }
+    if(c==1)fout<<S<<'\n';
+    else if(c==2)
+    {
+        p=1;
+        for(i=2; i*i<=S; ++i)if(S%i==0) p=i;
+        fout<<p+S/p<<'\n';
+    }
+    else
+    {
+        for(i=0; i<kmax; i++) cif[s[imax+i]-'0']=true;
+        k=S=0;
+        u=11;
+        for(i=0; i<=9; i++) if(cif[i])
+            {
+                k++;
+                S+=i;
+            }
+        for(i=2; i<k; i++)
+        {
+            S=S*i;
+            u=u*10+1;
+        }
+        fout<<S*u<<'\n';
+    }
+    fin.close();
+    fout.close();
+    return 0;
+}

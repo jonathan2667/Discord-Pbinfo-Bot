@@ -1,0 +1,71 @@
+#include <vector>
+#include <cstdint>
+#include <fstream>
+using namespace std;
+
+// the minimum energy for a distance and a given number of spells
+int64_t energy(int64_t x, int64_t spells) {
+    int64_t a = x / spells;
+    int64_t r = x % spells;
+    return (spells - r)*a*a + r*(a + 1)*(a + 1);
+}
+
+int main() {
+    ifstream        f("doubletrouble.in");
+    ofstream        g("doubletrouble.out");
+    int             N; f >> N;
+    int64_t         E; f >> E;
+    vector<int>     P(N+1), S(N+1), C(N+1), X;
+
+    // compute the initial position for each potion
+    for (int i = 1; i <= N; i++) {
+        int v; f >> v; P[v] = i;
+    }
+
+    // compute the Fenwick array -- add 1 to all elements
+    for (int i = 1; i <= N; i++) {
+        for (int k = i; k <= N; k += k & -k) S[k]++;
+    }
+
+    // for each potion, find the distance to its desired position
+    for (int i = 1; i <= N; i++) {
+        int x = 0;
+        for (int k = P[i]; k <= N; k += k & -k) S[k]--;
+        for (int k = P[i]; k  > 0; k -= k & -k) x += S[k];
+        C[x]++;
+    }
+
+    // extract all distinct distances
+    for (int i = 1; i <= N; i++) if (C[i]) X.push_back(i);
+
+    // binary search for the delta of the optimal solution
+    int64_t spells  = -1;
+    for (int64_t lo = 1, hi = 1LL*N*N; lo <= hi;) {
+        int64_t delta = (lo + hi)/2, cnt = 0, e = 0, s = 0;
+        int     u = 1, v = 1;
+        for (int i = 0; i < X.size(); i++) {
+            // update u and v -- the lower and the upper bound
+            while (u < X[i] && energy(X[i], u) - energy(X[i], u + 1)  > delta) u++;
+            v = max(v, u);
+            while (v < X[i] && energy(X[i], v) - energy(X[i], v + 1) >= delta) v++;
+
+            // update the used energy and the number of spells
+            e += C[X[i]]*energy(X[i], v);
+            s += C[X[i]]*v;
+
+            // in case we have a range, (u, v] producing delta, then keep track of these values,
+            // since later they might save a few spells, by trading a spell for delta units of energy
+            if (v > 1 && energy(X[i], v - 1) - energy(X[i], v) == delta) cnt += C[X[i]]*(v - u);
+        }
+
+        if (e <= E) {
+            spells = s - min((E - e)/delta, cnt);
+            lo = delta + 1;
+        } else {
+            hi = delta - 1;
+        }
+    }
+    g << spells;
+
+    return 0;
+}

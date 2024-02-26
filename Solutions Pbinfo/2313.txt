@@ -1,0 +1,74 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+char a[101][101];
+int n, m, b[101][101];
+
+/// ret. 1 daca patratul cu centrul in (i, j) nu are niciun '+'
+inline int Valid(int x, int y)
+{
+    for (int i = x - 1; i <= x + 1; i++)
+        for (int j = y - 1; j <= y + 1; j++)
+            if (a[i][j] == '+') return 0;
+    return 1;
+}
+
+void MakeStar(int x, int y)
+{
+    b[x][y] = 1;
+    for (int i = x - 1; i <= x + 1; i++)
+        for (int j = y - 1; j <= y + 1; j++)
+            a[i][j] = '*';
+}
+
+inline int Interior(int i, int j)
+{
+    if (i <= 1 || i >= n || j <= 1 || j >= m)
+        return 0;
+    return 1;
+}
+
+void Fill(int i, int j)
+{
+    MakeStar(i, j);
+    if (b[i - 1][j] == 0 && Valid(i - 1, j) && Interior(i-1,j)) Fill(i - 1, j);
+    if (b[i + 1][j] == 0 && Valid(i + 1, j) && Interior(i+1,j)) Fill(i + 1, j);
+    if (b[i][j - 1] == 0 && Valid(i, j - 1) && Interior(i,j-1)) Fill(i, j - 1);
+    if (b[i][j + 1] == 0 && Valid(i, j + 1) && Interior(i,j+1)) Fill(i, j + 1);
+}
+
+int main()
+{
+    int i, j, x, y;
+    ifstream fin("ferma1.in");
+    ofstream fout("ferma1.out");
+    fin >> n >> m;
+    for (i = 1; i <= n; i++)
+        for (j = 1; j <= m; j++)
+        {
+            fin >> a[i][j];
+            if (a[i][j] == 'R')
+            {
+                x = i; y = j;
+            }
+        }
+
+    /// bordare
+    for (i = 0; i <= n + 1; i++)
+        a[i][0] = a[i][m + 1] = '+';
+
+    for (j = 0; j <= m + 1; j++)
+        a[0][j] = a[n + 1][j] = '+';
+
+    Fill(x, y);
+
+    for (i = 1; i <= n; i++)
+    {
+        for (j = 1; j <= m; j++)
+            fout << a[i][j];
+        fout << "\n";
+    }
+    fout.close();
+
+    return 0;
+}

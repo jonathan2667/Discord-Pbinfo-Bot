@@ -1,0 +1,94 @@
+#include <fstream>
+#include <set>
+#define DIM 100010
+
+using namespace std;
+
+ifstream fin ("is.in");
+ofstream fout("is.out");
+
+struct segment {
+    int x1;
+    int y1;
+    int x2;
+    int y2;
+
+    int getType() {
+        if (y1 == y2)
+            return 1;
+        else
+            return 2;
+    }
+};
+
+set <pair <int, int> > s;
+
+segment v[DIM];
+int A[DIM*3*4*2];
+int n, N, sol;
+
+void update(int nod, int st, int dr, int poz, int val) {
+    if (st == dr) {
+        A[nod]+=val;
+    } else {
+        int mid = (st + dr)/2;
+        if (poz <= mid)
+            update(2*nod, st, mid, poz, val);
+        if (poz > mid)
+            update(2*nod+1, mid+1, dr, poz, val);
+        A[nod] = A[2*nod] + A[2*nod+1];
+    }
+}
+
+void query(int nod, int st, int dr, int a, int b) {
+    if (a <= st && dr <= b) {
+        sol += A[nod];
+    } else {
+        int mid = (st + dr)/2;
+        if (a <= mid)
+            query(2*nod, st, mid, a, b);
+        if (b > mid)
+            query(2*nod + 1, mid+1, dr, a, b);
+
+    }
+}
+
+int main () {
+    fin>>n;
+    for (int i=1;i<=n;i++) {
+        fin>>v[i].x1>>v[i].y1>>v[i].x2>>v[i].y2;
+        if (v[i].x1 == v[i].x2) {
+            if (v[i].y1 > v[i].y2)
+                swap(v[i].y1, v[i].y2);
+            s.insert(make_pair(v[i].x1, i));
+            N = max(N, v[i].y1);
+            N = max(N, v[i].y2);
+        } else {
+            if (v[i].x1 > v[i].x2)
+                swap(v[i].x1, v[i].x2);
+            s.insert(make_pair(v[i].x1, i));
+            s.insert(make_pair(v[i].x2, i));
+            N = max(N, v[i].y1);
+            N = max(N, v[i].y2);
+        }
+    }
+
+    for (set<pair<int, int> >::iterator it = s.begin(); it != s.end(); it++) {
+        int x = it->first;
+        int i = it->second;
+
+        if (v[i].getType() == 2) {
+            query(1, 0, N, v[i].y1, v[i].y2);
+        } else {
+            if (v[i].x1 == x)
+                update(1, 0, N, v[i].y1, 1);
+            else
+                update(1, 0, N, v[i].y1, -1);
+        }
+
+    }
+
+    fout<<sol;
+
+    return 0;
+}

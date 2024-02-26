@@ -1,0 +1,67 @@
+#include <bits/stdc++.h>
+using namespace std;
+ifstream in("caps.in");
+ofstream out("caps.out");
+char s1[100010],s2[100010];
+unsigned int f1a[27][100010],f1A[27][100010],f2a[27][100010],f2A[27][100010];
+long long l1,q,n,cat,r,dif,w;
+
+int main()
+{
+    in>>l1>>q;in.get();
+    //in.get(s1,101);
+    in>>s1;
+    for(int i=0;i<l1;++i)
+            if(s1[i]>='a')
+                {s2[i]=s1[i]-32;f1a[s1[i]-'a'][i]=1;f2A[s2[i]-'A'][i]=1;}
+            else
+                {s2[i]=s1[i]+32;f1A[s1[i]-'A'][i]=1;f2a[s2[i]-'a'][i]=1;}
+    for(int i=0;i<26;++i)
+        for(int j=1;j<l1;++j)
+        {
+            f1a[i][j]+=f1a[i][j-1];
+            f1A[i][j]+=f1A[i][j-1];
+            f2a[i][j]+=f2a[i][j-1];
+            f2A[i][j]+=f2A[i][j-1];
+        }
+    long long d=2ll*l1;
+    char c;
+    for(;q;--q)
+    {
+        in>>n;
+        cat=n/d;//nr bucati duble complete
+        r=n%d;//rest de cautat
+        long long nr=n/l1;//nr bucati mici
+        if(n%l1) nr++;//nr de bucati simple;
+        w= __builtin_parityll(nr-1ll); //numerotare de la 0
+        if(!w)//incepe cu s1
+            if(r==0ll) //se termina la sf s1
+                {c=s1[l1-1];
+                 dif=0ll;
+                }
+            else
+                if(r<=l1) //se termina pe bucata s1
+                    {c=s1[r-1]; if(c>='a') dif=f1a[c-'a'][r-1]; else dif=f1A[c-'A'][r-1]; }
+                else //de termina pe s1 dar nu e luata si precedenta, care e evident s2
+                    {c=s1[r-l1-1];if(c>='a') dif=f2a[c-'a'][l1-1]+f1a[c-'a'][r-l1-1]; else dif=f2A[c-'A'][l1-1]+f1A[c-'A'][r-l1-1]; }
+        else //incepe cu s2
+            if(r==0ll) //se termina cu s2
+                {
+                    c=s2[l1-1];
+                    dif=0ll;
+                }
+            else
+                if(r<=l1) //se termina pe bucata s2
+                    {c=s2[r-1];if(c>='a') dif=f2a[c-'a'][r-1]; else dif=f2A[c-'A'][r-1]; }
+                else //se termina pe s2 dar e luata si precedenta care e s1
+                    {c=s2[r-l1-1];if(c>='a') dif=f1a[c-'a'][l1-1]+f2a[c-'a'][r-l1-1]; else dif=f1A[c-'A'][l1-1]+f2A[c-'A'][r-l1-1]; }
+        unsigned long long sol=0ll;
+        if(c>='a')
+            sol=dif+1ll*cat*(f1a[c-'a'][l1-1]+f2a[c-'a'][l1-1]);
+        else
+            sol=dif+1ll*cat*(f1A[c-'A'][l1-1]+f2A[c-'A'][l1-1]);
+        out<<c<<' '<<sol<<'\n';
+    }
+    out.close();
+    return 0;
+}

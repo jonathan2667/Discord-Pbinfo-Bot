@@ -1,0 +1,29 @@
+#include <bits/stdc++.h>
+#define N 1000000
+using namespace std;
+
+ifstream  fin("eratostene0.in");
+ofstream fout("eratostene0.out");
+
+long long a[1000001];
+int n;
+
+int main()
+{
+    int i, j;
+    for (i = 1; i <= N; i++)
+        for (j = i; j <= N; j += i)
+            a[j] += i;
+    for (i = 2; i <= N; i++)
+        a[i] += a[i - 1];
+
+    fin >> n;
+    while (n--)
+    {
+        fin >> i >> j;
+        fout << (a[j] - a[i - 1]) << "\n";
+    }
+    fin.close();
+    fout.close();
+    return 0;
+}

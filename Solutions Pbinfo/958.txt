@@ -1,0 +1,39 @@
+#include <iostream>
+#include <cmath>
+using namespace std;
+
+int main()
+{
+    long long n , pp = 9 , i , n2 , t = 0 , c = 0;
+    cin >> n;
+    //cerinta a
+    long long prodmax=0, p;
+    int p10 = 100 , prefix , sufix;
+    do
+    {
+        prefix = n / p10;
+        sufix = n % (p10 / 10);
+        p = prefix * sufix;
+        prodmax = max(p , prodmax);
+        p10 = p10 * 10;
+    }
+    while( prefix > 9);
+    cout << prodmax << " ";
+
+    //cerinta b
+    n2 = n;
+    while (n2 != 0)
+    {
+        c = c + 1;
+        n2 = n2 / 10;
+    }
+    for (i = 1; i < c; i++)
+    {
+        t = t + i * pp; pp = pp * 10;
+    }
+    pp = pp / 9;
+    t = t + (n - pp + 1) * c;
+
+    cout << t+1 << endl;
+    return 0;
+}

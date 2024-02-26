@@ -1,0 +1,72 @@
+#include<fstream>
+#define DIM 600005
+#define mod 1000000007
+using namespace std;
+int n, i, p, lst, m, sol;
+int fact[DIM], inv[DIM], v[DIM];
+ifstream fin("crescator.in");
+ofstream fout("crescator.out");
+int mult(int x, int e){
+    if(e == 0){
+        return 1;
+    }
+    else{
+        int a = mult(x, e / 2);
+        if(e % 2 == 0){
+            return a * 1LL * a % mod;
+        }
+        else{
+            return a * 1LL * a % mod * x % mod;
+        }
+    }
+}
+int comb(int n, int k){
+    return fact[n] * 1LL * inv[k] % mod * inv[n - k] % mod;
+}
+int cr(int n, int k){
+    if(n == 0){
+        return 1;
+    }
+    return comb(n + k - 1, n - 1);
+}
+int main(){
+    fin>> n;
+    for(i = 1; i <= n; i++){
+        fin>> v[i];
+    }
+    m = v[n] + n;
+    fact[0] = 1;
+    for(i = 1; i <= m; i++){
+        fact[i] = fact[i - 1] * 1LL * i % mod;
+    }
+    inv[m] = mult(fact[m], mod - 2);
+    for(i = m - 1; i >= 0; i--){
+        inv[i] = inv[i + 1] * 1LL * (i + 1) % mod;
+    }
+    sol = 1;
+    lst = 1;
+    for(i = 2; i <= n; i++){
+        if(v[i] > 0){
+            if(v[lst] > v[i]){
+                sol = 0;
+            }
+            if(p == 0 || v[p] < v[lst] || v[p] > v[i]){
+                sol = sol * 1LL * cr(v[i] - v[lst] + 1, i - lst - 1) % mod;
+            }
+            else{
+                sol = sol * 1LL * ( cr(v[i] - v[lst] + 1, i - lst - 1) - cr(v[i] - v[p] + 1, i - p - 1) * 1LL * cr(v[p] - v[lst] + 1, p - lst - 1) % mod) % mod;
+                if(sol < 0){
+                    sol += mod;
+                }
+            }
+            lst = i;
+            p = 0;
+        }
+        else if(v[i] < 0){
+            p = i;
+            v[p] *= -1;
+        }
+    }
+    fout<< sol;
+    return 0;
+}

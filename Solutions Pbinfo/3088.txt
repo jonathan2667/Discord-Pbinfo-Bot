@@ -1,0 +1,65 @@
+// prof. Panaete Adrian  - Colegiul National "A.T. Laurian" Botosani
+// sursa cu numere pentagonale utilizata pentru validarea testelor
+
+
+#include <bits/stdc++.h>
+
+using namespace std;
+ifstream f("pdl.in");
+ofstream g("pdl.out");
+const int64_t N = 10010;
+const int64_t MOD = 3000017;
+inline int64_t suma(int64_t x,int64_t y){return (x+y)%MOD;}
+vector<int64_t> pent,semn;
+int64_t pert[N],sol[N];
+void precalculateAll()
+{
+    int64_t pn;
+    for(int64_t i=1;i<=10000;i++)
+    {
+        pn=(3*i*i-i)/2;
+        if(pn>10000)break;
+        pent.push_back(pn);
+        pn=(3*i*i+i)/2;
+        if(pn>10000)break;
+        pent.push_back(pn);
+    }
+    for(;semn.size()<pent.size();)
+    {
+        semn.push_back(1);
+        semn.push_back(1);
+        semn.push_back(-1);
+        semn.push_back(-1);
+    }
+    for(int64_t m=1;;m++)
+    {
+        pn=3*m*m-m;
+        if(pn>10000)break;
+        if(m%2)pert[pn]=1;
+        else pert[pn]=-1;
+    }
+}
+int main()
+{
+    precalculateAll();
+    sol[0]=1;sol[1]=1;
+    for(int64_t i=2;i<10000;i++)
+    {
+        for(int64_t j=0;pent[j]<i;j++)
+            if(semn[j]==1)
+                sol[i]=suma(sol[i],sol[i-pent[j]]);
+            else
+                sol[i]=suma(sol[i],MOD-sol[i-pent[j]]);
+    }
+    int64_t n;
+    f>>n;
+    n++;
+    int64_t solFin=0;
+    for(int64_t j=0;2*pent[j]<n;j++)
+            if(semn[j]==1)
+                solFin=suma(solFin,sol[n-2*pent[j]]);
+            else
+                solFin=suma(solFin,MOD-sol[n-2*pent[j]]);
+    g<<solFin<<'\n';
+    return 0;
+}

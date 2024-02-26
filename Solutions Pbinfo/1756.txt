@@ -1,0 +1,48 @@
+// implementare: Cristi Dospra
+// punctaj: 20p
+// complexitate: O(K^N)
+
+#include <fstream>
+using namespace std;
+
+#define Nmax 502
+#define Mod 666013
+
+ifstream fin ( "arpsohood.in" );
+ofstream fout ( "arpsohood.out" );
+
+int N, K, NrS = 0;
+int Frecv[Nmax];
+
+void bkt ( int poz ){
+
+    if ( poz > N ){
+        bool ok = 1;
+        for ( int i = 1; i <= K; ++i )
+            if ( !Frecv[i] ){
+                ok = 0;
+                break;
+            }
+
+        NrS = ( NrS + ok ) % Mod;
+
+        return;
+    }
+
+    for ( int i = 1; i <= K; ++i ){
+        Frecv[i]++;
+        bkt ( poz + 1 );
+        Frecv[i]--;
+    }
+}
+
+int main(){
+
+    fin >> N >> K;
+
+    bkt ( 1 );
+
+    fout << NrS;
+
+    return 0;
+}

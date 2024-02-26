@@ -1,0 +1,32 @@
+///Varianta cu sort-ul din STL (80 de puncte)
+#include <iostream>
+#include <algorithm>
+using namespace std;
+int n;
+string voc="aeiouAEIOU";
+struct str{
+    string s;
+    int v;
+}s[1000001];
+bool srt(str a,str b){
+    return !((a.v>b.v)||(a.v==b.v&&a.s>b.s));
+}
+int main(){
+    cin>>n;
+    for(int i=1;i<=n;i++){
+        cin>>s[i].s;
+        for(int j=1;s[i].s[j];j++){
+            if(voc.find(s[i].s[j])==string::npos&&voc.find(s[i].s[j-1])==string::npos){
+                s[i].v--;
+            }
+            else if(voc.find(s[i].s[j])!=string::npos&&voc.find(s[i].s[j-1])!=string::npos){
+                s[i].v++;
+            }
+        }
+    }
+    sort(s+1,s+n+1,srt);
+    for(int i=1;i<=n;i++){
+        cout<<s[i].s<<'\n';
+    }
+    return 0;
+}

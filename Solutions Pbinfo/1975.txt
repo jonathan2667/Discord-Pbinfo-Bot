@@ -1,0 +1,36 @@
+#include <cstdio>
+#include <iostream>
+#include <cmath>
+
+using namespace std;
+
+const int MAX_N = 4005;
+
+int main()
+{
+    freopen("bluescreen.in", "r", stdin);
+    freopen("bluescreen.out", "w", stdout);
+
+    int N, integer_numbers = 0;
+    scanf("%d\n", &N);
+    double sum_initial = 0;
+
+    for(int i = 1; i <= 2 * N; ++i){
+
+        double a;
+        scanf("%lf ", &a);
+        if(a - ceil(a) == 0) ++integer_numbers;
+        sum_initial += (a - floor(a));
+    }
+
+    double sol = 1e9;
+
+    for(int i = N; i >= N - integer_numbers; --i)
+        sol = min(sol, fabs(sum_initial - i));
+
+    printf("%.3lf", sol);
+
+    fclose(stdin);
+    fclose(stdout);
+    return 0;
+}

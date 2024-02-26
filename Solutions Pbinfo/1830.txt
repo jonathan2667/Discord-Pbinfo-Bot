@@ -1,0 +1,160 @@
+// autor: Iulia Tamas
+#include <fstream>
+#include <string.h>
+#include <assert.h>
+
+#include <string>
+#include <set>
+#include <vector>
+using namespace std;
+
+#define A_SIZE 26 // alfabet
+#define t_interval pair<pair<char, int>, pair<char, int> >
+#define t_intervals vector<t_interval>
+#define t_intervals_it vector<t_interval>::iterator
+
+char comuta_cu[A_SIZE];
+int ss_count[A_SIZE]; // numarul de litere de fiecare fel din ss_config
+set<char> ss_in; // literele (trupele) din ss_config
+set<int> ss_arc; // pozitiile arcasilor in ss_config
+t_intervals ss_ivls;
+
+int count[A_SIZE]; // numarul de litere din config curenta
+
+void next_interval(string config, int clen, int *start, t_intervals &ivls) {
+  if (*start >= clen)
+    return;
+
+  // calculam descrirea intervalui format doar din literele lit si c_lit
+  char lit = config[*start];
+  char c_lit = comuta_cu[lit - 'a'];
+  int i, n_lit, n_c_lit;
+  n_lit = 0; // numar de aparitii litera
+  n_c_lit = 0; // numar de aparitii litera care comuta
+  for(i = *start; i < clen; i++) {
+    if(config[i] == lit) {
+      n_lit++;
+      continue;
+    }
+    if(config[i] == c_lit) {
+      n_c_lit++;
+      continue;
+    }
+    break;
+  }
+
+  ivls.push_back(make_pair(make_pair(lit, n_lit), make_pair(c_lit, n_c_lit)));
+  *start = i;
+}
+
+bool equal_intervals(t_interval a, t_interval b) {
+  return (a.first == b.first && a.second == b.second) ||
+         (a.first == b.second && a.second == b.first);
+}
+
+// Prespune: config de lungime corecta
+bool same_arc(const string &config) {
+  set<int>::iterator it;
+  for(it = ss_arc.begin(); it != ss_arc.end(); it++){
+    if(config[*it] != 'a')
+      return false;
+  }
+  return true;
+}
+
+bool same_troups(const string &config) {
+  memset(count, 0, A_SIZE * sizeof(int));
+  string::const_iterator sit;
+  for (sit = config.begin(); sit != config.end(); sit++) {
+    if (++count[*sit - 'a'] > ss_count[*sit - 'a'])
+      return false;
+  }
+  return true;
+}
+
+int main() {
+  fstream fin, fout;
+  fin.open("armata_regelui.in", fstream::in);
+  fout.open("armata_regelui.out", fstream::out);
+
+  // ss_config
+  string ss_config;
+  fin >> ss_config;
+  int ss_len = ss_config.size();
+
+  // precalculari litere in ss_config
+  char lit;
+  string::iterator sit;
+  memset(comuta_cu, 0, A_SIZE);
+  memset(ss_count, 0, A_SIZE * sizeof(int));
+  ss_in.clear();
+  ss_arc.clear();
+  for (sit = ss_config.begin(); sit != ss_config.end(); sit++) {
+    lit = *sit;
+    assert(lit >= 'a' && lit <= 'z');
+
+    ss_count[lit - 'a']++;
+    ss_in.insert(lit);
+    if (lit == 'a') ss_arc.insert(sit - ss_config.begin());
+  }
+
+  // perechi care comuta
+  int M, N;
+  char t1, t2;
+  fin >> M >> N;
+  for(int i = 0; i < M; i++) {
+    fin >> t1 >> t2;
+    comuta_cu[t1 - 'a'] = t2;
+    comuta_cu[t2 - 'a'] = t1;
+  }
+
+  // precalculari intervale in ss_config
+  int start = 0;
+  do {
+    next_interval(ss_config, ss_len, &start, ss_ivls);
+  } while(start < ss_len);
+
+  // verificam fiecare configuratie
+  string config;
+  t_intervals ivls;
+  t_intervals_it iit;
+  for(int i = 1; i <= N; i++){
+    fin >> config;
+    int c_len = config.size();
+    if (c_len != ss_len){
+      continue;
+    }
+
+    // verificam pozitiile arcasilor
+    if (!same_arc(config)){
+      continue;
+    }
+
+    // verificam numar din fiecare trupa
+    if (!same_troups(config)){
+      continue;
+    }
+
+    // verificam fiecare interval in parte
+    ivls.clear();
+    start = 0;
+    iit = ss_ivls.begin();
+    do {
+      next_interval(config, c_len, &start, ivls);
+      if(!equal_intervals(ivls.back(), *iit)) {
+        break;
+      }
+
+      iit++;
+    } while(start < c_len && iit != ss_ivls.end());
+
+    if(start == c_len && iit == ss_ivls.end()) {
+      // acelasi numar de intervale si intervalele sunt identice
+      fout << i << "\n";
+    }
+  }
+
+  fin.close();
+  fout.close();
+  return 0;
+}

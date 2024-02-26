@@ -1,0 +1,23 @@
+#include <iostream>
+#include <cstdlib>
+using namespace std;
+
+int n, k , A[101][101];
+
+int main()
+{
+    cin >> n >> k;
+    for(int i =1; i <= n ; ++i)
+        for(int  j = 1 ; j <= n ; j ++)
+            if( abs(i-j) <= k || (i+j >= n + 1 - k && i + j <= n + 1 + k  ) )
+                A[i][j] = 1;
+            else
+                A[i][j] = 2;
+    for(int i =1; i <= n ; ++i)
+    {
+        for(int  j = 1 ; j <= n ; j ++)
+            cout << A[i][j] << " ";
+        cout << "\n";
+    }
+    return 0;
+}

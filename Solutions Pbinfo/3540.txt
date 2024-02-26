@@ -1,0 +1,53 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+ifstream in("ambuscada.in");
+ofstream out("ambuscada.out");
+
+#define MAX (int)1e9
+
+int N, V, M;
+vector<pair<int, int>>A;
+
+void update(int i, int j, int k)
+{
+    A.push_back(make_pair(i, -k));
+    A.push_back(make_pair(j + 1, k));
+}
+
+int query()
+{
+    int cnt = 0, val=0, i = 0;
+    while (i < A.size())
+    {
+        int j = i;
+        while (j < A.size() && A[i].first == A[j].first)
+        {
+            val += A[j].second;
+            j++;
+        }
+        if (val > 0)
+            if (j < A.size())
+                cnt += (A[j].first - A[i].first);
+            else
+                cnt += N - A[i].first;
+        i = j;
+    }
+    return cnt;
+}
+
+int main()
+{
+    in >> N >> M >> V;    
+    A.push_back(make_pair(0, V));
+    for (int m = 0; m < M; m++)
+    {
+        int i, j, k;
+        in >> i >> j >> k;
+        update(i - 1, j - 1, k);
+    }
+    sort(A.begin(), A.end());
+    out << query();
+
+    return 0;
+}
